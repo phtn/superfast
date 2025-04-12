@@ -18,6 +18,7 @@ module.exports = {
         void: "#14141B",
         chalk: "#FAFAFA",
         grey: "#46515F",
+        ghost: "#F8FAFC",
       },
     },
   },

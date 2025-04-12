@@ -3,7 +3,7 @@ import { Paginator } from "@/components/ux/Paginator";
 import { SwipeLeftIndicator } from "@/components/ux/Swipe";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Redirect } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useColorScheme } from "nativewind";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -53,6 +53,7 @@ const { width, height } = Dimensions.get("window");
 const OnboardingScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { toggleColorScheme, colorScheme } = useColorScheme();
+  const router = useRouter();
   const isDark = colorScheme === "dark";
   const gradients: readonly [string, string, ...string[]] = useMemo(
     () =>
@@ -120,18 +121,18 @@ const OnboardingScreen = () => {
     return (
       <View className=" flex items-center w-screen flex-1">
         <View className="h-1/6 flex relative items-center w-full justify-between flex-row px-8">
-          <View className="h-3/4 w-auto aspect-square border dark:bg-blu/30 bg-blu/40 border-void relative z-50 dark:border-chalk rounded-2xl"></View>
-          <View className="h-3/4 scale-90 w-auto absolute aspect-square border dark:border-2 border-active left-12 top-8 dark:border-active rounded-[17px]"></View>
+          <View className="h-3/4 w-auto aspect-square border dark:bg-blu/30 bg-blu/40 border-void relative z-50 dark:border-orange-100 rounded-2xl"></View>
+          <View className="h-3/4 scale-90 w-auto absolute aspect-square border dark:border-2 border-active left-12 top-8 dark:border-chalk rounded-[17px]"></View>
           <View className="h-3/4 w-auto aspect-square border-void/20 dark:border-chalk rounded-2xl"></View>
         </View>
-        <View className="w-full border-void dark:border-white p-8">
+        <View className="w-full border-void dark:border-white px-8 pt-10">
           <HText className="text-[4rem] px-2 font-bold dark:text-chalk border-orange-300 -tracking-[0.1em] text-active capitalize font-space">
             {item.title}
           </HText>
         </View>
         <View className="w-full border-void dark:border-white px-8">
           <View className=" -skew-x-12">
-            <HText className="text-[2.5rem] px-2 font-bold dark:text-orange-300 -tracking-[0.04em] text-slate-900 font-courg">
+            <HText className="text-[2.5rem] px-2 font-bold dark:text-orange-200 -tracking-[0.04em] text-slate-900 font-courg">
               {item.subtext}
             </HText>
           </View>
@@ -140,6 +141,10 @@ const OnboardingScreen = () => {
       </View>
     );
   };
+
+  const handleGetStarted = useCallback(() => {
+    router.push("/(entry)/sign-in");
+  }, []);
 
   const getItemLayout = useCallback(
     (_: ArrayLike<OnboardingData> | null | undefined, index: number) => ({
@@ -193,11 +198,16 @@ const OnboardingScreen = () => {
           />
         </View>
         <View className="fixed bottom-0 h-[10vh] w-full flex px-8 items-center flex-row justify-center">
-          <Pressable className="border rounded-3xl dark:border-chalk/80 dark:bg-transparent bg-white border-void px-12 py-4">
-            <HText className="text-xl font-semibold tracking-tight text-black">
-              Get Started
-            </HText>
-          </Pressable>
+          {currentIndex === slides.length - 1 && (
+            <Pressable
+              onPress={handleGetStarted}
+              className="border rounded-3xl dark:border-chalk/80 dark:bg-transparent bg-white border-void px-12 py-4"
+            >
+              <HText className="text-xl font-semibold tracking-tight text-black">
+                Get Started
+              </HText>
+            </Pressable>
+          )}
         </View>
         <View className="h-[15vh] flex items-center justify-center w-full">
           <Pressable

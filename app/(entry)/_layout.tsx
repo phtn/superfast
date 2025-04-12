@@ -6,7 +6,7 @@ import * as SecureStore from "expo-secure-store";
 export default function Layout() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFirstLaunch, setIsFirstLaunch] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
     async function checkFirstLaunch() {
@@ -39,11 +39,14 @@ export default function Layout() {
       <StatusBar style="auto" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="home" options={{ headerShown: false }} />
+        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="index" options={{ headerShown: false }} />
         {!isFirstLaunch && isAuthenticated ? (
-          <Stack.Screen name="home" />
+          <Stack.Screen name="home" options={{ headerShown: false }} />
         ) : (
-          <Stack.Screen name="sign-in" />
-        )}
+          <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+        )} */}
       </Stack>
     </>
   );

@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -14,6 +13,7 @@ import {
 import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { HText } from "@/components/HyperText";
 
 const SignInScreen = () => {
   const router = useRouter();
@@ -42,7 +42,7 @@ const SignInScreen = () => {
       await SecureStore.setItemAsync("userToken", "dummy-auth-token");
 
       setIsLoading(false);
-      router.push("/home");
+      router.push("/(entry)/home");
     } catch (error) {
       setIsLoading(false);
       setError("Authentication failed. Please try again.");
@@ -50,16 +50,21 @@ const SignInScreen = () => {
     }
   };
 
+  const handleSkip = useCallback(() => {
+    setIsLoading(false);
+    router.push("/(entry)/home");
+  }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <View className="flex-1 pt-20">
+      <StatusBar translucent backgroundColor="transparent" />
+      <View></View>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
+          <HText style={styles.title}>Personalization</HText>
         </View>
 
         <View style={styles.form}>
@@ -98,10 +103,10 @@ const SignInScreen = () => {
             />
           </View>
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {error ? <HText style={styles.errorText}>{error}</HText> : null}
 
-          <TouchableOpacity style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          <TouchableOpacity onPress={handleSkip} style={styles.forgotPassword}>
+            <HText style={styles.forgotPasswordText}>Forgot Password?</HText>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -112,28 +117,26 @@ const SignInScreen = () => {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.signInButtonText}>Sign In</Text>
+              <HText className="text-void" color="primary">
+                Sign In
+              </HText>
             )}
           </TouchableOpacity>
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity>
-            <Text style={styles.signUpText}>Sign Up</Text>
+          <HText style={styles.footerText}>Don't have an account? </HText>
+          <TouchableOpacity onPress={handleSkip}>
+            <HText style={styles.signUpText}>Sign Up</HText>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 // Styles for SignInScreen
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   keyboardView: {
     flex: 1,
   },
@@ -184,23 +187,15 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   forgotPasswordText: {
-    color: "#4A55A2",
+    color: "#46515F",
     fontSize: 14,
   },
   signInButton: {
-    backgroundColor: "#4A55A2",
+    backgroundColor: "#46515F",
     borderRadius: 12,
     height: 55,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#4A55A2",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 8,
   },
   signInButtonText: {
     color: "#fff",
@@ -217,7 +212,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   signUpText: {
-    color: "#4A55A2",
+    color: "#46515F",
     fontSize: 16,
     fontWeight: "600",
   },
