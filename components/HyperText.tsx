@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { Text as RNText, TextProps as RNTextProps } from "react-native";
 import clsx from "clsx";
-import { useColorScheme } from "nativewind";
 
 // Define the theme structure
 export type ThemeColors = {
@@ -64,6 +63,7 @@ export interface TextProps extends RNTextProps {
     | "subtitle"
     | "body"
     | "caption"
+    | "tiny"
     | "button"
     | "link";
   weight?: "normal" | "medium" | "semibold" | "bold";
@@ -103,15 +103,11 @@ export function HText({
   className,
   ...props
 }: TextProps) {
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const isLight = colorScheme === "light";
-
   return (
     <RNText
       className={clsx(
         // Color based on theme and color prop
-        color !== "inherit" && "dark:text-chalk text-void",
+        "dark:text-chalk text-void",
 
         // Variants
         {
@@ -122,6 +118,7 @@ export function HText({
           "text-lg": variant === "subtitle",
           "text-base": variant === "body",
           "text-sm": variant === "caption",
+          "text-[10px]": variant === "tiny",
           "text-base font-medium": variant === "button",
           underline: variant === "link",
         },
@@ -130,8 +127,8 @@ export function HText({
         {
           "font-normal": weight === "normal",
           "font-medium": weight === "medium",
-          "font-semibold": weight === "semibold",
-          "font-bold": weight === "bold",
+          "font-semibold tracking-tighter": weight === "semibold",
+          "font-bold -tracking-widest": weight === "bold",
         },
 
         // Text alignment

@@ -37,16 +37,16 @@ export default function Layout() {
   return (
     <>
       <StatusBar style="auto" />
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="home" options={{ headerShown: false }} />
-        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
         {/* <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="home" options={{ headerShown: false }} />
+        <Stack.Screen name="sign-in" options={{ headerShown: false }} /> */}
         {!isFirstLaunch && isAuthenticated ? (
           <Stack.Screen name="home" options={{ headerShown: false }} />
         ) : (
           <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-        )} */}
+        )}
+        <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
     </>
   );

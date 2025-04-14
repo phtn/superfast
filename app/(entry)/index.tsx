@@ -114,7 +114,8 @@ const OnboardingScreen = () => {
   };
 
   const handleSkip = () => {
-    completeOnboarding();
+    // completeOnboarding();
+    router.push("/(entry)/sign-in");
   };
 
   const renderItem = ({ item }: { item: OnboardingData }) => {
@@ -158,7 +159,7 @@ const OnboardingScreen = () => {
   return (
     <LinearGradient
       colors={gradients}
-      className="h-screen bg-void"
+      className="flex-1 bg-void"
       style={{ paddingTop: inset.top, paddingBottom: inset.bottom }}
     >
       <View className="flex flex-col items-center">

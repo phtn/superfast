@@ -1,50 +1,38 @@
-# Welcome to your Expo app 👋
+# Superfast - RN Expo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A superfast app created for FastInsure
 
-## Get started
+## The Stack
 
-1. Install dependencies
+- React Native Expo
+- TypeScript
+- Bun
 
-   ```bash
-   npm install
-   ```
+### Frontend
 
-2. Start the app
+- Nativewind
 
-   ```bash
-    npx expo start
-   ```
+### Backend
 
-In the output, you'll find options to open the app in a
+- Firebase
+- Expo SecureStorage
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Prebuild
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+`bunx expo prebuild`
 
-## Get a fresh project
+This will generate Android and iOS project directories.
 
-When you're ready, run:
+## Android Release (.apk)
 
-```bash
-npm run reset-project
-```
+`./gradlew clean`
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+If no errors, proceed with the release build.
 
-## Learn more
+`./gradlew assembleRelease`
 
-To learn more about developing your project with Expo, look at the following resources:
+## Android Prod Release
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+`./gradlew bundleRelease`
 
-## Join the community
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
