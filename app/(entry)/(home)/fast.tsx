@@ -2,18 +2,21 @@
 
 import { Platform, View } from "react-native";
 
-import { StatusBar } from "expo-status-bar";
+import { UserCategories } from "@/app/_components/home/categories";
 import { Header, SearchBar } from "@/app/_components/home/components";
+import {
+  type IProductItem,
+  UserProducts,
+} from "@/app/_components/home/products";
 import ParallaxView from "@/components/ParallaxView";
-import { Categories } from "@/app/_components/home/categories";
-import { BottomTab } from "@/app/_components/home/bottom-tab";
-import { IProductItem, Products } from "@/app/_components/home/products";
+import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "nativewind";
+import { useEffect, useMemo, useState } from "react";
 import Animated, {
   useAnimatedRef,
   useScrollViewOffset,
+  useSharedValue,
 } from "react-native-reanimated";
-import { useEffect, useMemo, useState } from "react";
-import { useColorScheme } from "nativewind";
 
 const FastScreen = () => {
   const { colorScheme } = useColorScheme();
@@ -21,58 +24,35 @@ const FastScreen = () => {
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const svo = useScrollViewOffset(scrollRef);
-  const [scrollValue, setScrollValue] = useState(0);
+  const scrollValue = useSharedValue(0);
 
   useEffect(() => {
     if (scrollRef.current) {
-      setScrollValue(svo.value);
+      scrollValue.value = svo.value;
     }
-  }, [svo, scrollRef]);
+  }, [svo, scrollRef, scrollValue]);
 
   const products = useMemo(
     () =>
       [
         {
           id: 0,
-          name: "CTPL",
-          subtext: "Compulsory",
+          name: "Lancer XL",
+          subtext: "1999 Mitsubishi",
+          coverage: "Full Coverage",
           price: 999,
           image: "@/assets/images/car-cover-light.png",
-          description: "Third Party Liability",
+          description: "My First Car",
           rating: 95,
         },
         {
           id: 1,
-          name: "Comprehensive",
-          subtext: "Full Coverage",
+          name: "Land Cruiser ZX",
+          subtext: "2025 Toyota",
           price: 899,
           image: "@/assets/images/gray-icon.png",
-          description: "Comprehensive Coverage",
+          description: "Hyper SUV",
           rating: 90,
-        },
-        {
-          id: 2,
-          name: "Google Pixel 6 Pro",
-          price: 799,
-          image: "@/assets/images/gray-icon.png",
-          description: "Google Store",
-          rating: 85,
-        },
-        {
-          id: 3,
-          name: "Google Pixel 6 Pro",
-          price: 799,
-          image: "@/assets/images/gray-icon.png",
-          description: "Google Store",
-          rating: 85,
-        },
-        {
-          id: 4,
-          name: "Google Pixel 6 Pro",
-          price: 799,
-          image: "@/assets/images/gray-icon.png",
-          description: "Google Store",
-          rating: 85,
         },
       ] as IProductItem[],
     [],
@@ -85,23 +65,21 @@ const FastScreen = () => {
       <StatusBar translucent backgroundColor="transparent" />
       {/* Header - Fixed */}
 
-      <Header v={scrollValue} />
+      <Header v={scrollValue.value} />
       {/* Search Bar - Fixed */}
-      {/* <Animated.View style={{ transform: [{ translateY: svo.get() }] }}> */}
-      <SearchBar />
       {/* </Animated.View> */}
-      {/* Categories - Will scroll up and hide */}
 
       <ParallaxView
         svo={svo}
         scrollRef={scrollRef}
         height={120}
-        header={<Categories isDark={isDarkMode} svov={scrollValue} />}
+        header={
+          <UserCategories scrollValue={scrollValue.value} isDark={isDarkMode} />
+        }
       >
         {/* Main Scrollable Content */}
-        <Products list={products} isDark={isDarkMode} />
+        <UserProducts list={products} isDark={isDarkMode} />
       </ParallaxView>
-      {/* Bottom Navigation */}
     </View>
   );
 };

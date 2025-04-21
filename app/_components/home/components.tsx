@@ -14,13 +14,13 @@ export const Header = ({ v }: HeaderProps) => {
       <FlexRow>
         <TouchableOpacity className="size-10 mr-2.5 rounded-full bg-active flex items-center justify-center">
           <Image
-            source={{ uri: "https://randomuser.me/api/portraits/men/32.jpg" }}
+            source={require("@/assets/images/profile.png")}
             className="size-9 rounded-full relative z-[50]"
           />
         </TouchableOpacity>
         <FlexCol className="justify-start">
           <Text className="tracking-tighter dark:text-chalk font-quickbold">
-            Rene Descartes {v?.toFixed(2)}
+            René Descartes
           </Text>
         </FlexCol>
       </FlexRow>
@@ -39,7 +39,7 @@ export const Header = ({ v }: HeaderProps) => {
 export const SearchBar = () => {
   return (
     <View className="px-4 pt-2 items-center z-10">
-      <FlexRow className="ps-5 pe-2 justify-between h-14 rounded-2xl bg-white dark:bg-neutral-200">
+      <FlexRow className="ps-5 pe-2 justify-between h-14 rounded-2xl bg-grei dark:bg-neutral-200">
         <TextInput
           placeholder="Search"
           placeholderTextColor="#888"

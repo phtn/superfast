@@ -78,7 +78,7 @@ const CardCarousel = () => {
             <View style={styles.cardBottom}>
               <View>
                 <Text className="text-void/40 dark:text-void/40 font-quick tracking-wide">
-                  ROBERT LANG
+                  RENÉ DESCARTES
                 </Text>
               </View>
 

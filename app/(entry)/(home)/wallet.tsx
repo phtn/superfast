@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -20,7 +19,7 @@ import CardCarousel from "@/components/ui/CardCarousel";
 import { Header } from "@/app/_components/home/components";
 import { FlexRow } from "@/components/ui/FlexRow";
 
-export default function HomeScreen() {
+export default function WalletScreen() {
   return (
     <View
       className={`flex-1 bg-grei dark:bg-void ${Platform.OS === "ios" ? "pt-14" : "pt-9"}`}
@@ -114,7 +113,6 @@ export default function HomeScreen() {
           />
         </Animated.View>
       </ScrollView>
-      {/* Bottom Navigation */}
     </View>
   );
 }

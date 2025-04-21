@@ -14,6 +14,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { useEffect, useMemo, useState } from "react";
 import { useColorScheme } from "nativewind";
+import { SheetProvider } from "react-native-actions-sheet";
+import "@/components/ui/ActionSheets/sheets";
 
 const ShopScreen = () => {
   const { colorScheme } = useColorScheme();
@@ -50,37 +52,13 @@ const ShopScreen = () => {
           description: "Comprehensive Coverage",
           rating: 90,
         },
-        {
-          id: 2,
-          name: "Google Pixel 6 Pro",
-          price: 799,
-          image: "@/assets/images/gray-icon.png",
-          description: "Google Store",
-          rating: 85,
-        },
-        {
-          id: 3,
-          name: "Google Pixel 6 Pro",
-          price: 799,
-          image: "@/assets/images/gray-icon.png",
-          description: "Google Store",
-          rating: 85,
-        },
-        {
-          id: 4,
-          name: "Google Pixel 6 Pro",
-          price: 799,
-          image: "@/assets/images/gray-icon.png",
-          description: "Google Store",
-          rating: 85,
-        },
       ] as IProductItem[],
     [],
   );
 
   return (
     <View
-      className={`flex-1 bg-grei dark:bg-void ${Platform.OS === "ios" ? "pt-14" : "pt-9"}`}
+      className={`flex-1 bg-white dark:bg-void ${Platform.OS === "ios" ? "pt-14" : "pt-9"}`}
     >
       <StatusBar translucent backgroundColor="transparent" />
       {/* Header - Fixed */}
@@ -99,7 +77,9 @@ const ShopScreen = () => {
         header={<Categories isDark={isDarkMode} svov={scrollValue} />}
       >
         {/* Main Scrollable Content */}
-        <Products list={products} isDark={isDarkMode} />
+        <SheetProvider>
+          <Products list={products} isDark={isDarkMode} />
+        </SheetProvider>
       </ParallaxView>
       {/* Bottom Navigation */}
     </View>

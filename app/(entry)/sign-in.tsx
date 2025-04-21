@@ -152,16 +152,19 @@ const SignInScreen = () => {
               </Text>
             )}
           </TouchableOpacity>
+          <FlexRow className="h-12">
+            <Text className="text-sm">or</Text>
+          </FlexRow>
           <TouchableOpacity
-            className="bg-white flex flex-row items-center justify-center rounded-2xl h-16"
-            onPress={handleGoogleSignIn}
+            className="bg-ghost flex border border-void flex-row items-center justify-center rounded-2xl h-16"
+            onPress={handleSkip}
             disabled={isLoading}
           >
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="text-royal tracking-tighter font-quickbold">
-                Continue
+                Continue with Google
               </Text>
             )}
           </TouchableOpacity>
