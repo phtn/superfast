@@ -6,14 +6,15 @@ import {
   Text,
   StyleSheet,
   Dimensions,
-  Image,
   FlatList,
   Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { FlexRow } from "./FlexRow";
+import { FlexCol } from "./FlexCol";
 
 const { width } = Dimensions.get("window");
-const CARD_WIDTH = width - 80;
+const CARD_WIDTH = width - 64;
 const SPACING = 20;
 
 interface Card {
@@ -29,7 +30,18 @@ const cards: Card[] = [
     id: "1",
     type: "VISA",
     number: "•••• •••• •••• 7995",
-    gradient: ["#1E293B", "#0F172A"],
+    gradient: [
+      "#FFF",
+      "#fefefe",
+      "#ededed",
+      "#ededed",
+      "#ededed",
+      "#ededed",
+      "#ededed",
+      "#1E293B",
+      "#1E293B",
+      "#0F172A",
+    ],
     logo: "visa",
   },
   {
@@ -54,29 +66,31 @@ const CardCarousel = () => {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <View style={styles.cardContent}>
-            <Text style={styles.cardLabel}>PULSE</Text>
+          <View className="relative flex-1 flex flex-col justify-between">
+            <Text className="text-royal font-quickbold tracking-tight">
+              FastInsure
+            </Text>
 
-            <View style={styles.chipContainer}>
-              <Image
-                source={require("@/assets/images/adaptive-icon.png")}
-                style={styles.chipImage}
-              />
-            </View>
-
-            <Text style={styles.cardNumber}>{item.number}</Text>
+            <Text className="text-royal mt-10 text-xl font-space tracking-widest">
+              {item.number}
+            </Text>
 
             <View style={styles.cardBottom}>
               <View>
-                <Text style={styles.cardHolderLabel}>CARD HOLDER</Text>
-                <Text style={styles.cardHolderName}>ROBERT LANG</Text>
+                <Text className="text-void/40 dark:text-void/40 font-quick tracking-wide">
+                  ROBERT LANG
+                </Text>
               </View>
 
               <View style={styles.logoContainer}>
                 {item.type === "VISA" ? (
-                  <Text style={styles.visaLogo}>VISA</Text>
+                  <Text className="font-bold text-3xl tracking-tighter text-white">
+                    VISA
+                  </Text>
                 ) : (
-                  <Text style={styles.mastercardLogo}>MASTERCARD</Text>
+                  <Text className="font-bold text-xl tracking-tighter text-white">
+                    MASTERCARD
+                  </Text>
                 )}
               </View>
             </View>
@@ -87,7 +101,7 @@ const CardCarousel = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <FlexCol className="gap-x-3 w-full">
       <FlatList
         data={cards}
         keyExtractor={(item) => item.id}
@@ -95,7 +109,7 @@ const CardCarousel = () => {
         showsHorizontalScrollIndicator={false}
         snapToInterval={CARD_WIDTH + SPACING}
         decelerationRate="fast"
-        contentContainerStyle={styles.flatListContent}
+        contentContainerStyle={[styles.flatListContent]}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: false },
@@ -120,7 +134,7 @@ const CardCarousel = () => {
           />
         ))}
       </View>
-    </View>
+    </FlexCol>
   );
 };
 
@@ -130,6 +144,7 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     paddingHorizontal: 40,
+    gap: 24,
   },
   cardContainer: {
     width: CARD_WIDTH,
@@ -144,8 +159,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   card: {
-    height: 200,
-    borderRadius: 16,
+    height: 224,
+    borderRadius: 24,
+    borderRightWidth: 1,
+    borderColor: "#fff",
     padding: 20,
   },
   cardContent: {
@@ -169,7 +186,6 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   cardNumber: {
-    color: "#fff",
     fontSize: 18,
     fontWeight: "600",
     letterSpacing: 2,
@@ -194,11 +210,6 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "flex-end",
-  },
-  visaLogo: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "700",
   },
   mastercardLogo: {
     color: "#fff",

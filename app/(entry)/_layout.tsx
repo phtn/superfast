@@ -42,7 +42,7 @@ export default function Layout() {
         <Stack.Screen name="home" options={{ headerShown: false }} />
         <Stack.Screen name="sign-in" options={{ headerShown: false }} /> */}
         {!isFirstLaunch && isAuthenticated ? (
-          <Stack.Screen name="home" options={{ headerShown: false }} />
+          <Stack.Screen name="(home)" options={{ headerShown: false }} />
         ) : (
           <Stack.Screen name="sign-in" options={{ headerShown: false }} />
         )}

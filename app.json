@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "googleServicesFile": "./ios/superfast/GoogleService-Info.plist",
       "supportsTablet": true,
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [
@@ -29,6 +30,7 @@
       "bundleIdentifier": "com.anonymous.superfast"
     },
     "android": {
+      "googleServicesFile": "./android/app/google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -50,10 +52,19 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "38745951-79fb-4b45-8a18-aa4e3a42bcd5"
+      }
     }
   }
 }

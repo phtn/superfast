@@ -4,16 +4,28 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
   ActivityIndicator,
+  Text,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { RelativePathString, useRouter } from "expo-router";
 import { HText } from "@/components/HyperText";
+import { FlexRow, FrBtn } from "@/components/ui/FlexRow";
+// import auth from "@react-native-firebase/auth";
+
+async function onGoogleButtonPress() {
+  // Check if your device supports Google Play
+  // Get the users ID token
+  // Try the new style of google-sign in result, from v13+ of that module
+  // Create a Google credential with the token
+
+  // Sign-in the user with the credential
+  return null;
+}
 
 const SignInScreen = () => {
   const router = useRouter();
@@ -42,7 +54,7 @@ const SignInScreen = () => {
       await SecureStore.setItemAsync("userToken", "dummy-auth-token");
 
       setIsLoading(false);
-      router.push("/(entry)/home");
+      router.navigate("/(entry)/(home)" as RelativePathString);
     } catch (error) {
       setIsLoading(false);
       setError("Authentication failed. Please try again.");
@@ -52,8 +64,13 @@ const SignInScreen = () => {
 
   const handleSkip = useCallback(() => {
     setIsLoading(false);
-    router.push("/(entry)/home");
+    router.push("/(entry)/(home)" as RelativePathString);
   }, []);
+
+  const handleGoogleSignIn = useCallback(async () => {
+    setIsLoading(true);
+    await onGoogleButtonPress();
+  }, [onGoogleButtonPress]);
 
   return (
     <View className="flex-1 pt-20">
@@ -63,72 +80,107 @@ const SignInScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
-        <View style={styles.header}>
-          <HText style={styles.title}>Personalization</HText>
-        </View>
+        <FlexRow className="h-56 px-2">
+          <Text className="font-sat rotate-3 text-dark-active -tracking-widest mt-1.5 text-3xl">
+            My
+          </Text>
+
+          <Text className="font-bold -tracking-[0.06em] text-4xl text-void dark:text-white">
+            FastInsure
+          </Text>
+        </FlexRow>
 
         <View style={styles.form}>
           <View style={styles.inputContainer}>
             <Ionicons
               name="mail-outline"
-              size={22}
-              color="#666"
+              size={20}
+              color="#0F172A"
               style={styles.inputIcon}
             />
             <TextInput
               style={styles.input}
               placeholder="Email Address"
-              placeholderTextColor="#999"
+              placeholderTextColor="#bbb"
               keyboardType="email-address"
               autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
+              className="font-quicksemi text-active"
             />
           </View>
 
           <View style={styles.inputContainer}>
             <Ionicons
               name="lock-closed-outline"
-              size={22}
-              color="#666"
+              size={20}
+              color="#0F172A"
               style={styles.inputIcon}
             />
             <TextInput
               style={styles.input}
               placeholder="Password"
-              placeholderTextColor="#999"
+              placeholderTextColor="#bbb"
               secureTextEntry
               value={password}
               onChangeText={setPassword}
+              className="font-quicksemi text-royal"
             />
           </View>
 
           {error ? <HText style={styles.errorText}>{error}</HText> : null}
 
-          <TouchableOpacity onPress={handleSkip} style={styles.forgotPassword}>
-            <HText style={styles.forgotPasswordText}>Forgot Password?</HText>
+          <TouchableOpacity
+            onPress={handleSkip}
+            className="h-12 self-end align-middle flex items-start px-2 flex-row"
+          >
+            <Text className="text-sm text-dark-active tracking-tighter font-quicksemi">
+              Forgot password?
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.signInButton}
+            className="bg-dark-active flex flex-row items-center justify-center rounded-2xl h-16"
             onPress={handleSignIn}
             disabled={isLoading}
           >
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <HText className="text-void" color="primary">
+              <Text className="text-white tracking-tighter font-quickbold">
                 Sign In
-              </HText>
+              </Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-white flex flex-row items-center justify-center rounded-2xl h-16"
+            onPress={handleGoogleSignIn}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-royal tracking-tighter font-quickbold">
+                Continue
+              </Text>
             )}
           </TouchableOpacity>
         </View>
 
         <View style={styles.footer}>
-          <HText style={styles.footerText}>Don't have an account? </HText>
-          <TouchableOpacity onPress={handleSkip}>
-            <HText style={styles.signUpText}>Sign Up</HText>
-          </TouchableOpacity>
+          <Text className="dark:text-chalk/70 text-sm text-royal/80 font-quicksemi mr-2">
+            Don't have an account?{" "}
+          </Text>
+          <FrBtn onPress={handleSkip}>
+            <Text className="text-dark-active -tracking-[0.02em] px-1 rounded-md text-sm font-quicksemi">
+              Sign up
+            </Text>
+            <Ionicons
+              name="arrow-up-outline"
+              className="size-fit rotate-45"
+              color="#007AFE"
+            />
+          </FrBtn>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -174,7 +226,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 55,
-    color: "#333",
     fontSize: 16,
   },
   errorText: {

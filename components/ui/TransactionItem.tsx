@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { FlexCol } from "./FlexCol";
 
 interface TransactionItemProps {
   avatar: string;
@@ -16,25 +17,31 @@ const TransactionItem = ({
   isPositive,
 }: TransactionItemProps) => {
   return (
-    <TouchableOpacity activeOpacity={0.7} style={styles.container}>
-      <View style={styles.avatarContainer}>
-        <Text style={styles.avatarText}>{avatar}</Text>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      className="flex flex-row items-center py-4 border-b-[0.33px] dark:border-chalk/40"
+    >
+      <View className="rounded-xl size-10 bg-void/10 dark:bg-chalk/20">
+        <Text className="font-bold text-lg dark:text-white">{avatar}</Text>
       </View>
 
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.date}>{date}</Text>
+        <Text className="dark:text-chalk font-quick text-sm">{title}</Text>
+        <Text className="text-sm tracking-wide font-space dark:text-chalk/60">
+          {date}
+        </Text>
       </View>
 
-      <Text
-        style={[
-          styles.amount,
-          isPositive ? styles.positiveAmount : styles.negativeAmount,
-        ]}
-      >
-        {isPositive ? "+" : ""}
-        {amount}
-      </Text>
+      <FlexCol>
+        <Text
+          style={[isPositive ? styles.positiveAmount : styles.negativeAmount]}
+          className="font-quickbold text-void dark:text-chalk"
+        >
+          {isPositive ? "+" : ""}
+          {amount}
+        </Text>
+        <Text></Text>
+      </FlexCol>
     </TouchableOpacity>
   );
 };
@@ -82,7 +89,7 @@ const styles = StyleSheet.create({
     color: "#10B981",
   },
   negativeAmount: {
-    color: "#0F172A",
+    color: "#FAFAFE",
   },
 });
 

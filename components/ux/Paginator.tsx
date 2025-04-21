@@ -1,5 +1,6 @@
 import { useMemo, memo } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import { Animated } from "react-native";
+import { FlexRow } from "../ui/FlexRow";
 
 interface PaginatorProps {
   scrollX: Animated.Value;
@@ -49,22 +50,6 @@ export const Paginator = memo(
       });
     }, [scrollX, slides.length, width, isDark]);
 
-    return <View style={styles.paginatorContainer}>{dots}</View>;
+    return <FlexRow className="h-16">{dots}</FlexRow>;
   },
 );
-
-const styles = StyleSheet.create({
-  paginatorContainer: {
-    height: 64,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
-    backgroundColor: "white",
-  },
-});

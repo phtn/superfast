@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { FlexCol } from "./FlexCol";
 
 interface ActionButtonProps {
   icon: ReactNode;
@@ -9,19 +10,24 @@ interface ActionButtonProps {
 
 const ActionButton = ({ icon, label }: ActionButtonProps) => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity activeOpacity={0.8}>
+    <FlexCol className="gap-y-2 items-center">
+      <TouchableOpacity
+        activeOpacity={0.8}
+        className=" overflow-hidden size-12 rounded-full"
+      >
         <LinearGradient
-          colors={["#1E293B", "#0F172A"]}
-          style={styles.button}
+          colors={["#2b2b31", "#2b2b31", "#29292f", "#29292f", "#2a2a30"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
+          className="flex flex-row items-center justify-center size-10"
         >
           {icon}
         </LinearGradient>
       </TouchableOpacity>
-      <Text style={styles.label}>{label}</Text>
-    </View>
+      <Text className="font-quicksemi dark:text-chalk tracking-tight text-sm">
+        {label}
+      </Text>
+    </FlexCol>
   );
 };
 

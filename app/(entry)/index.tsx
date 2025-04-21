@@ -1,6 +1,6 @@
 import { HText } from "@/components/HyperText";
 import { Paginator } from "@/components/ux/Paginator";
-import { SwipeLeftIndicator } from "@/components/ux/Swipe";
+import { SwipeLeftIndicator } from "@/components/ux/SwipeIndicator";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, useRouter } from "expo-router";
@@ -13,7 +13,7 @@ import {
   FlatList,
   Pressable,
   StatusBar,
-  StyleSheet,
+  Text,
   View,
   ViewToken,
 } from "react-native";
@@ -48,7 +48,7 @@ const slides: OnboardingData[] = [
   },
 ];
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const OnboardingScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -118,22 +118,29 @@ const OnboardingScreen = () => {
     router.push("/(entry)/sign-in");
   };
 
-  const renderItem = ({ item }: { item: OnboardingData }) => {
+  const x1 = scrollX.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [40, 0, -40],
+    // extrapolate: "clamp",
+  });
+
+  const renderItem = ({
+    item,
+    index,
+  }: {
+    item: OnboardingData;
+    index: number;
+  }) => {
     return (
       <View className=" flex items-center w-screen flex-1">
-        <View className="h-1/6 flex relative items-center w-full justify-between flex-row px-8">
-          <View className="h-3/4 w-auto aspect-square border dark:bg-blu/30 bg-blu/40 border-void relative z-50 dark:border-orange-100 rounded-2xl"></View>
-          <View className="h-3/4 scale-90 w-auto absolute aspect-square border dark:border-2 border-active left-12 top-8 dark:border-chalk rounded-[17px]"></View>
-          <View className="h-3/4 w-auto aspect-square border-void/20 dark:border-chalk rounded-2xl"></View>
-        </View>
         <View className="w-full border-void dark:border-white px-8 pt-10">
-          <HText className="text-[4rem] px-2 font-bold dark:text-chalk border-orange-300 -tracking-[0.1em] text-active capitalize font-space">
+          <Text className="text-[4rem] px-2 font-semi dark:text-chalk border-orange-300 -tracking-[0.12em] text-active capitalize font-space">
             {item.title}
-          </HText>
+          </Text>
         </View>
         <View className="w-full border-void dark:border-white px-8">
           <View className=" -skew-x-12">
-            <HText className="text-[2.5rem] px-2 font-bold dark:text-orange-200 -tracking-[0.04em] text-slate-900 font-courg">
+            <HText className="text-[2.5rem] px-2 dark:text-orange-200 -tracking-[0.04em] text-void font-courg">
               {item.subtext}
             </HText>
           </View>
@@ -156,10 +163,92 @@ const OnboardingScreen = () => {
     [width],
   );
 
+  const Frames = useCallback(() => {
+    return (
+      <View className="h-24 flex relative items-center w-full justify-between flex-row px-8">
+        <View className="h-3/4 w-auto aspect-square border dark:bg-blu/30 bg-blu/40 border-void relative z-50 dark:border-orange-100 rounded-2xl"></View>
+        <Animated.View
+          className="h-2/4 flex-row rounded-2xl bg-active/15 items-center justify-center w-auto absolute aspect-square border dark:border-2 border-active top-6 left-20 dark:border-dark-active"
+          style={{
+            transform: [
+              {
+                translateX: scrollX.interpolate({
+                  inputRange: [
+                    (currentIndex - 1) * width,
+                    currentIndex * width,
+                    (currentIndex + 1) * width,
+                  ],
+                  outputRange: [150, 0, 0],
+                  extrapolate: "clamp",
+                }),
+              },
+              {
+                translateY: scrollX.interpolate({
+                  inputRange: [
+                    (currentIndex - 1) * width,
+                    currentIndex * width,
+                    (currentIndex + 1) * width,
+                  ],
+                  outputRange: [-200, 0, 0],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+            opacity: scrollX.interpolate({
+              inputRange: [
+                (currentIndex - 1) * width,
+                currentIndex * width,
+                (currentIndex * 2 + 1) * width,
+              ],
+              outputRange: [0, 1, 1],
+              extrapolate: "clamp",
+            }),
+            borderCurve: "continuous",
+          }}
+        ></Animated.View>
+        {/* <Animated.View
+          style={{
+            transform: [
+              {
+                translateX: scrollX.interpolate({
+                  inputRange: [
+                    (currentIndex - 1) * 2 * width,
+                    currentIndex * width,
+                    (currentIndex + 1) * 2 * width,
+                  ],
+                  outputRange: [-200, 0, 0],
+                  extrapolate: "clamp",
+                }),
+              },
+              {
+                translateY: scrollX.interpolate({
+                  inputRange: [
+                    (currentIndex - 2) * width,
+                    currentIndex * 2 * width,
+                    (currentIndex + 2) * width,
+                  ],
+                  outputRange: [-200, 0, 0],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          }}
+          className="absolute top-10 border size-16 left-24 border-chalk flex flex-row items-center justify-center"
+        >
+          <Image
+            source={require("@/assets/images/adaptive-icon.png")}
+            className="absolute size-16 aspect-auto"
+          />
+        </Animated.View> */}
+        <View className="h-3/4 w-auto aspect-square border-0 dark:border-chalk rounded-2xl"></View>
+      </View>
+    );
+  }, [currentIndex]);
+
   return (
     <LinearGradient
       colors={gradients}
-      className="flex-1 bg-void"
+      className="flex-1 bg-void antialiased"
       style={{ paddingTop: inset.top, paddingBottom: inset.bottom }}
     >
       <View className="flex flex-col items-center">
@@ -174,13 +263,15 @@ const OnboardingScreen = () => {
           />
           <View>
             <Pressable onPress={handleSkip}>
-              <HText weight="medium" className="dark:text-chalk opacity-60">
+              <Text className="dark:text-chalk font-quick font-semibold">
                 Skip
-              </HText>
+              </Text>
             </Pressable>
           </View>
         </View>
-        <View className="h-[calc(100vh-43vh)]">
+
+        <Frames />
+        <View className="h-[calc(100vh-46vh)]">
           <FlatList
             horizontal
             data={slides}
@@ -202,131 +293,39 @@ const OnboardingScreen = () => {
           {currentIndex === slides.length - 1 && (
             <Pressable
               onPress={handleGetStarted}
-              className="border rounded-3xl dark:border-chalk/80 dark:bg-transparent bg-white border-void px-12 py-4"
+              className="rounded-3xl dark:border-chalk/80 dark:bg-transparent bg-active px-12 py-4"
             >
-              <HText className="text-xl font-semibold tracking-tight text-black">
+              <Text className="text-xl font-semibold text-white font-quickbold tracking-tight">
                 Get Started
-              </HText>
+              </Text>
             </Pressable>
           )}
         </View>
         <View className="h-[15vh] flex items-center justify-center w-full">
           <Pressable
-            style={styles.swipeIndicatorContainer}
+            className="flex flex-row items-center justify-center"
             onPress={handleNext}
           >
             <SwipeLeftIndicator
               onComplete={completeOnboarding}
               isLastScreen={currentIndex === slides.length - 1}
-              hasSwiped={currentIndex !== 0}
+              hasSwiped={currentIndex === 2}
               dots={6}
             />
           </Pressable>
         </View>
         <Pressable
           onPress={toggleColorScheme}
-          className="absolute bottom-8 right-8 rounded-xl size-8 dark:border-chalk flex items-center dark:bg-blu/5 bg-void/10 justify-center"
+          className="absolute bottom-12 right-8 rounded-xl size-8 dark:border-chalk flex items-center dark:bg-blu/[8%] bg-void/[8%] justify-center"
         >
           <Ionicons
-            size={18}
+            size={16}
             name={colorScheme === "dark" ? "sunny" : "moon"}
-            color={colorScheme === "dark" ? "#777" : "#fff"}
+            color={colorScheme === "dark" ? "#fed7aaf0" : "#fff7ed"}
           />
         </Pressable>
       </View>
     </LinearGradient>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  slide: {
-    width,
-    height,
-    flex: 1,
-    alignItems: "center",
-    paddingHorizontal: 30,
-    justifyContent: "center",
-  },
-  image: {
-    fontSize: 100,
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 64,
-    color: "white",
-    marginBottom: 16,
-    fontWeight: "bold",
-    fontStyle: "italic",
-    textAlign: "center",
-    letterSpacing: -2.75,
-    paddingHorizontal: 12,
-    fontFamily: "Courgette",
-  },
-  subtext: {
-    fontSize: 18,
-    color: "white",
-    maxWidth: "80%",
-    textAlign: "center",
-  },
-  paginatorContainer: {
-    height: 64,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  dot: {
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
-    backgroundColor: "white",
-  },
-  button: {
-    bottom: 50,
-    borderRadius: 50,
-    marginBottom: 20,
-    position: "absolute",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-  buttonText: {
-    fontSize: 18,
-    color: "white",
-    fontWeight: "600",
-  },
-  buttonIcon: {
-    marginLeft: 10,
-  },
-  skipButton: {
-    top: 60,
-    right: 20,
-    zIndex: 1,
-    position: "absolute",
-  },
-  skipText: {
-    fontSize: 16,
-    color: "white",
-    fontWeight: "600",
-  },
-  swipeIndicatorContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  swipeText: {
-    opacity: 0.8,
-    fontSize: 16,
-    marginTop: 12,
-    color: "white",
-    fontWeight: "500",
-  },
-});
-
 export default OnboardingScreen;

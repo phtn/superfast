@@ -1,7 +1,7 @@
-import { HText } from "@/components/HyperText";
 import { FlexRow } from "@/components/ui/FlexRow";
-import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useMemo } from "react";
 import { Image, Text } from "react-native";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -10,7 +10,99 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
-export const Products = () => {
+export interface IProductItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+  rating: number;
+  subtext?: string;
+}
+
+interface Props {
+  isDark: boolean;
+  list: IProductItem[];
+}
+
+export const Products = ({ isDark, list }: Props) => {
+  const buttonGradients: readonly [string, string, ...string[]] = useMemo(
+    () =>
+      isDark
+        ? [
+            "#3B9DFF",
+            "#3B9DFF",
+            "#3B9DFF",
+            "#3B9DFF",
+            "#45a2ff",
+            "#45a2ff",
+            "#45a2ff",
+            "#45a2ff",
+            "#4fa7ff",
+            "#4fa7ff",
+            "#58acff",
+            "#58acff",
+            "#60afff",
+            "#60afff",
+          ]
+        : [
+            "#007AFE",
+            "#007AFE",
+            "#007AFE",
+            "#0A84FF",
+            "#0A84FF",
+            "#0A84FF",
+            "#3B9DFF",
+            "#0A84FF",
+            "#53A9FF",
+            "#60afff",
+          ],
+    [isDark],
+  );
+  const productGradients: readonly [string, string, ...string[]] = useMemo(
+    () =>
+      isDark
+        ? [
+            "#28282e",
+            "#28282e",
+            "#29292f",
+            "#29292f",
+            "#2a2a30",
+            "#2a2a30",
+            "#2a2a30",
+            "#29292f",
+            "#29292f",
+            "#29292f",
+            "#2b2b31",
+            "#2b2b31",
+            "#2a2a30",
+            "#333338",
+            "#434347",
+            "#2a2a30",
+            "#2a2a30",
+          ]
+        : [
+            "#2f2f2f",
+            "#2f2f2f",
+            "#2e2e2e",
+            "#2e2e2e",
+            "#2e2e2e",
+            "#2e2e2e",
+            "#2f2f2f",
+            "#2f2f2f",
+            "#2f2f2f",
+            "#2d2d2d",
+            "#2c2c2c",
+            "#2b2b2b",
+            "#303030",
+            "#404040",
+            "#505050",
+            "#2f2f2f",
+            "#2f2f2f",
+          ],
+    [isDark],
+  );
+
   const scrollY = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -19,53 +111,10 @@ export const Products = () => {
     },
   });
 
-  const products = [
-    {
-      id: 0,
-      name: "iPhone 13 Pro Max",
-      price: 999,
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
-      merchant: "Apple Store",
-      rating: 95,
-    },
-    {
-      id: 1,
-      name: "Samsung Galaxy S21 Ultra",
-      price: 899,
-      image: "https://randomuser.me/api/portraits/women/45.jpg",
-      merchant: "Samsung Store",
-      rating: 90,
-    },
-    {
-      id: 2,
-      name: "Google Pixel 6 Pro",
-      price: 799,
-      image: "https://randomuser.me/api/portraits/women/46.jpg",
-      merchant: "Google Store",
-      rating: 85,
-    },
-    {
-      id: 3,
-      name: "Google Pixel 6 Pro",
-      price: 799,
-      image: "https://randomuser.me/api/portraits/women/46.jpg",
-      merchant: "Google Store",
-      rating: 85,
-    },
-    {
-      id: 4,
-      name: "Google Pixel 6 Pro",
-      price: 799,
-      image: "https://randomuser.me/api/portraits/women/46.jpg",
-      merchant: "Google Store",
-      rating: 85,
-    },
-  ];
-
   return (
     <Animated.ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 10, gap: 24 }}
+      contentContainerStyle={{ paddingHorizontal: 16, gap: 32 }}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
     >
@@ -73,42 +122,61 @@ export const Products = () => {
       {/* <View style={{ height: CATEGORIES_HEIGHT }} /> */}
 
       {/* Featured Product */}
-      {products.map((product) => (
+      {list.map((product) => (
         <Animated.View
           key={product.id}
           entering={FadeInDown.delay(400 + 100 * product.id).duration(500)}
-          className="overflow-hidden rounded-[36px] border-[0.33px] border-gray-500 p-1.5 bg-white"
+          className="overflow-hidden rounded-[36px] border-none border-royal/80 p-1.5 bg-ga dark:bg-ga"
         >
-          <View className="relative rounded-b-xl rounded-t-[32px] overflow-hidden h-64">
-            <FlexRow className="absolute z-10 h-20 right-0 px-6 justify-end">
+          <View className="relative rounded-b-3xl rounded-t-[32px] overflow-hidden h-64">
+            <FlexRow className="absolute z-10 top-6 left-0 w-full px-6 justify-between">
+              <View className="w-3/5">
+                <Text className="font-quicksemi text-2xl text-white tracking-tighter">
+                  {product.description}
+                </Text>
+              </View>
               <View className="">
-                <Text>{product.price}</Text>
+                <Text></Text>
               </View>
             </FlexRow>
 
-            <Image
-              source={{
-                uri: "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-7inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1692845702708",
-              }}
-              resizeMode="cover"
-              className="w-auto h-64"
-            />
-          </View>
-          <FlexRow className="justify-between pt-1.5 px-3 h-20">
-            <View>
-              <HText>{product.name}</HText>
-              <View style={styles.availabilityContainer}>
-                <Feather name="clock" size={14} color="#64748B" />
-                <Text style={styles.availabilityText}>Detail</Text>
+            <LinearGradient
+              className="flex size-full items-center justify-center flex-row"
+              colors={productGradients}
+              start={{ x: 0.5, y: 0 }}
+            >
+              <View className="size-full flex items-center justify-center flex-row">
+                <Image
+                  source={require(`${"@/assets/images/gray-icon.png"}`)}
+                  resizeMode="contain"
+                  className="w-1/2 aspect-auto mt-20 h-auto"
+                />
               </View>
+            </LinearGradient>
+          </View>
+          <FlexRow className="justify-between pt-1.5 px-2.5 h-20">
+            <View className="flex-col items-start ps-2">
+              <Text className="font-quickbold tracking-tight text-royal text-lg">
+                {product.name}
+              </Text>
+              <FlexRow className="gap-x-1 w-fit">
+                <Text className="font-quick tracking-tighter opacity-60 text-sm">
+                  {product.subtext}
+                </Text>
+              </FlexRow>
             </View>
-            <TouchableOpacity className="h-12 bg-active flex flex-row items-center justify-center px-8 rounded-full">
-              <HText
-                className="text-white font-space tracking-tight"
-                weight="semibold"
-              >
-                Get Started
-              </HText>
+
+            <TouchableOpacity className="h-12 overflow-hidden rounded-full flex flex-row items-center justify-center">
+              <LinearGradient start={{ x: 0, y: 0 }} colors={buttonGradients}>
+                <FlexRow className="h-12 ps-4 pe-3 rounded-full gap-x-3">
+                  <Text className="text-white text-lg mb-1 font-quickbold tracking-tighter">
+                    Get Started
+                  </Text>
+                  <FlexRow className="rounded-full bg-white size-6">
+                    <Ionicons name="arrow-forward" size={14} color="#53A9FF" />
+                  </FlexRow>
+                </FlexRow>
+              </LinearGradient>
             </TouchableOpacity>
           </FlexRow>
         </Animated.View>

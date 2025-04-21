@@ -8,46 +8,41 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
-import { Ionicons, Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import Animated, { FadeInUp } from "react-native-reanimated";
 
 // Components
 import ActionButton from "@/components/ui/ActionButton";
 import TransactionItem from "@/components/ui/TransactionItem";
 import CardCarousel from "@/components/ui/CardCarousel";
+import { Header } from "@/app/_components/home/components";
+import { FlexRow } from "@/components/ui/FlexRow";
 
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState("Home");
-
   return (
-    <View className="flex-1 pt-16">
+    <View
+      className={`flex-1 bg-grei dark:bg-void ${Platform.OS === "ios" ? "pt-14" : "pt-9"}`}
+    >
       <StatusBar translucent backgroundColor="transparent" />
-
+      {/* Header - Fixed */}
+      <Header v={0} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.avatarContainer}>
-            <Text style={styles.avatarText}>RL</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.headerTitle}></Text>
-
-          <TouchableOpacity style={styles.notificationButton}>
-            <Ionicons name="notifications-outline" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
-
         {/* Balance Section */}
         <Animated.View
           entering={FadeInUp.delay(200).duration(700)}
-          style={styles.balanceContainer}
+          className="h-48 flex flex-col items-center justify-center"
         >
-          <Text style={styles.balanceAmount}>€ 6.815,53</Text>
-          <Text style={styles.balanceLabel}>Current balance</Text>
+          <Text className="font-quick dark:text-ghost py-2 text-5xl">
+            ₱ 50.00
+          </Text>
+          <Text className="dark:text-chalk/70 font-quick tracking-tight text-sm">
+            Current balance
+          </Text>
         </Animated.View>
 
         {/* Card Carousel */}
@@ -58,22 +53,22 @@ export default function HomeScreen() {
         {/* Action Buttons */}
         <Animated.View
           entering={FadeInUp.delay(600).duration(700)}
-          style={styles.actionButtonsContainer}
+          className="flex flex-row items-center justify-between h-24 w-full gap-3 py-4 px-10"
         >
           <ActionButton
-            icon={<Feather name="plus" size={24} color="#fff" />}
+            icon={<Feather name="plus" size={20} color="#fff" />}
             label="Top up"
           />
           <ActionButton
-            icon={<Feather name="refresh-cw" size={22} color="#fff" />}
+            icon={<Feather name="refresh-cw" size={20} color="#fff" />}
             label="Exchange"
           />
           <ActionButton
-            icon={<Feather name="arrow-up" size={24} color="#fff" />}
+            icon={<Ionicons name="arrow-up-outline" size={20} color="#fff" />}
             label="Transfer"
           />
           <ActionButton
-            icon={<Feather name="credit-card" size={22} color="#fff" />}
+            icon={<Feather name="credit-card" size={20} color="#fff" />}
             label="Details"
           />
         </Animated.View>
@@ -81,20 +76,24 @@ export default function HomeScreen() {
         {/* Transactions Section */}
         <Animated.View
           entering={FadeInUp.delay(800).duration(700)}
-          style={styles.transactionsContainer}
+          className="px-6 pb-32"
         >
-          <View style={styles.transactionsHeader}>
-            <Text style={styles.transactionsTitle}>Transactions</Text>
+          <FlexRow className="justify-between my-12">
+            <Text className="dark:text-chalk/70 tracking-tight font-quick text-sm">
+              Transactions
+            </Text>
             <TouchableOpacity>
-              <Text style={styles.viewAllText}>View all</Text>
+              <Text className="font-quick text-dark-active text-sm">
+                View all
+              </Text>
             </TouchableOpacity>
-          </View>
+          </FlexRow>
 
           <TransactionItem
             avatar="RL"
             title="Balance Top Up"
             date="1 Jul 2024"
-            amount="€ 800"
+            amount="800.00"
             isPositive={true}
           />
 
@@ -102,7 +101,7 @@ export default function HomeScreen() {
             avatar="AZ"
             title="Amazon"
             date="30 Jun 2024"
-            amount="€ 129,99"
+            amount="129.99"
             isPositive={false}
           />
 
@@ -110,90 +109,12 @@ export default function HomeScreen() {
             avatar="SB"
             title="Starbucks"
             date="29 Jun 2024"
-            amount="€ 5,75"
+            amount="5.75"
             isPositive={false}
           />
         </Animated.View>
       </ScrollView>
-
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("Home")}
-        >
-          <Feather
-            name="home"
-            size={22}
-            color={activeTab === "Home" ? "#1E293B" : "#94A3B8"}
-          />
-          <Text
-            style={[
-              styles.navLabel,
-              { color: activeTab === "Home" ? "#1E293B" : "#94A3B8" },
-            ]}
-          >
-            Home
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("Transactions")}
-        >
-          <Feather
-            name="list"
-            size={22}
-            color={activeTab === "Transactions" ? "#1E293B" : "#94A3B8"}
-          />
-          <Text
-            style={[
-              styles.navLabel,
-              { color: activeTab === "Transactions" ? "#1E293B" : "#94A3B8" },
-            ]}
-          >
-            Transactions
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("Reports")}
-        >
-          <Feather
-            name="bar-chart-2"
-            size={22}
-            color={activeTab === "Reports" ? "#1E293B" : "#94A3B8"}
-          />
-          <Text
-            style={[
-              styles.navLabel,
-              { color: activeTab === "Reports" ? "#1E293B" : "#94A3B8" },
-            ]}
-          >
-            Reports
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("Manage")}
-        >
-          <Feather
-            name="grid"
-            size={22}
-            color={activeTab === "Manage" ? "#1E293B" : "#94A3B8"}
-          />
-          <Text
-            style={[
-              styles.navLabel,
-              { color: activeTab === "Manage" ? "#1E293B" : "#94A3B8" },
-            ]}
-          >
-            Manage
-          </Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }

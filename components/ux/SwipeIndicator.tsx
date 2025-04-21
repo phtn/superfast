@@ -1,158 +1,200 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useRef } from "react";
-import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
-import { HText } from "../HyperText";
+import React, { useEffect } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  withDelay,
+  Easing,
+  interpolate,
+  withSequence,
+  cancelAnimation,
+} from "react-native-reanimated";
+import Svg, { Path } from "react-native-svg";
+import { useColorScheme } from "nativewind";
+import { FlexRow } from "../ui/FlexRow";
 
-const SwipeIndicator = ({
-  onComplete = () => {},
+interface SwipeLeftIndicatorProps {
+  onComplete: () => void;
+  isLastScreen?: boolean;
+  hasSwiped?: boolean;
+  dots?: number;
+}
+
+export const SwipeLeftIndicator = ({
+  onComplete,
+  hasSwiped,
   isLastScreen = false,
-  color = "#ffffff",
-  width = 120,
-  dotCount = 3,
-  hasSwiped = false,
-}) => {
-  // Animation value for horizontal movement
-  const moveAnim = useRef(new Animated.Value(0)).current;
+  dots = 5,
+}: SwipeLeftIndicatorProps) => {
+  const progress = useSharedValue(0);
+  const { colorScheme } = useColorScheme();
+
+  // Only run the animation if it's not the last screen
+  useEffect(() => {
+    if (!isLastScreen) {
+      progress.value = withRepeat(
+        withDelay(
+          1000,
+          withTiming(1, {
+            duration: 3000,
+            easing: Easing.bezier(0.25, 0.15, 0.3, 1),
+          }),
+        ),
+        -1,
+        false,
+      );
+    }
+  }, [isLastScreen]);
 
   useEffect(() => {
-    // Only run animation if not on the last screen
-    if (!hasSwiped) {
-      animateSwipe();
+    if (hasSwiped) {
+      cancelAnimation(progress);
     }
+  }, [hasSwiped, progress]);
 
-    return () => {
-      moveAnim.stopAnimation();
+  // Arrow animation styles
+  const arrowAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: interpolate(progress.value, [0, 1], [250, -250]),
+        },
+      ],
+      opacity: interpolate(progress.value, [0.2, 0.6, 1], [0.6, 1, 0.2]),
     };
-  }, [hasSwiped]);
-
-  const animateSwipe = () => {
-    // Reset position to right side
-    moveAnim.setValue(width);
-
-    // Animate to left side
-    Animated.timing(moveAnim, {
-      toValue: 0,
-      duration: 1800,
-      useNativeDriver: true,
-    }).start(() => {
-      // Loop the animation
-      animateSwipe();
-    });
-  };
-
-  // Generate array of dots
-  const dots = [...Array(dotCount)].map((_, i) => {
-    // Calculate delay factor for each dot
-    const delayFactor = i * -15;
-
-    return (
-      <Animated.View
-        key={i}
-        style={[
-          styles.dot,
-          {
-            backgroundColor: color,
-            opacity: 0.5 - i * 0.15, // Fade out trailing dots
-            transform: [
-              {
-                translateX: moveAnim.interpolate({
-                  inputRange: [-30, width + delayFactor],
-                  outputRange: [-100, width - delayFactor * 2],
-                  extrapolate: "clamp",
-                }),
-              },
-            ],
-          },
-        ]}
-      />
-    );
   });
 
-  // If it's the last screen, show the signup button
-  if (isLastScreen) {
-    return (
-      <View>
-        <TouchableOpacity style={styles.signupButton} onPress={onComplete}>
-          <HText style={styles.signupText}>Create Account</HText>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  // Generate dots
+  const Dots = () => {
+    return Array(dots)
+      .fill(0)
+      .map((_, index) => {
+        const dotProgress = useSharedValue(0);
+
+        useEffect(() => {
+          if (!isLastScreen) {
+            dotProgress.value = withDelay(
+              1000,
+              withRepeat(
+                withSequence(
+                  withTiming(1, {
+                    duration: 2000,
+                    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+                  }),
+                ),
+                -1,
+                false,
+              ),
+            );
+          }
+        }, [isLastScreen]);
+
+        // Animated style for each dot
+        const dotStyle = useAnimatedStyle(() => {
+          return {
+            opacity: interpolate(dotProgress.value, [0, 1], [1, 0.8]),
+            transform: [
+              {
+                translateX: interpolate(
+                  dotProgress.value,
+                  [0, 1],
+                  [0, 10 * index * 3],
+                ),
+              },
+              {
+                scale: interpolate(
+                  dotProgress.value,
+                  [0, 1],
+                  [1, 0.8 - index * 0.15],
+                ),
+              },
+            ],
+          };
+        });
+
+        return (
+          <Animated.View
+            key={index}
+            style={[
+              !hasSwiped && {
+                width: 5,
+                height: 5,
+                borderRadius: 3,
+              },
+              dotStyle,
+              {
+                backgroundColor: colorScheme === "dark" ? "#ffedd5" : "#14141b",
+              },
+            ]}
+          />
+        );
+      });
+  };
 
   return (
-    <View style={{ width }} className="gap-y-4">
-      {/* Overflow hidden container to clip animation */}
-      <View style={styles.animationContainer}>
-        {/* Arrow */}
-        <Animated.View
-          style={[
-            styles.arrowContainer,
-            {
-              transform: [
-                {
-                  translateX: moveAnim.interpolate({
-                    inputRange: [0, width],
-                    outputRange: [-80, width],
-                    extrapolate: "clamp",
-                  }),
-                },
-              ],
-            },
-          ]}
+    <View style={styles.container}>
+      <Animated.View
+        style={[arrowAnimatedStyle]}
+        className="py-2 pe-6 mr-2 flex flex-row items-center absolute right-0"
+      >
+        <Svg
+          width={24}
+          height={24}
+          strokeWidth={0}
+          viewBox="0 0 24 24"
+          fill="none"
         >
-          <Ionicons name="arrow-back" size={20} color={color} />
-        </Animated.View>
-        {dots}
-      </View>
+          <Path
+            d="M4 12h16M9 17s-5-3.682-5-5s5-5 5-5"
+            stroke={colorScheme === "dark" ? "#fafafa" : "#14141b"}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
 
-      <View className="flex items-center justify-center">
-        <HText variant="caption" className="text-quick">
-          Swipe left to continue
-        </HText>
-      </View>
+        <FlexRow
+          className="relative w-12 px-3"
+          // style={{
+          //   height: 16,
+          //   width: 50,
+          //   display: "flex",
+          //   alignItems: "center",
+          //   position: "relative",
+          // }}
+        >
+          <Dots />
+        </FlexRow>
+      </Animated.View>
+      <FlexRow className="mt-10 w-full">
+        <Text className="opacity-60 font-quicksemi text-sm dark:text-chalk">
+          {isLastScreen ? "Are you ready?" : "Swipe left to continue"}
+        </Text>
+      </FlexRow>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  animationContainer: {
-    width: "100%",
-    overflow: "hidden",
+  container: {
+    display: "flex",
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: "#fafafa",
-    borderWidth: 1,
+    alignItems: "stretch",
+    height: 100,
+    width: 200,
+    paddingHorizontal: 20,
+    position: "relative",
+    overflow: "hidden",
   },
   arrowContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  dot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
+    padding: 8,
     position: "absolute",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    right: 0,
   },
-  signupButton: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderColor: "rgba(255, 255, 255, 0.3)",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-  },
-  signupText: {
-    fontSize: 16,
-    color: "#ffffff",
-    fontWeight: "600",
-  },
-  swipeHintText: {
-    marginTop: 8,
-    fontSize: 14,
-    opacity: 0.7,
-    color: "#ffffff",
-  },
+  // dot: ,
 });
-
-export default SwipeIndicator;

@@ -20,8 +20,13 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceBold: require("../assets/fonts/SpaceMono-Bold.ttf"),
+    Satisfy: require("../assets/fonts/Satisfy-Regular.ttf"),
     Courgette: require("../assets/fonts/Courgette-Regular.ttf"),
-    Quicksand: require("../assets/fonts/Quicksand-VariableFont_wght.ttf"),
+    Quicksand: require("../assets/fonts/Quicksand-Medium.ttf"),
+    QuickSemi: require("../assets/fonts/Quicksand-SemiBold.ttf"),
+    QuickBold: require("../assets/fonts/Quicksand-Bold.ttf"),
+    Roman: require("../assets/fonts/mrs-eaves-roman.ttf"),
   });
 
   useEffect(() => {

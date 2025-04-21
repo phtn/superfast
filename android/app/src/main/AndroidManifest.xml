@@ -26,6 +26,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="myapp"/>
         <data android:scheme="com.anonymous.superfast"/>
+        <data android:scheme="exp+superfast"/>
       </intent-filter>
     </activity>
   </application>
