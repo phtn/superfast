@@ -1,10 +1,15 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import ActionSheet from "react-native-actions-sheet";
+import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { FlexRow } from "../FlexRow";
 import { FlexCol } from "../FlexCol";
 import { Ionicons } from "@expo/vector-icons";
 
 function GetStartedSheet() {
+  const handleUseCamera = () => {
+    SheetManager.show("use-camera");
+    console.log("Camera pressed");
+  };
+
   return (
     <ActionSheet
       containerStyle={{ backgroundColor: "transparent", height: 288 }}
@@ -14,7 +19,10 @@ function GetStartedSheet() {
           className="justify-between bg-white py-2 h-56"
           style={{ borderRadius: 40 }}
         >
-          <TouchableOpacity className="h-24 flex-row items-center px-10 justify-start gap-3">
+          <TouchableOpacity
+            onPress={handleUseCamera}
+            className="h-24 flex-row items-center px-10 justify-start gap-3"
+          >
             <FlexRow className="size-14 rounded-3xl bg-grei">
               <Ionicons name="camera" size={24} color="black" />
             </FlexRow>

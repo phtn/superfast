@@ -8,7 +8,7 @@ import Animated, {
   useScrollViewOffset,
 } from "react-native-reanimated";
 
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 
 type Props = PropsWithChildren<{
   height: number;
