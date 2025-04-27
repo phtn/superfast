@@ -20,6 +20,7 @@ import CardCarousel from "@/components/ui/CardCarousel";
 import { Header } from "@/app/_components/home/components";
 import { FlexRow } from "@/components/ui/FlexRow";
 import { FlexCol } from "@/components/ui/FlexCol";
+import HyperParallax from "@/components/HyperParallax";
 
 export default function ChatScreen() {
   return (
@@ -33,12 +34,7 @@ export default function ChatScreen() {
           Chats
         </Text>
       </FlexCol>
-      <FlexRow className="h-44 ">
-        <FlexRow className="h-24 bg-void/5 px-12 rounded-3xl gap-3">
-          <Ionicons name="construct" size={16} color="#0F172A" />
-          <Text className="dark:text-chalk font-quick">Nothing here yet.</Text>
-        </FlexRow>
-      </FlexRow>
+      <HyperParallax />
     </View>
   );
 }

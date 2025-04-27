@@ -1,0 +1,9 @@
+Variant: debugAndroidTest
+Config: debug
+Store: /Users/xpriori/.android/debug.keystore
+Alias: AndroidDebugKey
+MD5: 60:E8:AA:0E:7B:C3:CE:AF:A1:83:78:EB:15:5C:2F:99
+SHA1: C6:E9:2B:17:82:95:E1:5C:91:2B:0C:7B:C5:01:2E:AF:D4:C2:A1:E8
+SHA-256: 71:D2:E5:D5:3D:99:46:97:CA:E7:DD:C9:66:E0:F0:D5:B3:85:AC:15:B3:B0:51:6B:FA:F6:F7:0B:77:0A:4E:DC
+Valid until: Saturday, 3 April 2055
+----------

@@ -15,6 +15,10 @@ install! 'cocoapods',
 prepare_react_native_project!
 
 target 'superfast' do
+  # Firebase configuration
+  $RNFirebaseAsStaticFramework = true
+  use_frameworks! :linkage => :static
+  
   use_expo_modules!
 
   if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
@@ -31,6 +35,8 @@ target 'superfast' do
       'ios'
     ]
   end
+
+  config = use_native_modules!(config_command)
 
   config = use_native_modules!(config_command)
 
