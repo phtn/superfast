@@ -162,7 +162,7 @@ export const Products = ({ isDark, list }: Props) => {
               </View>
             </LinearGradient>
           </View>
-          <FlexRow className="justify-between pt-1.5 px-2.5 h-20">
+          <FlexRow className="justify-between pt-1.5 px-3 h-20">
             <View className="flex-col items-start ps-2">
               <Text className="font-quickbold tracking-tight text-royal text-lg">
                 {product.name}
@@ -179,7 +179,7 @@ export const Products = ({ isDark, list }: Props) => {
               className="h-12 overflow-hidden rounded-full flex flex-row items-center justify-center"
             >
               <LinearGradient start={{ x: 0, y: 0 }} colors={buttonGradients}>
-                <FlexRow className="h-12 ps-4 pe-3 rounded-full gap-x-3">
+                <FlexRow className="h-12 ps-4 pe-3.5 rounded-full gap-x-3">
                   <Text
                     className={clsx(
                       "text-white text-lg font-quickbold tracking-tighter",

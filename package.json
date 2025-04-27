@@ -30,6 +30,7 @@
     "expo-camera": "~16.0.18",
     "expo-constants": "~17.0.8",
     "expo-dev-client": "~5.0.20",
+    "expo-device": "~7.0.3",
     "expo-font": "~13.0.4",
     "expo-haptics": "~14.0.1",
     "expo-linear-gradient": "^14.0.2",
@@ -53,8 +54,7 @@
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "react-native-wgpu": "^0.1.23",
-    "typegpu-confetti": "^0.0.2"
+    "react-native-wgpu": "^0.1.23"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

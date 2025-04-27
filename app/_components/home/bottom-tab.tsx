@@ -6,12 +6,15 @@ import { TouchableOpacity, StyleSheet, Platform, Text } from "react-native";
 import { RelativePathString, router } from "expo-router";
 import { FlexCol } from "@/components/ui/FlexCol";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { IconName } from "@/components/icons/types";
+import { Icon } from "@/components/icons";
+import { clsx } from "clsx";
 
 export interface ITabItem {
   id: number;
   name: "wallet" | "fast" | "shop" | "chat";
   title?: string;
-  icon: any;
+  icon: IconName;
   active: any;
   color?: string;
   route: string;
@@ -30,28 +33,28 @@ export const BottomTab = ({
         {
           id: 0,
           name: "fast",
-          active: "card-outline",
-          icon: "folder",
+          active: "home",
+          icon: "home",
           route: "fast",
         },
         {
           id: 1,
           name: "shop",
-          active: "bag-handle-outline",
-          icon: "bag-handle",
+          active: "shop",
+          icon: "shop",
           route: "",
         },
         {
           id: 2,
           name: "chat",
-          active: "chatbox-outline",
-          icon: "chatbox",
+          active: "chats",
+          icon: "chats",
           route: "chat",
         },
         {
           id: 3,
           name: "wallet",
-          active: "wallet-outline",
+          active: "wallet",
           icon: "wallet",
           route: "wallet",
         },
@@ -74,21 +77,18 @@ export const BottomTab = ({
         key={index}
         style={styles.navItem}
       >
-        <FlexCol>
-          {index === active ? (
-            <FlexRow className="size-14 bg-void rounded-[18px] shadow-2xl shadow-active/80">
-              {tab.id === 0 ? (
-                <FastIcon isActive={false} />
-              ) : (
-                <Ionicons name={tab.active} size={22} color="#FFFFFF" />
-              )}
-            </FlexRow>
-          ) : tab.id === 0 ? (
-            <FastIcon isActive={index === 0} />
-          ) : (
-            <Ionicons name={tab.active} size={24} color={"#14141b"} />
-          )}
-        </FlexCol>
+        <FlexRow
+          className={clsx("size-14 rounded-[18px]", {
+            "bg-void shadow-2xl shadow-active/80": index === active,
+          })}
+        >
+          <Icon
+            name={tab.active}
+            size={24}
+            color={index === active ? "#FFFFFF" : "#14141B"}
+            strokeWidth={1.5}
+          />
+        </FlexRow>
       </TouchableOpacity>
     ));
   }, [active, handleTabRoute, tabs]);
@@ -162,4 +162,23 @@ const FastIcon = ({ isActive }: FastIconProps) => {
       )}
     </FlexRow>
   );
+};
+
+const Tab = () => {
+  return null;
+  // <FlexCol>
+  //   {index === active ? (
+  //     <FlexRow className="size-14 bg-void rounded-[18px] shadow-2xl shadow-active/80">
+  //       {tab.id === 0 ? (
+  //         <FastIcon isActive={false} />
+  //       ) : (
+  //         <Icon name={tab.active} size={24} color="#FFFFFF" />
+  //       )}
+  //     </FlexRow>
+  //   ) : tab.id === 0 ? (
+  //     <FastIcon isActive={index === 0} />
+  //   ) : (
+  //     <Icon name={tab.active} size={24} color={"#14141b"} />
+  //   )}
+  // </FlexCol>
 };

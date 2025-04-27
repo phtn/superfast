@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
+import { AuthCtxProvider } from "@/ctx/auth";
 
 export default function Layout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +36,7 @@ export default function Layout() {
     return null;
   }
   return (
-    <>
+    <AuthCtxProvider>
       <StatusBar style="auto" />
       <Stack screenOptions={{ headerShown: false }}>
         {/* <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -48,6 +49,6 @@ export default function Layout() {
         )}
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
-    </>
+    </AuthCtxProvider>
   );
 }

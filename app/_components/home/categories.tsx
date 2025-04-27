@@ -47,8 +47,8 @@ export const Categories = ({ svov, isDark }: Props) => {
         className="scroll-smooth"
         contentContainerStyle={{
           paddingVertical: 24,
-          paddingHorizontal: 18,
-          gap: 28,
+          paddingHorizontal: 20,
+          gap: 24,
         }}
       >
         {categories.map((category) => (

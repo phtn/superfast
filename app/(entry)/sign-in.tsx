@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   View,
   TextInput,
@@ -8,6 +8,7 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
+  PermissionsAndroid,
   Text,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
@@ -15,6 +16,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { RelativePathString, useRouter } from "expo-router";
 import { HText } from "@/components/HyperText";
 import { FlexRow, FrBtn } from "@/components/ui/FlexRow";
+import { Icon } from "@/components/icons";
+
+import * as Device from "expo-device";
+import { useAuth } from "@/ctx/auth";
+
 // import auth from "@react-native-firebase/auth";
 
 async function onGoogleButtonPress() {
@@ -32,7 +38,9 @@ const SignInScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const [deviceNumber, setDeviceNumber] = useState<string | null>(null);
 
   const handleSignIn = async () => {
     if (email.trim() === "" || password.trim() === "") {
@@ -67,9 +75,11 @@ const SignInScreen = () => {
     router.push("/(entry)/(home)" as RelativePathString);
   }, []);
 
+  const { signinWithGoogle } = useAuth();
+
   const handleGoogleSignIn = useCallback(async () => {
-    setIsLoading(true);
-    await onGoogleButtonPress();
+    setIsGoogleLoading(true);
+    await signinWithGoogle();
   }, [onGoogleButtonPress]);
 
   return (
@@ -89,9 +99,10 @@ const SignInScreen = () => {
             FastInsure
           </Text>
         </FlexRow>
+        <FlexRow className="h-14"></FlexRow>
 
         <View style={styles.form}>
-          <View style={styles.inputContainer}>
+          <FlexRow className="rounded-xl mb-4 px-5 bg-white border border-royal/40">
             <Ionicons
               name="mail-outline"
               size={20}
@@ -100,17 +111,17 @@ const SignInScreen = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Email Address"
+              placeholder="Phone number or Email Address"
               placeholderTextColor="#bbb"
               keyboardType="email-address"
               autoCapitalize="none"
-              value={email}
+              value={deviceNumber ?? email}
               onChangeText={setEmail}
               className="font-quicksemi text-active"
             />
-          </View>
+          </FlexRow>
 
-          <View style={styles.inputContainer}>
+          {/* <View style={styles.inputContainer}>
             <Ionicons
               name="lock-closed-outline"
               size={20}
@@ -126,13 +137,13 @@ const SignInScreen = () => {
               onChangeText={setPassword}
               className="font-quicksemi text-royal"
             />
-          </View>
+          </View> */}
 
           {error ? <HText style={styles.errorText}>{error}</HText> : null}
 
           <TouchableOpacity
             onPress={handleSkip}
-            className="h-12 self-end align-middle flex items-start px-2 flex-row"
+            className="h-8 opacity-0 self-end align-middle flex items-start px-2 flex-row"
           >
             <Text className="text-sm text-dark-active tracking-tighter font-quicksemi">
               Forgot password?
@@ -157,15 +168,18 @@ const SignInScreen = () => {
           </FlexRow>
           <TouchableOpacity
             className="bg-ghost flex border border-void flex-row items-center justify-center rounded-2xl h-16"
-            onPress={handleSkip}
+            onPress={handleGoogleSignIn}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" />
+            {isGoogleLoading ? (
+              <ActivityIndicator color="#14141b" />
             ) : (
-              <Text className="text-royal tracking-tighter font-quickbold">
-                Continue with Google
-              </Text>
+              <FlexRow className="gap-x-4">
+                <Text className="text-royal tracking-tighter font-quickbold">
+                  Continue with Google
+                </Text>
+                <Icon name="google" solid color="#222" className="size-6" />
+              </FlexRow>
             )}
           </TouchableOpacity>
         </View>
@@ -221,7 +235,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     borderRadius: 12,
     marginBottom: 16,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   inputIcon: {
     marginRight: 10,
@@ -271,5 +285,49 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+const getPhoneNumber = async () => {
+  // This primarily works on Android, not iOS
+  if (Platform.OS === "ios") {
+    console.log("iOS does not allow access to phone number via API");
+    return null;
+  }
+
+  try {
+    // Request READ_PHONE_STATE permission
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+      {
+        title: "Phone Number Permission",
+        message:
+          "This app needs access to your phone number to provide personalized services.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK",
+      },
+    );
+
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      // Try to get the phone number
+      const phoneNumber = Device.brand;
+
+      // Note: On many devices/carriers this might still return an empty string
+      // even with permission granted
+      if (phoneNumber && phoneNumber !== "") {
+        console.log("Phone number:", phoneNumber);
+        return phoneNumber;
+      } else {
+        console.log("Phone number not available or empty");
+        return null;
+      }
+    } else {
+      console.log("Phone number permission denied");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting phone number:", error);
+    return null;
+  }
+};
 
 export default SignInScreen;

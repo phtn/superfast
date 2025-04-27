@@ -3,6 +3,8 @@ import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { FlexRow } from "../FlexRow";
 import { FlexCol } from "../FlexCol";
 import { Ionicons } from "@expo/vector-icons";
+import { Handle } from "./components";
+import { Icon } from "@/components/icons";
 
 function GetStartedSheet() {
   const handleUseCamera = () => {
@@ -12,28 +14,37 @@ function GetStartedSheet() {
 
   return (
     <ActionSheet
-      containerStyle={{ backgroundColor: "transparent", height: 288 }}
+      containerStyle={{ backgroundColor: "transparent", height: 320 }}
     >
-      <View className="h-72 px-8">
+      <View className="px-0" style={{ height: 360 }}>
         <FlexCol
-          className="justify-between bg-white py-2 h-56"
-          style={{ borderRadius: 40 }}
+          style={{ borderRadius: 24, height: "100%" }}
+          className="justify-start relative bg-white border-t pt-4"
         >
+          <Handle />
+          <View className="h-14 pt-2 px-6">
+            <Text
+              className="text-sm tracking-widest font-quick"
+              style={{ color: "#666" }}
+            >
+              ACTIONS
+            </Text>
+          </View>
           <TouchableOpacity
             onPress={handleUseCamera}
-            className="h-24 flex-row items-center px-10 justify-start gap-3"
+            className="h-24 flex-row items-center px-8 justify-start gap-3"
           >
-            <FlexRow className="size-14 rounded-3xl bg-grei">
-              <Ionicons name="camera" size={24} color="black" />
+            <FlexRow className="size-14 rounded-2xl bg-grei">
+              <Icon name="camera-outline" size={24} color="#14141B" />
             </FlexRow>
-            <Text className="font-quicksemi w-2/3 tracking-tighter text-lg px-2">
+            <Text className="font-quicksemi w-2/3 tracking-tight text-lg px-2">
               Use camera
             </Text>
           </TouchableOpacity>
-          <View className="h-1 w-full bg-grei" />
-          <TouchableOpacity className="h-24 flex-row items-center px-10 justify-start gap-3">
-            <FlexRow className="size-14 rounded-3xl bg-grei">
-              <Ionicons name="document-text" size={20} color="black" />
+          {/* <View className="w-full bg-grei" style={{ height: 2 }} /> */}
+          <TouchableOpacity className="h-24 flex-row items-center px-8 justify-start gap-3">
+            <FlexRow className="size-14 rounded-2xl bg-grei">
+              <Icon name="document-linear" size={24} color="#14141B" />
             </FlexRow>
             <Text className="font-quicksemi text-lg w-2/3 text-royal px-2">
               Enter vehicle details

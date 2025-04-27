@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { TouchableOpacity, TouchableOpacityProps, View } from "react-native";
 
 interface FlexRowProps {
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
   style?: object;
 }
