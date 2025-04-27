@@ -11,8 +11,12 @@ import Animated, {
   useAnimatedProps,
 } from "react-native-reanimated";
 
+<<<<<<< HEAD
 import { ScrollView, TextInput, View } from "react-native";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
+=======
+import { View } from "react-native";
+>>>>>>> 358313f1f37d3b8017ee50a297d69a891bb34d8c
 
 type Props = PropsWithChildren<{
   height: number;
