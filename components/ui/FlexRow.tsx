@@ -1,48 +1,21 @@
-import { clsx } from "clsx";
-import type { ReactNode } from "react";
-import { TouchableOpacity, TouchableOpacityProps, View } from "react-native";
+import { ClassName } from "@/types";
+import {
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+  ViewProps,
+} from "react-native";
 
-interface FlexRowProps {
-  children?: ReactNode;
-  className?: string;
-  style?: object;
-}
-
-export const FlexRow = ({
-  children,
-  className = "",
-  style,
-  ...rest
-}: FlexRowProps) => {
-  const baseClasses = "flex flex-row items-center justify-center";
-
-  return (
-    <View className={clsx(baseClasses, className)} style={style} {...rest}>
-      {children}
-    </View>
-  );
+export const FlexRow = ({ className, children }: ViewProps) => {
+  const baseStyles = "flex flex-row items-center justify-center";
+  return <View className={`${baseStyles} ${className}`}>{children}</View>;
 };
-interface FlexRowButtonProps extends TouchableOpacityProps {
-  children: ReactNode;
-  className?: string;
-  style?: object;
+
+interface FlexButtonProps extends TouchableOpacityProps {
+  textStyles?: ClassName;
 }
 
-export const FrBtn = ({
-  children,
-  className = "",
-  style,
-  ...rest
-}: FlexRowButtonProps) => {
-  const baseClasses = "flex flex-row items-center justify-center";
-
-  return (
-    <TouchableOpacity
-      className={`${baseClasses} ${className}`}
-      style={style}
-      {...rest}
-    >
-      {children}
-    </TouchableOpacity>
-  );
+export const FlexBtn = ({ className }: FlexButtonProps) => {
+  const baseStyles = "flex flex-row items-center justify-center";
+  return <TouchableOpacity className={`${baseStyles} ${className}`} />;
 };

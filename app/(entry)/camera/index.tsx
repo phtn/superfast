@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,12 +15,14 @@ import {
 } from "expo-camera";
 import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
+import { Icon } from "@/app/_components/icons";
+import { RelativePathString, useRouter } from "expo-router";
 
 type ExtendedCameraCapturedPicture = CameraCapturedPicture & {
   base64?: string;
 };
 
-export default function CameraSheet() {
+export default function CameraScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [type, setType] = useState<CameraType>("back");
   const [capturedImage, setCapturedImage] = useState<
@@ -28,12 +30,23 @@ export default function CameraSheet() {
   >();
   const cameraRef = useRef<CameraView | null>(null);
 
+  const router = useRouter();
+
+  const toggleCameraType = useCallback(() => {
+    setType((prevType) => (prevType === "back" ? "front" : "back"));
+  }, []);
+
+  const viewImageList = useCallback(() => {
+    router.push("camera/preview" as RelativePathString);
+  }, [router]);
+
   useEffect(() => {
     let mounted = true;
 
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       if (mounted) {
+        console.log("Camera permission status:", status);
         setHasPermission(status === "granted");
       }
     })();
@@ -147,9 +160,9 @@ export default function CameraSheet() {
     }
   };
 
-  const flipCamera = () => {
+  const flipCamera = useCallback(() => {
     setType(type === "back" ? "front" : "back");
-  };
+  }, [type]);
 
   if (hasPermission === null) {
     return (
@@ -174,7 +187,6 @@ export default function CameraSheet() {
       <StatusBar style="auto" />
 
       {capturedImage ? (
-        // Preview captured image
         <View style={styles.previewContainer}>
           <Image source={{ uri: capturedImage.uri }} style={styles.preview} />
           <View style={styles.buttonRow}>
@@ -190,45 +202,46 @@ export default function CameraSheet() {
           </View>
         </View>
       ) : (
-        // Camera view
         <View style={styles.cameraContainer}>
-          {cameraRef.current ? (
-            <CameraView style={styles.camera} facing={type} ref={cameraRef}>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={styles.flipButton}
-                  onPress={flipCamera}
-                >
-                  <Text style={styles.buttonText}>Flip</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.captureButton}
-                  onPress={takePicture}
-                >
-                  <View style={styles.captureButtonInner} />
-                </TouchableOpacity>
-              </View>
-            </CameraView>
-          ) : (
-            <View style={styles.container}>
-              <Text style={[styles.buttonText, { textAlign: "center" }]}>
-                Camera initializing...
-              </Text>
+          <CameraView style={styles.camera} facing={type} ref={cameraRef}>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.flipButton}
+                onPress={viewImageList}
+              >
+                <Icon name="images" size={24} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.captureButton}
+                onPress={takePicture}
+              >
+                <View style={styles.captureButtonInner} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.flipButton} onPress={flipCamera}>
+                <Icon name="camera-rotate" size={32} color="#fff" />
+              </TouchableOpacity>
             </View>
-          )}
+          </CameraView>
         </View>
       )}
     </View>
   );
 }
 
+interface CamProps {
+  toggleCameraFacing: () => void;
+  facing: CameraType;
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: 200,
     backgroundColor: "#000",
   },
   cameraContainer: {
     flex: 1,
+    height: 200,
   },
   camera: {
     flex: 1,
@@ -245,7 +258,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     backgroundColor: "rgba(0,0,0,0.4)",
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 24,
   },
   captureButton: {
     width: 70,

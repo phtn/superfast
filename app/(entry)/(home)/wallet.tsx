@@ -26,7 +26,7 @@ export default function WalletScreen() {
     >
       <StatusBar translucent backgroundColor="transparent" />
       {/* Header - Fixed */}
-      <Header v={0} />
+      <Header />
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}

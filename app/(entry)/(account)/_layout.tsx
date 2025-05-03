@@ -9,9 +9,8 @@ export default function AccountLayout({
   return (
     <>
       <StatusBar style="auto" />
-      <Stack>
-        <Stack.Screen name="profile" options={{ headerShown: false }} />
-        <Stack.Screen name="wallet" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="premium" options={{ headerShown: false }} />
       </Stack>
     </>
   );

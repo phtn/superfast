@@ -1,4 +1,4 @@
-import { BottomTab, ITabItem } from "@/app/_components/home/bottom-tab";
+import { BottomTab, ITabItem } from "@/components/ui/BottomTab";
 import { HapticTab } from "@/components/HapticTab";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -15,7 +15,7 @@ export default function HomeLayout() {
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="shop"
           options={{ title: "Shop", headerShown: false }}
         />
         <Tabs.Screen

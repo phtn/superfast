@@ -11,16 +11,20 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from "react-native-reanimated";
+import { Icon } from "../icons";
+import { FlashList } from "@shopify/flash-list";
+import { useColorScheme } from "nativewind";
 
 export interface IProductItem {
   id: number;
   name: string;
-  price: number;
-  image: string;
+  price?: number;
+  image?: string;
   description: string;
-  rating: number;
+  rating?: number;
   subtext?: string;
   coverage?: string;
+  textStyles?: string;
 }
 
 interface Props {
@@ -28,95 +32,18 @@ interface Props {
   list: IProductItem[];
 }
 
+const ItemSep = () => <View style={{ height: 48 }} />;
+
 export const Products = ({ isDark, list }: Props) => {
-  const buttonGradients: readonly [string, string, ...string[]] = useMemo(
-    () =>
-      isDark
-        ? [
-            "#3B9DFF",
-            "#3B9DFF",
-            "#3B9DFF",
-            "#3B9DFF",
-            "#45a2ff",
-            "#45a2ff",
-            "#45a2ff",
-            "#45a2ff",
-            "#4fa7ff",
-            "#4fa7ff",
-            "#58acff",
-            "#58acff",
-            "#60afff",
-            "#60afff",
-          ]
-        : [
-            "#007AFE",
-            "#007AFE",
-            "#007AFE",
-            "#0A84FF",
-            "#0A84FF",
-            "#0A84FF",
-            "#3B9DFF",
-            "#0A84FF",
-            "#53A9FF",
-            "#60afff",
-          ],
-    [isDark],
-  );
-  const productGradients: readonly [string, string, ...string[]] = useMemo(
-    () =>
-      isDark
-        ? [
-            "#28282e",
-            "#28282e",
-            "#29292f",
-            "#29292f",
-            "#2a2a30",
-            "#2a2a30",
-            "#2a2a30",
-            "#29292f",
-            "#29292f",
-            "#29292f",
-            "#2b2b31",
-            "#2b2b31",
-            "#2a2a30",
-            "#333338",
-            "#434347",
-            "#2a2a30",
-            "#2a2a30",
-          ]
-        : [
-            "#2f2f2f",
-            "#2f2f2f",
-            "#2e2e2e",
-            "#2e2e2e",
-            "#2e2e2e",
-            "#2e2e2e",
-            "#2f2f2f",
-            "#2f2f2f",
-            "#2f2f2f",
-            "#2d2d2d",
-            "#2c2c2c",
-            "#2b2b2b",
-            "#303030",
-            "#404040",
-            "#505050",
-            "#2f2f2f",
-            "#2f2f2f",
-          ],
-    [isDark],
-  );
-
   const scrollY = useSharedValue(0);
-
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollY.value = event.contentOffset.y;
     },
   });
 
-  const handlePressGetStarted = useCallback(() => {
-    console.log("Get Started button pressed");
-    SheetManager.show("get-started");
+  const renderItem = useCallback(({ item }: { item: IProductItem }) => {
+    return <ProductItem {...item} />;
   }, []);
 
   return (
@@ -126,193 +53,18 @@ export const Products = ({ isDark, list }: Props) => {
       onScroll={scrollHandler}
       scrollEventThrottle={16}
     >
-      {/* Spacer to account for categories */}
-      {/* <View style={{ height: CATEGORIES_HEIGHT }} /> */}
-
-      {/* Featured Product */}
-      {list.map((product) => (
-        <Animated.View
-          key={product.id}
-          entering={FadeInDown.delay(400 + 100 * product.id).duration(500)}
-          className="overflow-hidden rounded-[36px] border-none border-royal/80 p-1.5 bg-ga dark:bg-ga"
-        >
-          <View className="relative rounded-b-3xl rounded-t-[32px] overflow-hidden h-64">
-            <FlexRow className="absolute z-10 top-6 left-0 w-full px-6 justify-between">
-              <View className="w-3/5">
-                <Text className="font-quicksemi text-2xl text-white tracking-tighter">
-                  {product.description}
-                </Text>
-              </View>
-              <View className="">
-                <Text></Text>
-              </View>
-            </FlexRow>
-
-            <LinearGradient
-              className="flex size-full items-center justify-center flex-row"
-              colors={productGradients}
-              start={{ x: 0.5, y: 0 }}
-            >
-              <View className="size-full flex items-center justify-center flex-row">
-                <Image
-                  source={require(`${"@/assets/images/gray-icon.png"}`)}
-                  resizeMode="contain"
-                  className="w-1/2 aspect-auto mt-20 h-auto"
-                />
-              </View>
-            </LinearGradient>
-          </View>
-          <FlexRow className="justify-between pt-1.5 px-3 h-20">
-            <View className="flex-col items-start ps-2">
-              <Text className="font-quickbold tracking-tight text-royal text-lg">
-                {product.name}
-              </Text>
-              <FlexRow className="gap-x-1 w-fit">
-                <Text className="font-quick tracking-tighter opacity-60 text-sm">
-                  {product.subtext}
-                </Text>
-              </FlexRow>
-            </View>
-
-            <TouchableOpacity
-              onPress={handlePressGetStarted}
-              className="h-12 overflow-hidden rounded-full flex flex-row items-center justify-center"
-            >
-              <LinearGradient start={{ x: 0, y: 0 }} colors={buttonGradients}>
-                <FlexRow className="h-12 ps-4 pe-3.5 rounded-full gap-x-3">
-                  <Text
-                    className={clsx(
-                      "text-white text-lg font-quickbold tracking-tighter",
-                      Platform.OS === "ios" ? "mb-0.5" : "mb-1",
-                    )}
-                  >
-                    Get Started
-                  </Text>
-                  <FlexRow className="rounded-full bg-white size-6">
-                    <Ionicons name="arrow-forward" size={14} color="#53A9FF" />
-                  </FlexRow>
-                </FlexRow>
-              </LinearGradient>
-            </TouchableOpacity>
-          </FlexRow>
-        </Animated.View>
-      ))}
+      <FlashList
+        data={list}
+        estimatedItemSize={10}
+        renderItem={renderItem}
+        ItemSeparatorComponent={ItemSep}
+      />
       <View className="h-28"></View>
     </Animated.ScrollView>
   );
 };
 
 export const UserProducts = ({ isDark, list }: Props) => {
-  const fullGradients: readonly [string, string, ...string[]] = useMemo(
-    () =>
-      isDark
-        ? [
-            "#28282e",
-            "#28282e",
-            "#28282e",
-            "#28282e",
-            "#29292f",
-            "#29292f",
-            "#2a2a30",
-            "#2a2a30",
-            "#2a2a30",
-            "#29292f",
-            "#29292f",
-            "#29292f",
-            "#2b2b31",
-            "#2b2b31",
-          ]
-        : [
-            "#007AFE",
-            "#007AFE",
-            "#007AFE",
-            "#0A84FF",
-            "#0A84FF",
-            "#0A84FF",
-            "#3B9DFF",
-            "#0A84FF",
-            "#53A9FF",
-            "#60afff",
-          ],
-    [isDark],
-  );
-  const buttonGradients: readonly [string, string, ...string[]] = useMemo(
-    () =>
-      isDark
-        ? [
-            "#3B9DFF",
-            "#3B9DFF",
-            "#3B9DFF",
-            "#3B9DFF",
-            "#45a2ff",
-            "#45a2ff",
-            "#45a2ff",
-            "#45a2ff",
-            "#4fa7ff",
-            "#4fa7ff",
-            "#58acff",
-            "#58acff",
-            "#60afff",
-            "#60afff",
-          ]
-        : [
-            "#007AFE",
-            "#007AFE",
-            "#007AFE",
-            "#0A84FF",
-            "#0A84FF",
-            "#0A84FF",
-            "#3B9DFF",
-            "#0A84FF",
-            "#53A9FF",
-            "#60afff",
-          ],
-    [isDark],
-  );
-  const productGradients: readonly [string, string, ...string[]] = useMemo(
-    () =>
-      isDark
-        ? [
-            "#28282e",
-            "#28282e",
-            "#29292f",
-            "#29292f",
-            "#2a2a30",
-            "#2a2a30",
-            "#2a2a30",
-            "#29292f",
-            "#29292f",
-            "#29292f",
-            "#2b2b31",
-            "#2b2b31",
-            "#2a2a30",
-            "#333338",
-            "#434347",
-            "#2a2a30",
-            "#2a2a30",
-          ]
-        : [
-            "#2f2f2f",
-            "#2f2f2f",
-            "#2e2e2e",
-            "#2e2e2e",
-            "#2e2e2e",
-            "#2e2e2e",
-            "#2f2f2f",
-            "#2f2f2f",
-            "#2f2f2f",
-            "#2d2d2d",
-            "#2c2c2c",
-            "#2b2b2b",
-            "#303030",
-            "#404040",
-            "#505050",
-            "#2f2f2f",
-            "#2f2f2f",
-          ],
-    [isDark],
-  );
-
   const scrollY = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -320,6 +72,18 @@ export const UserProducts = ({ isDark, list }: Props) => {
       scrollY.value = event.contentOffset.y;
     },
   });
+
+  const renderItem = useCallback(({ item }: { item: IProductItem }) => {
+    return (
+      <ProductItem
+        id={item.id}
+        name={item.name}
+        subtext={item.subtext}
+        description={item.description}
+        image={item.image}
+      />
+    );
+  }, []);
 
   return (
     <Animated.ScrollView
@@ -332,10 +96,10 @@ export const UserProducts = ({ isDark, list }: Props) => {
 
       <FlexRow className="justify-between h-16 -mb-6 px-3">
         <View className="flex flex-row items-center">
-          <Text className="font-sat text-2xl rotate-12 text-active mt-1 dark:text-dark-active">
+          <Text className="font-courg text-2xl text-dark-active -tracking-[0.16rem] dark:text-hyper-active">
             My
           </Text>
-          <Text className="font-bold text-royal -tracking-widest dark:text-chalk text-2xl">
+          <Text className="font-quickbold text-royal dark:text-chalk text-2xl -tracking-widest">
             Fast Cars
           </Text>
         </View>
@@ -348,78 +112,15 @@ export const UserProducts = ({ isDark, list }: Props) => {
           />
         </TouchableOpacity>
       </FlexRow>
-      {/* <View style={{ height: CATEGORIES_HEIGHT }} /> */}
 
       {/* Featured Product */}
-      {list.map((product) => (
-        <Animated.View
-          key={product.id}
-          entering={FadeInDown.delay(400 + 100 * product.id).duration(500)}
-          className="overflow-hidden rounded-[36px] border-none border-royal/80 p-1.5 bg-ga dark:bg-ga"
-        >
-          <View className="relative rounded-b-3xl rounded-t-[32px] overflow-hidden h-64">
-            <FlexRow className="absolute z-10 top-6 left-0 w-full px-6 justify-between">
-              <View className="w-3/5">
-                <Text className="font-quicksemi text-2xl text-white tracking-tighter">
-                  {product.description}
-                </Text>
-              </View>
-              <View className="">
-                <Text></Text>
-              </View>
-            </FlexRow>
-
-            <LinearGradient
-              className="flex size-full items-center justify-center flex-row"
-              colors={productGradients}
-              start={{ x: 0.5, y: 0 }}
-            >
-              <View className="size-full flex items-center justify-center flex-row">
-                <Image
-                  source={require(`${"@/assets/images/gray-icon.png"}`)}
-                  resizeMode="contain"
-                  className="w-1/2 aspect-auto mt-20 h-auto"
-                />
-              </View>
-            </LinearGradient>
-          </View>
-          <FlexRow className="justify-between pt-1.5 px-2.5 h-20">
-            <View className="flex-col items-start ps-2">
-              <Text className="font-quickbold tracking-tight text-royal text-lg">
-                {product.name}
-              </Text>
-              <FlexRow className="gap-x-1 w-fit">
-                <Text className="font-quick tracking-tighter opacity-60 text-sm">
-                  {product.subtext}
-                </Text>
-              </FlexRow>
-            </View>
-
-            <TouchableOpacity className="h-12 overflow-hidden rounded-full flex flex-row items-center justify-center">
-              <LinearGradient start={{ x: 0, y: 0 }} colors={fullGradients}>
-                <FlexRow className="h-12 ps-4 pe-3 rounded-full gap-x-3">
-                  <Text
-                    className={clsx(
-                      "text-white text-lg font-quickbold tracking-tighter",
-                      Platform.OS === "ios" ? "mb-0.5" : "mb-1",
-                    )}
-                  >
-                    {product.coverage}
-                  </Text>
-                  <FlexRow className="rounded-full relative size-4 bg-chalk">
-                    <Ionicons
-                      name="shield-checkmark"
-                      size={20}
-                      color="#0A84FF"
-                      className="absolute"
-                    />
-                  </FlexRow>
-                </FlexRow>
-              </LinearGradient>
-            </TouchableOpacity>
-          </FlexRow>
-        </Animated.View>
-      ))}
+      <FlashList
+        data={list}
+        renderItem={renderItem}
+        estimatedItemSize={10}
+        ItemSeparatorComponent={ItemSep}
+      />
+      <SpecialOffer />
       <View className="h-28"></View>
     </Animated.ScrollView>
   );
@@ -498,7 +199,7 @@ const styles = StyleSheet.create({
   },
   buyButton: {
     backgroundColor: "#F9D75E",
-    paddingHorizontal: 20,
+    paddingHorizontal: 28,
     paddingVertical: 12,
     borderRadius: 30,
   },
@@ -509,7 +210,7 @@ const styles = StyleSheet.create({
   },
   specialOfferContainer: {
     marginBottom: 20,
-    borderRadius: 20,
+    borderRadius: 18,
     overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: {
@@ -522,12 +223,13 @@ const styles = StyleSheet.create({
   },
   specialOfferGradient: {
     borderRadius: 20,
-    padding: 20,
+    paddingVertical: 20,
   },
   specialOfferContent: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     alignItems: "center",
+    paddingHorizontal: 10,
   },
   specialOfferTitle: {
     fontSize: 18,
@@ -542,7 +244,7 @@ const styles = StyleSheet.create({
   },
   specialOfferButton: {
     backgroundColor: "#fff",
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 30,
   },
@@ -560,23 +262,222 @@ export const SpecialOffer = () => {
       style={styles.specialOfferContainer}
     >
       <LinearGradient
-        colors={["#1E293B", "#0F172A"]}
+        colors={["#0A84FF", "#007AFE"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.specialOfferGradient}
       >
         <View style={styles.specialOfferContent}>
           <View>
-            <Text style={styles.specialOfferTitle}>Special Offer</Text>
+            <Text className="font-quickbold text-xl text-white">
+              Special Offer
+            </Text>
             <Text style={styles.specialOfferDescription}>
               Get 5% cashback on all purchases today
             </Text>
           </View>
-          <TouchableOpacity style={styles.specialOfferButton}>
-            <Text style={styles.specialOfferButtonText}>View Offers</Text>
+          <TouchableOpacity className="rounded-full flex-row flex-1 flex items-center justify-center gap-2 bg-white px-4 py-1.5">
+            <Text className="font-quicksemi tracking-tighter">View Offers</Text>
+            <Icon
+              name="wallet"
+              size={20}
+              color="#14141b"
+              className="text-royal"
+            />
           </TouchableOpacity>
         </View>
       </LinearGradient>
     </Animated.View>
   );
 };
+// https://fastinsure-f1801.appspot.com/v0/o/ga-waves.png?alt=media
+const storageBucket = process.env.EXPO_PUBLIC_F_STORAGEBUCKET;
+const storageToken = process.env.FIREBASE_STORAGE_TOKEN;
+const baseUrl = `https://firebasestorage.googleapis.com/v0/b/${storageBucket}.appspot.com/o`;
+const fileName = "wordmark.png";
+const uri = `${baseUrl}/${fileName}?alt=media&token=${storageToken}`;
+
+const ProductItem = ({
+  id,
+  name,
+  description,
+  image,
+  subtext,
+  textStyles,
+}: IProductItem) => {
+  const { colorScheme } = useColorScheme();
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
+  const buttonGradients: readonly [string, string, ...string[]] = useMemo(
+    () =>
+      isDark
+        ? ["#95959b", "#939398", "#909096", "#8e8e93"]
+        : [
+            "#f2f2f2",
+            "#f2f2f2",
+            "#f2f2f2",
+            "#ebebeb",
+            "#ebebeb",
+            "#ebebeb",
+            "#eaeaea",
+            "#eaeaea",
+          ],
+    [isDark],
+  );
+  const productGradients: readonly [string, string, ...string[]] = useMemo(
+    () =>
+      isDark
+        ? [
+            "#28282e",
+            "#28282e",
+            "#29292f",
+            "#29292f",
+            "#2a2a30",
+            "#2a2a30",
+            "#2a2a30",
+            "#29292f",
+            "#29292f",
+            "#29292f",
+            "#2b2b31",
+            "#2b2b31",
+            "#2a2a30",
+            "#333338",
+            "#434347",
+            "#2a2a30",
+            "#2a2a30",
+          ]
+        : [
+            "#2f2f2f",
+            "#2f2f2f",
+            "#2e2e2e",
+            "#2e2e2e",
+            "#2e2e2e",
+            "#2e2e2e",
+            "#2f2f2f",
+            "#2f2f2f",
+            "#2f2f2f",
+            "#2d2d2d",
+            "#2c2c2c",
+            "#2b2b2b",
+            "#303030",
+            "#404040",
+            "#505050",
+            "#2f2f2f",
+            "#2f2f2f",
+          ],
+    [isDark],
+  );
+  const handlePressGetStarted = useCallback(() => {
+    console.log("Get Started button pressed");
+    SheetManager.show("get-started");
+  }, []);
+  return (
+    <Animated.View
+      key={id}
+      entering={FadeInDown.delay(400 + 100 * id).duration(500)}
+      className={clsx(
+        "overflow-hidden rounded-[36px] p-1.5 bg-grei dark:bg-ga",
+      )}
+    >
+      <View className="relative rounded-b-3xl rounded-t-[32px] overflow-hidden h-64">
+        <FlexRow className="absolute z-10 top-6 left-0 w-full px-6 justify-between">
+          <View className="w-3/5">
+            <Text
+              className={clsx(
+                "font-quicksemi text-xl tracking-tighter",
+                textStyles ? textStyles : "text-chalk",
+              )}
+            >
+              {description}
+            </Text>
+          </View>
+          <View className="">
+            <Text></Text>
+          </View>
+        </FlexRow>
+
+        <LinearGradient
+          className="flex size-full items-center justify-center flex-row"
+          colors={productGradients}
+          start={{ x: 0.5, y: 0 }}
+        >
+          <View className="size-full flex items-center justify-center flex-row">
+            <Image
+              source={{
+                uri: image,
+              }}
+              resizeMode="cover"
+              className="w-full aspect-auto h-full"
+            />
+          </View>
+        </LinearGradient>
+      </View>
+      <FlexRow className="justify-between pt-1.5 px-3 h-20">
+        <View className="flex-col items-start ps-2">
+          <Text className="font-quickbold tracking-tight text-void text-lg">
+            {name}
+          </Text>
+          <FlexRow className="gap-x-1 w-fit">
+            <Text className="font-quick tracking-tighter text-void">
+              {subtext}
+            </Text>
+          </FlexRow>
+        </View>
+
+        <TouchableOpacity
+          activeOpacity={0.75}
+          onPress={handlePressGetStarted}
+          className="h-12 overflow-hidden rounded-full flex flex-row items-center justify-center"
+        >
+          <LinearGradient start={{ x: 0, y: 0 }} colors={buttonGradients}>
+            <FlexRow
+              className={clsx(
+                "h-12 ps-5 pe-3.5 border-[0.33px] bg-ga/15 rounded-full gap-x-1",
+                isDark ? "border-light-ga/80 bg-void/60" : "border-ga/40",
+              )}
+            >
+              <Text
+                className={clsx(
+                  "font-quickbold tracking-tighter",
+                  Platform.OS === "ios" ? "mb-0.5" : "mb-1",
+                  isDark ? "text-white" : "text-zark",
+                )}
+              >
+                Get Started
+              </Text>
+              <FlexRow className="rounded-full size-6">
+                <Ionicons
+                  name="arrow-forward"
+                  size={20}
+                  color={isDark ? "#53A9FF" : "#53A9FF"}
+                  className={clsx(
+                    "-rotate-45",
+                    isDark ? " drop-shadow-xs" : "",
+                  )}
+                />
+              </FlexRow>
+            </FlexRow>
+          </LinearGradient>
+        </TouchableOpacity>
+      </FlexRow>
+    </Animated.View>
+  );
+};
+
+/*
+[
+            "#3B9DFF",
+            "#3B9DFF",
+            "#3B9DFF",
+            "#3B9DFF",
+            "#45a2ff",
+            "#45a2ff",
+            "#45a2ff",
+            "#45a2ff",
+            "#4fa7ff",
+            "#4fa7ff",
+            "#58acff",
+            "#58acff",
+            "#60afff",
+            "#60afff",
+          ]
+*/

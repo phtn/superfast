@@ -1,52 +1,71 @@
 import { FlexCol } from "@/components/ui/FlexCol";
 import { FlexRow } from "@/components/ui/FlexRow";
+import { useAuth } from "@/app/_ctx/auth";
 import { Feather } from "@expo/vector-icons";
-import { clsx } from "clsx";
 import { Image, TouchableOpacity, View, TextInput, Text } from "react-native";
+import { useRouter } from "expo-router";
+import { Icon } from "../icons";
+import { Colors } from "@/constants/Colors";
 
 interface HeaderProps {
   v?: number;
 }
 
-export const Header = ({ v }: HeaderProps) => {
+export const Header = () => {
+  const { user } = useAuth();
+  const router = useRouter();
+  const navigateToProfile = () => {
+    router.push("/(entry)/(account)");
+  };
+
   return (
-    <FlexRow className={clsx(`justify-between px-5 bg-transparent z-10 `)}>
-      <FlexRow>
-        <TouchableOpacity className="size-10 mr-2.5 rounded-full bg-active flex items-center justify-center">
-          <Image
-            source={require("@/assets/images/profile.png")}
-            className="size-9 rounded-full relative z-[50]"
-          />
+    <View className={`justify-between h-14 flex flex-row px-5 z-10`}>
+      <FlexCol className="items-start justify-center h-14">
+        <TouchableOpacity
+          activeOpacity={0.65}
+          onPress={navigateToProfile}
+          className="items-start flex-col flex"
+        >
+          <View className="w-full flex items-center flex-row">
+            <Image
+              source={{
+                uri: user?.user_metadata?.avatar_url,
+              }}
+              style={{ width: 32, height: 32, borderRadius: 16 }}
+              className="border-2 border-ga mr-3"
+            />
+            <Text className="dark:text-chalk font-tight">
+              {user?.user_metadata?.name?.split(" ").shift()}
+            </Text>
+            <View className="size-6 pt-0.5">
+              <Icon name="chev-right" size={24} color={Colors.dark.active} />
+            </View>
+          </View>
         </TouchableOpacity>
-        <FlexCol className="justify-start">
-          <Text className="tracking-tighter dark:text-chalk font-quickbold">
-            René Descartes
-          </Text>
-        </FlexCol>
-      </FlexRow>
+      </FlexCol>
       <FlexRow>
-        <Text className="font-sat text-[15.5px] rotate-6 text-active mt-1 dark:text-dark-active">
+        <Text className="font-courg text-dark-active mt-0.5 tracking-tighter dark:text-hyper-active">
           My
         </Text>
-        <Text className="font-bold text-royal -tracking-widest dark:text-chalk text-[17px]">
+        <Text className="font-quickbold text-royal -tracking-widest text-lg dark:text-chalk">
           FastInsure
         </Text>
       </FlexRow>
-    </FlexRow>
+    </View>
   );
 };
 
 export const SearchBar = () => {
   return (
     <View className="px-4 pt-2 items-center z-10">
-      <FlexRow className="ps-5 pe-2 justify-between h-14 rounded-2xl bg-grei dark:bg-neutral-200">
+      <FlexRow className="ps-5 pe-2 justify-between h-14 rounded-2xl bg-grei/80 dark:bg-neutral-200">
         <TextInput
           placeholder="Search"
-          placeholderTextColor="#888"
-          className="flex-1 h-12 font-quicksemi placeholder:text-sm text-active"
+          placeholderTextColor="#919195"
+          className="flex-1 h-12 font-quicksemi shadow-none border-none text-void"
         />
         <TouchableOpacity className="size-10 rounded-full items-center opacity-60 justify-center">
-          <Feather name="search" size={20} color="#0F172A" />
+          <Feather name="search" size={20} color="#919195" />
         </TouchableOpacity>
       </FlexRow>
     </View>

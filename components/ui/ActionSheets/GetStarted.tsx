@@ -2,15 +2,17 @@ import { Text, TouchableOpacity, View } from "react-native";
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { FlexRow } from "../FlexRow";
 import { FlexCol } from "../FlexCol";
-import { Ionicons } from "@expo/vector-icons";
 import { Handle } from "./components";
-import { Icon } from "@/components/icons";
+import { Icon } from "@/app/_components/icons";
+import { useRouter } from "expo-router";
+import { useCallback } from "react";
 
 function GetStartedSheet() {
-  const handleUseCamera = () => {
-    SheetManager.show("use-camera");
+  const router = useRouter();
+  const handleUseCamera = useCallback(() => {
+    router.push("/camera");
     console.log("Camera pressed");
-  };
+  }, []);
 
   return (
     <ActionSheet

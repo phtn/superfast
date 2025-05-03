@@ -11,6 +11,7 @@ export type IconName = IconNameType;
 export interface IconProps extends SvgProps {
   name: IconNameType;
   className?: ClassName;
+  container?: ClassName;
   size?: number;
   color?: string;
   solid?: boolean;

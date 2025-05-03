@@ -1,8 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 
 module.exports = {
-  // NOTE: Update this to include the paths to all of your component files.
-  content: ["./app/**/*.{js,jsx,ts,tsx}"],
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
@@ -14,12 +13,19 @@ module.exports = {
         quickbold: ["QuickBold"],
         spacebold: ["SpaceBold"],
         sat: ["Satisfy"],
-        roman: ["Roman"],
+        tight: ["TightMedium"],
+        ultratight: ["TightSemi"],
+        hypertight: ["TightBold"],
+        eaves: ["Eaves"],
       },
       colors: {
         active: "#007AFE",
         "dark-active": "#0A84FF",
+        "hyper-active": "#53A9FF",
+        "ultra-active": "#8FC6FC",
+        "off-active": "#aad3fc",
         pale: "#F2D5F1",
+        zark: "#18181b",
         blu: "#DAE1FA",
         royal: "#0F172A",
         void: "#14141B",
@@ -28,6 +34,9 @@ module.exports = {
         ghost: "#F8FAFC",
         grei: "#f2f2f2",
         ga: "#b8b8bd",
+        "dark-ga": "#5d5d63",
+        "light-ga": "#c7c7cb",
+        fade: "#f3f4f6",
       },
 
       keyframes: {

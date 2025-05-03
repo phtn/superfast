@@ -74,6 +74,7 @@ const SVG_PROP_MAPPING: Record<string, string> = {
   "letter-spacing": "letterSpacing",
   "text-anchor": "textAnchor",
   "text-decoration": "textDecoration",
+  "animate-transform": "animateTransform",
 };
 
 /**

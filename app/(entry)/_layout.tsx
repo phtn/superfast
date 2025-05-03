@@ -2,25 +2,19 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import { AuthCtxProvider } from "@/ctx/auth";
+import { useAuth } from "@/app/_ctx/auth";
 
 export default function Layout() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFirstLaunch, setIsFirstLaunch] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const { session, loading: authLoading } = useAuth();
 
   useEffect(() => {
     async function checkFirstLaunch() {
       try {
-        // Check if onboarding has been completed before
         const hasSeenOnboarding =
           await SecureStore.getItemAsync("hasSeenOnboarding");
-
-        // Check if user is logged in
-        const userToken = await SecureStore.getItemAsync("userToken");
-
         setIsFirstLaunch(hasSeenOnboarding !== "true");
-        setIsAuthenticated(userToken !== null);
         setIsLoading(false);
       } catch (error) {
         console.log("Error checking first launch status:", error);
@@ -31,24 +25,30 @@ export default function Layout() {
     checkFirstLaunch();
   }, []);
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     // You could return a splash screen here
     return null;
   }
+
   return (
-    <AuthCtxProvider>
-      <StatusBar style="auto" />
+    <>
       <Stack screenOptions={{ headerShown: false }}>
-        {/* <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="home" options={{ headerShown: false }} />
-        <Stack.Screen name="sign-in" options={{ headerShown: false }} /> */}
-        {!isFirstLaunch && isAuthenticated ? (
-          <Stack.Screen name="(home)" options={{ headerShown: false }} />
+        {!isFirstLaunch && session ? (
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="/(account)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="camera/index"
+              options={{
+                headerShown: false,
+                presentation: "fullScreenModal",
+              }}
+            />
+          </Stack>
         ) : (
           <Stack.Screen name="sign-in" options={{ headerShown: false }} />
         )}
-        <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
-    </AuthCtxProvider>
+      <StatusBar style="auto" />
+    </>
   );
 }

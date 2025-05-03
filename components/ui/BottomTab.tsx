@@ -1,14 +1,13 @@
 import { LogoDark, LogoLight } from "@/components/svg/Logo";
 import { FlexRow } from "@/components/ui/FlexRow";
-import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useMemo, useState } from "react";
 import { TouchableOpacity, StyleSheet, Platform, Text } from "react-native";
 import { RelativePathString, router } from "expo-router";
-import { FlexCol } from "@/components/ui/FlexCol";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { IconName } from "@/components/icons/types";
-import { Icon } from "@/components/icons";
+import { IconName } from "@/app/_components/icons/types";
+import { Icon } from "@/app/_components/icons";
 import { clsx } from "clsx";
+import { useColorScheme } from "nativewind";
 
 export interface ITabItem {
   id: number;
@@ -26,6 +25,8 @@ export const BottomTab = ({
   navigation,
 }: BottomTabProps) => {
   const [active, setActive] = useState(1);
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
 
   const tabs = useMemo(
     () =>
@@ -33,8 +34,8 @@ export const BottomTab = ({
         {
           id: 0,
           name: "fast",
-          active: "home",
-          icon: "home",
+          active: "home-2",
+          icon: "home-2",
           route: "fast",
         },
         {
@@ -42,7 +43,7 @@ export const BottomTab = ({
           name: "shop",
           active: "shop",
           icon: "shop",
-          route: "",
+          route: "shop",
         },
         {
           id: 2,
@@ -70,34 +71,49 @@ export const BottomTab = ({
     [router],
   );
 
+  const getTabColor = useCallback(
+    (id: number) => {
+      return isDark
+        ? id === active
+          ? "bg-[#14141B]"
+          : ""
+        : id === active
+          ? "bg-[#E5E7EB] shadow-xl shadow-active/90"
+          : "bg-[#14141B]";
+    },
+    [active, isDark],
+  );
+
   const Tabs = useCallback(() => {
     return tabs?.map((tab, index) => (
-      <TouchableOpacity
-        onPress={handleTabRoute(tab.route, index)}
-        key={index}
-        style={styles.navItem}
-      >
-        <FlexRow
-          className={clsx("size-14 rounded-[18px]", {
-            "bg-void shadow-2xl shadow-active/80": index === active,
-          })}
-        >
+      <TouchableOpacity onPress={handleTabRoute(tab.route, index)} key={index}>
+        <FlexRow className={clsx(`rounded-2xl size-12 `, getTabColor(index))}>
           <Icon
             name={tab.active}
             size={24}
-            color={index === active ? "#FFFFFF" : "#14141B"}
+            color={
+              isDark
+                ? index === active
+                  ? "#E5E7EB"
+                  : "#14141B"
+                : index === active
+                  ? "#14141B"
+                  : "#E5E7EB"
+            }
             strokeWidth={1.5}
           />
         </FlexRow>
       </TouchableOpacity>
     ));
-  }, [active, handleTabRoute, tabs]);
+  }, [active, handleTabRoute, tabs, colorScheme]);
 
   return (
-    <FlexRow className="w-full px-10">
+    <FlexRow className="w-full px-16">
       <FlexRow
-        style={{ borderCurve: "continuous" }}
-        className="bg-white overflow-hidden px-3 h-20 absolute shadow-lg bottom-0 rounded-[1.8rem] w-full mb-6 justify-between"
+        className={clsx(
+          "overflow-hidden px-4 h-20 absolute shadow-lg bottom-0 rounded-[1.8rem] w-full mb-6 justify-between",
+          colorScheme === "dark" ? "bg-white" : "bg-void",
+        )}
       >
         <Tabs />
       </FlexRow>

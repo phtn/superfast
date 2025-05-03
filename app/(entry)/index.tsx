@@ -134,15 +134,15 @@ const OnboardingScreen = () => {
     return (
       <View className=" flex items-center w-screen flex-1">
         <View className="w-full border-void dark:border-white px-8 pt-10">
-          <Text className="text-[4rem] px-2 font-semi dark:text-chalk border-orange-300 -tracking-[0.12em] text-active capitalize font-space">
+          <Text className="text-[4rem] px-2 font-semi dark:text-chalk border-orange-300 -tracking-[0.12em] text-dark-active capitalize font-space">
             {item.title}
           </Text>
         </View>
         <View className="w-full border-void dark:border-white px-8">
-          <View className=" -skew-x-12">
-            <HText className="text-[2.5rem] px-2 dark:text-orange-200 -tracking-[0.04em] text-void font-courg">
+          <View className="-skew-x-12">
+            <Text className="text-[2.5rem] px-2 dark:text-orange-200 -tracking-[0.04em] text-void font-eaves">
               {item.subtext}
-            </HText>
+            </Text>
           </View>
         </View>
         <View className="h-1/3 bg-orange-100/5"></View>
@@ -293,9 +293,9 @@ const OnboardingScreen = () => {
           {currentIndex === slides.length - 1 && (
             <Pressable
               onPress={handleGetStarted}
-              className="rounded-3xl dark:border-chalk/80 dark:bg-transparent bg-active px-12 py-4"
+              className="rounded-3xl dark:border-chalk/80 dark:bg-transparent bg-dark-active px-12 py-4"
             >
-              <Text className="text-xl font-semibold text-white font-quickbold tracking-tight">
+              <Text className="text-xl font-semibold text-white font-quicksemi tracking-tight">
                 Get Started
               </Text>
             </Pressable>
@@ -321,7 +321,7 @@ const OnboardingScreen = () => {
           <Ionicons
             size={16}
             name={colorScheme === "dark" ? "sunny" : "moon"}
-            color={colorScheme === "dark" ? "#fed7aaf0" : "#fff7ed"}
+            color={"#FFFFFF"}
           />
         </Pressable>
       </View>

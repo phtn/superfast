@@ -9,9 +9,11 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import "../global.css";
+import "@/global.css";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { AuthProvider } from "@/app/_ctx/auth";
+import { SheetProvider } from "react-native-actions-sheet";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -26,7 +28,10 @@ export default function RootLayout() {
     Quicksand: require("../assets/fonts/Quicksand-Medium.ttf"),
     QuickSemi: require("../assets/fonts/Quicksand-SemiBold.ttf"),
     QuickBold: require("../assets/fonts/Quicksand-Bold.ttf"),
-    Roman: require("../assets/fonts/mrs-eaves-roman.ttf"),
+    TightMedium: require("../assets/fonts/InterTight-Medium.ttf"),
+    TightSemi: require("../assets/fonts/InterTight-SemiBold.ttf"),
+    TightBold: require("../assets/fonts/InterTight-Bold.ttf"),
+    Eaves: require("../assets/fonts/Mrs-Eaves-XLSerif-OT.otf"),
   });
 
   useEffect(() => {
@@ -41,11 +46,15 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(entry)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+      <AuthProvider>
+        <SheetProvider>
+          <Stack>
+            <Stack.Screen name="(entry)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </SheetProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

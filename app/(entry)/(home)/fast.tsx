@@ -3,7 +3,7 @@
 import { Platform, View } from "react-native";
 
 import { UserCategories } from "@/app/_components/home/categories";
-import { Header, SearchBar } from "@/app/_components/home/components";
+import { Header } from "@/app/_components/home/components";
 import {
   type IProductItem,
   UserProducts,
@@ -65,12 +65,10 @@ const FastScreen = () => {
       <StatusBar translucent backgroundColor="transparent" />
       {/* Header - Fixed */}
 
-      <Header v={scrollValue.value} />
+      <Header />
       {/* Search Bar - Fixed */}
-      {/* </Animated.View> */}
 
       <ParallaxView
-        svo={svo}
         scrollRef={scrollRef}
         height={120}
         header={

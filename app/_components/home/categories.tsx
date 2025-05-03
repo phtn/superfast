@@ -12,13 +12,12 @@ import {
 } from "react-native";
 
 interface Props {
-  svov?: number;
   isDark: boolean;
 }
-export const Categories = ({ svov, isDark }: Props) => {
+export const Categories = ({ isDark }: Props) => {
   const [activeCategory, setActiveCategory] = useState(1);
   const categories = [
-    { id: 1, name: "Auto", icon: "car-sport" },
+    { id: 1, name: "Car", icon: "car-sport" },
     { id: 2, name: "Personal", icon: "user-injured" },
     { id: 3, name: "Fire", icon: "fire-alt" },
     { id: 4, name: "Health", icon: "heartbeat" },
@@ -61,14 +60,19 @@ export const Categories = ({ svov, isDark }: Props) => {
             >
               <FlexRow
                 className={clsx(
-                  `rounded-2xl w-14 h-12 ${activeCategory === category.id ? "dark:bg-dark-active bg-active" : "bg-grei dark:bg-chalk/10"}`,
+                  `rounded-2xl w-14 h-12 ${activeCategory === category.id ? "dark:bg-hyper-active bg-dark-active" : "bg-grei/80 dark:bg-chalk/10"}`,
                 )}
               >
-                {category.name === "Auto" ? (
+                {category.name === "Car" ? (
                   <Ionicons
                     name={category.icon}
                     size={24}
                     color={getCategoryColor(category.id)}
+                    className={
+                      activeCategory === category.id
+                        ? "shadow-lg shadow-hyper-active"
+                        : ""
+                    }
                   />
                 ) : (
                   <FontAwesome5
@@ -80,7 +84,7 @@ export const Categories = ({ svov, isDark }: Props) => {
               </FlexRow>
               <Text
                 className={clsx(
-                  `tracking-tighter text-sm dark:chalk text-active font-quicksemi ${activeCategory === category.id ? "text-active dark:text-dark-active" : "text-void/70 dark:text-chalk/80"}`,
+                  `tracking-tighter text-sm text-dark-active font-quicksemi ${activeCategory === category.id ? "text-dark-active dark:text-hyper-active" : "text-void/70 dark:text-chalk/80"}`,
                 )}
               >
                 {category.name}
