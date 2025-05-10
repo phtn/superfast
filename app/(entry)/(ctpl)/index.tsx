@@ -5,30 +5,30 @@ import { FlexRow } from "@/components/ui/FlexRow";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useColorScheme } from "nativewind";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
+import { SheetManager } from "react-native-actions-sheet";
 import Animated, {
-  FadeInDown,
   FadeInRight,
   ZoomIn,
   ZoomInEasyDown,
   Easing,
   ZoomInEasyUp,
-  SlideInDown,
   ZoomOutEasyUp,
   useSharedValue,
   useAnimatedStyle,
   withDelay,
   withTiming,
+  FadeInUp,
 } from "react-native-reanimated";
 
 export default function CTPLScreen() {
   const router = useRouter();
   const goBack = useCallback(() => router.back(), [router]);
   const { colorScheme } = useColorScheme();
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
   const { carType } = useCTPLCtx();
   const [currentIndex, setActiveKeyword] = useState(0);
-
   const y = useSharedValue(0);
 
   useEffect(() => {
@@ -50,20 +50,19 @@ export default function CTPLScreen() {
     transform: [{ translateY: y.value }],
   }));
 
-  const useCamera = useCallback(() => {
-    router.push("/camera");
-    console.log("Camera pressed");
-  }, []);
+  const selectUploadOption = useCallback(() => {
+    SheetManager.show("upload-options");
+  }, [SheetManager]);
 
   return (
     <View className="size-full relative px-6 bg-white dark:bg-void">
       <View className="h-14"></View>
 
-      <Brand route={goBack} isDark={colorScheme === "dark"} />
+      <Brand route={goBack} isDark={isDark} />
       <View className="pt-12 h-56">
         <Image
           source={{
-            uri: "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Fbike.png?alt=media",
+            uri: carType?.imageUri,
           }}
           resizeMode="contain"
           className="w-full -top-[4.5rem] aspect-auto h-80"
@@ -71,9 +70,7 @@ export default function CTPLScreen() {
       </View>
 
       <Animated.View
-        entering={FadeInDown.delay(100)
-          .duration(500)
-          .withInitialValues({ opacity: 0.95 })}
+        entering={FadeInUp.delay(100).duration(500)}
         className="h-20 mt-10 overflow-hidden dark:bg-void bg-white border-t-[0.33px] dark:border-grei"
       >
         <Animated.View style={[scrollAnimation]}>
@@ -84,7 +81,7 @@ export default function CTPLScreen() {
             >
               <FlexRow className="gap-x-3 h-20 w-full items-center">
                 <Animated.Text
-                  entering={SlideInDown.delay(200)
+                  entering={FadeInUp.delay(200)
                     .duration(500)
                     .easing(Easing.out(Easing.quad))}
                   exiting={ZoomOutEasyUp.duration(400).easing(
@@ -109,43 +106,62 @@ export default function CTPLScreen() {
       </MinimalistCard>
 
       <Animated.View
-        entering={FadeInDown.delay(300).duration(300)}
-        className="pt-5 pb-3 -mt-3 px-6 mx-3 rounded-b-xl bg-hyper-active/15 flex flex-row items-center justify-between"
+        entering={FadeInUp.delay(700)
+          .duration(500)
+          .withInitialValues({ y: -32 })
+          .easing(Easing.out(Easing.quad))}
+        className="pt-6 pb-3 -mt-3 px-6 mx-2 rounded-b-xl bg-hyper-active/15 dark:bg-hyper-active flex flex-row items-center justify-between"
       >
-        <Text className=" font-tight dark:text-chalk opacity-60">
+        <Text className=" font-tight dark:text-royal opacity-80">
           Next Step:
         </Text>
-        <Text className=" font-tight tracking-tight dark:text-chalk">
+        <Text className=" font-ultratight dark:text-white">
           Upload Documents
         </Text>
       </Animated.View>
 
-      <FlexRow className="px-3 py-5 pb-0 gap-5">
+      <FlexRow className="px-2 pt-8 py-b pb-0 gap-7">
         <TouchableOpacity
-          onPress={useCamera}
+          onPress={selectUploadOption}
+          className="flex-1 h-44"
           activeOpacity={0.6}
-          className="flex-1"
         >
-          <FlexRow className="h-28 flex-col bg-grei/60 dark:bg-[#4f5057] gap-3 rounded-3xl">
-            <Icon name="camera-outline" size={28} color={Colors.dark.ultra} />
-            <Text className="text-sm font-quicksemi dark:text-chalk">
-              Use Camera
-            </Text>
+          <FlexRow className="h-44 py-8  flex-col dark:bg-mortar bg-grei/70 rounded-[2rem]">
+            <View className="size-full gap-4 flex items-center justify-center flex-col">
+              <Image
+                source={{
+                  uri: "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2FOR2.png?alt=media",
+                }}
+                resizeMode="contain"
+                className="w-full aspect-auto h-full"
+              />
+              <Text className="text-sm font-quicksemi tracking-tight dark:text-chalk">
+                Original Receipt
+              </Text>
+            </View>
           </FlexRow>
         </TouchableOpacity>
 
-        <TouchableOpacity activeOpacity={0.6} className="flex-1">
-          <FlexRow className="h-28 flex-col bg-grei/60 dark:bg-[#4f5057] gap-3 rounded-3xl">
-            <Icon name="folder" size={28} color={Colors.dark.ultra} />
-            <Text className="text-sm font-quicksemi dark:text-chalk">
-              Upload from files
-            </Text>
+        <TouchableOpacity
+          onPress={selectUploadOption}
+          className="flex-1 h-44"
+          activeOpacity={0.6}
+        >
+          <FlexRow className="h-44 py-8 flex-col dark:bg-mortar bg-grei/70 rounded-[2rem]">
+            <View className="size-full gap-4 p-1 flex items-center justify-center flex-col">
+              <Image
+                source={{
+                  uri: "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2FCR2.png?alt=media",
+                }}
+                resizeMode="contain"
+                className="w-full aspect-auto h-full"
+              />
+              <Text className="text-sm font-quicksemi tracking-tight dark:text-chalk">
+                Certificate of Registration
+              </Text>
+            </View>
           </FlexRow>
         </TouchableOpacity>
-      </FlexRow>
-      <FlexRow className="px-3 py-5 gap-5">
-        <FlexRow className="h-28 flex-col bg-grei/30 gap-3 rounded-3xl flex-1"></FlexRow>
-        <FlexRow className="h-28 flex-1"></FlexRow>
       </FlexRow>
     </View>
   );
@@ -216,60 +232,6 @@ const Brand = ({ route, isDark }: HeaderProps) => {
     </FlexRow>
   );
 };
-const List = () => (
-  <Animated.View
-    entering={FadeInDown.delay(300).duration(700)}
-    className="py-10 px-6"
-  >
-    <Text className=" font-tight h-14 text-xl">Pro Member Privileges</Text>
-    <View className="bg-neutral-50 rounded-3xl py-1">
-      <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga">
-        <View className="flex flex-row items-center gap-x-4">
-          <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-            <Icon name="document-linear" size={24} color="#14141b" />
-          </View>
-          <Text className="font-quicksemi text-lg tracking-tighter">
-            Help Center
-          </Text>
-        </View>
-        <Icon
-          name="chev-right-linear"
-          strokeWidth={1.5}
-          size={24}
-          color="#14141b"
-        />
-      </TouchableOpacity>
-
-      <View className="h-px bg-neutral-300" />
-
-      <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga">
-        <View className="flex flex-row items-center gap-x-4">
-          <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-            <Icon name="chats" size={24} color="#14141b" />
-          </View>
-          <Text className="font-quicksemi text-lg tracking-tighter">
-            Contact Support
-          </Text>
-        </View>
-        <Icon name="chev-right-linear" size={24} color="#14141b" />
-      </TouchableOpacity>
-
-      <View className="h-px bg-neutral-300" />
-
-      <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga">
-        <View className="flex flex-row items-center gap-x-4">
-          <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-            <Icon name="wallet" size={24} color="#14141b" />
-          </View>
-          <Text className="font-quicksemi text-lg tracking-tighter">
-            FastInsure Guide
-          </Text>
-        </View>
-        <Icon name="chev-right-linear" size={24} color="#14141b" />
-      </TouchableOpacity>
-    </View>
-  </Animated.View>
-);
 
 const Logo = () => {
   return (
@@ -320,3 +282,33 @@ const Action = () => {
     </TouchableOpacity>
   );
 };
+
+const ActionPanel = ({ isDark }: { isDark: boolean }) => (
+  <FlexRow className="px-3 py-8 pb-0 gap-7">
+    <TouchableOpacity activeOpacity={0.6} className="flex-1">
+      <FlexRow className="h-32 dark:border-black bg-grei/60 dark:bg-medusa border-2 border-transparent rounded-[1.75rem] flex-col gap-4">
+        <Icon
+          size={32}
+          name="camera-outline"
+          color={isDark ? Colors.dark.hyper : Colors.light.ultra}
+        />
+        <Text className="text-sm font-quicksemi dark:text-chalk">
+          Use Camera
+        </Text>
+      </FlexRow>
+    </TouchableOpacity>
+
+    <TouchableOpacity className="flex-1" activeOpacity={0.6}>
+      <FlexRow className="h-32 dark:border-black border-2 border-transparent flex-col bg-grei/60 dark:bg-medusa rounded-[1.75rem] gap-4">
+        <Icon
+          size={32}
+          name="folder"
+          color={isDark ? Colors.dark.hyper : Colors.light.ultra}
+        />
+        <Text className="text-sm font-quicksemi dark:text-chalk">
+          Upload from files
+        </Text>
+      </FlexRow>
+    </TouchableOpacity>
+  </FlexRow>
+);

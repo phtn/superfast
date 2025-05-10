@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { LinearGradient } from "expo-linear-gradient";
 import { useColorScheme } from "nativewind";
 import { Text, TouchableOpacity, View } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { Easing, FadeInUp } from "react-native-reanimated";
 import { Icon } from "../icons";
 import { Colors } from "@/constants/Colors";
 import { type IconName } from "../icons/types";
@@ -24,9 +24,12 @@ export const MinimalistCard = (props: PremiumCardProps) => {
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(200).duration(500)}
-      className="w-full z-10 relative"
+      entering={FadeInUp.delay(300)
+        .duration(500)
+        .easing(Easing.out(Easing.quad))}
+      className="w-full z-50 relative"
     >
+      <View className="absolute dark:bg-void/15 bg-void/25 -bottom-2 left-0 rounded-lg scale-[0.97] px-2 w-full h-24 z-10" />
       <LinearGradient
         colors={
           colorScheme === "light"
@@ -35,7 +38,7 @@ export const MinimalistCard = (props: PremiumCardProps) => {
         }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="px-1.5 h-[5.5rem] relative overflow-hidden flex flex-row items-center border dark:border-chalk/20 rounded-xl border-royal"
+        className="px-1.5 h-[5.5rem] z-50 relative overflow-hidden flex flex-row items-center rounded-xl"
       >
         <FlexRow className="h-20 w-12">
           <Icon

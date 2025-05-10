@@ -33,6 +33,11 @@ export default function CameraScreen() {
   const cameraRef = useRef<CameraView | null>(null);
 
   const router = useRouter();
+
+  const back = useCallback(() => {
+    router.back();
+  }, [router]);
+
   const gallery = useCallback(() => {
     const uri = capturedImage?.uri;
     if (uri)
@@ -224,7 +229,18 @@ export default function CameraScreen() {
           </FlexRow>
         </View>
       ) : (
-        <View style={styles.cameraContainer}>
+        <View style={styles.cameraContainer} className="relative">
+          <TouchableOpacity
+            onPress={back}
+            activeOpacity={0.7}
+            className="absolute top-16 left-6 z-50"
+          >
+            <FlexRow>
+              <View className="-rotate-90">
+                <Icon name="arrow-to-left" size={28} color={Colors.dark.text} />
+              </View>
+            </FlexRow>
+          </TouchableOpacity>
           <CameraView style={styles.camera} facing={type} ref={cameraRef}>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.flipButton} onPress={gallery}>
@@ -240,7 +256,7 @@ export default function CameraScreen() {
                 className="size-[4.5rem] rounded-full bg-transparent border-4 border-white flex flex-row items-center justify-center"
                 onPress={takePicture}
               >
-                <View className="size-14 rounded-full bg-ultra-active" />
+                <View className="size-14 rounded-full bg-hyper-active" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.flipButton} onPress={flipCamera}>
                 <Icon name="camera-rotate" size={32} color="#fff" />

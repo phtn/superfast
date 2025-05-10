@@ -39,6 +39,8 @@ module.exports = {
         fade: "#f3f4f6",
         hades: "#222229",
         cronus: "#1e2029",
+        medusa: "#67696f",
+        mortar: "#808186",
       },
 
       keyframes: {

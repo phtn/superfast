@@ -1,7 +1,6 @@
 import { FlexCol } from "@/components/ui/FlexCol";
 import { FlexRow } from "@/components/ui/FlexRow";
 import { Colors } from "@/constants/Colors";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { clsx } from "clsx";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";

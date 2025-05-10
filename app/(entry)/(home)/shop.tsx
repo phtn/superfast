@@ -39,7 +39,7 @@ const ShopScreen = () => {
           subtext: "Compulsory",
           price: 999,
           image:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Flayer-2-light.png?alt=media",
+            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2FCTPL_LIGHT3.png?alt=media",
           description: "Compulsory Third Party Liability",
           rating: 95,
           textStyles: "text-void",

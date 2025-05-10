@@ -7,6 +7,7 @@ import Animated from "react-native-reanimated";
 import { FlexCol } from "@/components/ui/FlexCol";
 import { MinimalistCard } from "@/app/_components/cards/minimalist";
 import { WordTransition } from "@/components/ux/WordTransition";
+import { TextTransition } from "@/components/ux/TextTransition";
 
 export default function ChatScreen() {
   return (
@@ -14,18 +15,17 @@ export default function ChatScreen() {
       className={`flex-1 bg-grei dark:bg-void ${Platform.OS === "ios" ? "pt-14" : "pt-9"}`}
     >
       <StatusBar translucent backgroundColor="transparent" />
-      {/* Header - Fixed */}
       <FlexCol className=" items-start px-6 h-16 justify-center">
         <Text className="text-3xl tracking-tighter dark:text-chalk font-quickbold">
           Chats
         </Text>
       </FlexCol>
-      <Animated.ScrollView>
+      <Animated.ScrollView className="px-4">
         <MinimalistCard
           title="Minimalist Card"
           onPress={() => console.log("")}
         />
-        <WordTransition cycleTime={6000} />
+        <TextTransition cycleTime={6000} />
       </Animated.ScrollView>
     </View>
   );

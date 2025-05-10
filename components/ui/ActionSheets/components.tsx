@@ -1,6 +1,9 @@
 import Svg, { Path } from "react-native-svg";
 import { FlexRow } from "../FlexRow";
-import { Dimensions } from "react-native";
+import { Dimensions, View } from "react-native";
+import { memo } from "react";
+import Animated, { SlideInUp, ZoomInEasyDown } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
 export const Handle = () => {
   const width = Dimensions.get("screen").width;
@@ -31,3 +34,41 @@ export const Handle = () => {
     </FlexRow>
   );
 };
+
+export const SheetHeader = memo(({ title }: { title: string }) => (
+  <Animated.View
+    entering={ZoomInEasyDown.delay(0).duration(500).damping(2).mass(2)}
+    className="h-16 overflow-hidden bg-royal dark:bg-void relative flex flex-col rounded-3xl items-center justify-center mx-4"
+  >
+    <Animated.View
+      entering={SlideInUp.delay(600)
+        .duration(1750)
+        .damping(5)
+        .mass(3)
+        .withInitialValues({ originY: 224 })}
+      className="absolute -top-56 bg-dark-active skew-x-12 -rotate-[30deg] w-[36rem] rounded-full"
+    >
+      <LinearGradient
+        colors={["#99f6e4", "#53A9FF", "#53A9FF", "#0A84FF"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <View className="h-16" />
+      </LinearGradient>
+    </Animated.View>
+    <Animated.View
+      entering={SlideInUp.delay(600)
+        .duration(1600)
+        .damping(8)
+        .mass(1)
+        .withInitialValues({ originY: 192, height: 1 })}
+      className="absolute -top-48 bg-white -rotate-[30deg] h-2 w-[36rem] rounded-full"
+    />
+    <Animated.Text
+      entering={ZoomInEasyDown.delay(150).duration(500).damping(5)}
+      className="font-ultratight origin-center tracking-tight text-white text-2xl"
+    >
+      {title}
+    </Animated.Text>
+  </Animated.View>
+));

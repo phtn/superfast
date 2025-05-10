@@ -1,6 +1,12 @@
-import React, { FC, memo, ReactNode, useCallback, useMemo } from "react";
+import React, {
+  FC,
+  memo,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useEffect,
+} from "react";
 import { View } from "react-native";
-import { useEffect } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,6 +14,8 @@ import Animated, {
   withDelay,
 } from "react-native-reanimated";
 import { type ContentStyle, FlashList } from "@shopify/flash-list";
+import { ClassName } from "@/types";
+import { clsx } from "clsx";
 
 // Helper to combine styles (replacement for cn utility)
 const combineStyles = (...styles: any[]) => {
@@ -20,7 +28,7 @@ interface HyperListProps<T> {
   keyId?: keyof T;
   component: FC<T>;
   data: T[] | undefined;
-  containerStyle?: StyleProp;
+  containerStyle?: ClassName;
   contentContainerStyle?: ContentStyle;
   itemStyle?: StyleProp;
   reversed?: boolean;
@@ -50,7 +58,7 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
   } = props;
 
   const baseContainerStyle = useMemo(
-    () => combineStyles("h-24", containerStyle),
+    () => clsx("h-80", containerStyle),
     [containerStyle],
   );
 
@@ -90,42 +98,61 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
     return slicedData?.sort(sortFn) ?? [];
   }, [slicedData, sortFn]);
 
-  const opacity = useSharedValue(disableAnimation ? 1 : 0);
-  const translation = useSharedValue(disableAnimation ? 0 : getInitialValue());
-
-  // Create reanimated animated styles
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-      transform:
-        direction === "left" || direction === "right"
-          ? [{ translateX: translation.value }]
-          : [{ translateY: translation.value }],
-    };
-  });
-
-  const renderItem = useCallback(
+  // Animated item component to handle per-item animation
+  const AnimatedItem = useCallback(
     ({ item, index }: { item: T; index: number }) => {
       const key = keyId && keyId in item ? String(item[keyId]) : String(index);
+      const itemOpacity = useSharedValue(disableAnimation ? 1 : 0);
+      const itemTranslation = useSharedValue(
+        disableAnimation ? 0 : getInitialValue(),
+      );
 
-      // Start animations with delay based on index
-      const animationDelay = index * 40 + delay;
+      const itemAnimatedStyle = useAnimatedStyle(() => {
+        return {
+          opacity: itemOpacity.value,
+          transform:
+            direction === "left" || direction === "right"
+              ? [{ translateX: itemTranslation.value }]
+              : [{ translateY: itemTranslation.value }],
+        };
+      });
 
-      opacity.value = disableAnimation
-        ? 1
-        : withDelay(animationDelay, withTiming(1, { duration: 300 }));
-
-      translation.value = disableAnimation
-        ? 0
-        : withDelay(animationDelay, withTiming(0, { duration: 300 }));
+      useEffect(() => {
+        if (!disableAnimation) {
+          const animationDelay = index * 40 + delay;
+          itemOpacity.value = withDelay(
+            animationDelay,
+            withTiming(1, { duration: 300 }),
+          );
+          itemTranslation.value = withDelay(
+            animationDelay,
+            withTiming(0, { duration: 300 }),
+          );
+        }
+      }, [disableAnimation, index, delay, direction, getInitialValue]);
 
       return (
-        <Animated.View key={key} style={[baseItemStyle, animatedStyle]}>
+        <Animated.View key={key} style={[baseItemStyle, itemAnimatedStyle]}>
           <Item {...item} />
         </Animated.View>
       );
     },
-    [],
+    [
+      baseItemStyle,
+      disableAnimation,
+      delay,
+      direction,
+      getInitialValue,
+      Item,
+      keyId,
+    ],
+  );
+
+  const renderItem = useCallback(
+    ({ item, index }: { item: T; index: number }) => {
+      return <AnimatedItem key={index} item={item} index={index} />;
+    },
+    [AnimatedItem],
   );
 
   const keyExtractor = useCallback(
@@ -136,7 +163,7 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
   );
 
   return (
-    <View className="h-80">
+    <View className={baseContainerStyle}>
       {children}
       <FlashList
         data={sortedData}

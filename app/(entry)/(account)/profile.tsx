@@ -108,9 +108,9 @@ export default function Profile() {
   }, []);
 
   return (
-    <View className="pt-12 pb-6 h-full bg-gray-200 dark:bg-transparent relative">
+    <View className="pt-16 pb-6 h-full bg-gray-200 dark:bg-transparent relative">
       <TouchableOpacity
-        className="absolute top-12 z-10 left-6 size-10 rounded-full dark:bg-gray-300/5 flex flex-row items-center justify-center"
+        className="absolute top-16 z-10 left-6 size-10 rounded-full dark:bg-gray-300/5 flex flex-row items-center justify-center"
         onPress={goBack}
       >
         <Icon

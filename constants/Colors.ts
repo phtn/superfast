@@ -27,6 +27,7 @@ export const Colors = {
     icon: "#9BA1A6",
     tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
+    fade: "#808186",
     hyper: "#8FC6FC",
     active: "#007AFE",
     ultra: "#53A9FF",

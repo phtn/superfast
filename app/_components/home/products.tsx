@@ -15,8 +15,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { Icon } from "../icons";
 import { FlashList } from "@shopify/flash-list";
-import { useColorScheme } from "nativewind";
 import { PremiumCard } from "../cards/premium";
+import { Colors } from "@/constants/Colors";
 
 export interface IProductItem {
   id: number;
@@ -105,12 +105,12 @@ export const UserProducts = ({ isDark, list }: Props) => {
 
   return (
     <Animated.ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 16, gap: 48 }}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingHorizontal: 16, gap: 48 }}
     >
-      <FlexRow className="justify-between h-16 -mb-6 px-3">
+      <FlexRow className="justify-between h-14 -mb-12 px-3">
         <View className="flex flex-row items-center">
           <Text className="font-courg text-2xl text-dark-active -tracking-[0.16rem] dark:text-hyper-active">
             My
@@ -119,12 +119,12 @@ export const UserProducts = ({ isDark, list }: Props) => {
             Fast Cars
           </Text>
         </View>
-        <TouchableOpacity className="rounded-full flex items-center justify-center size-7 bg-royal dark:bg-white">
+        <TouchableOpacity className="rounded-full flex items-center justify-center size-7 bg-royal dark:bg-mortar">
           <Ionicons
-            name="add"
             size={20}
+            name="add"
             className="stroke-2"
-            color={isDark ? "#0F172A" : "#FFFFFF"}
+            color={isDark ? Colors.dark.royal : Colors.dark.text}
           />
         </TouchableOpacity>
       </FlexRow>
@@ -132,10 +132,18 @@ export const UserProducts = ({ isDark, list }: Props) => {
       {/* Featured Product */}
       <FlashList
         data={list}
-        renderItem={renderItem}
         estimatedItemSize={10}
+        renderItem={renderItem}
         ItemSeparatorComponent={ItemSep}
       />
+
+      <View className="h-48 w-full rounded-3xl overflow-hidden">
+        <View className="dark:bg-ga flex-1"></View>
+        <View className="bg-mortar flex-1"></View>
+      </View>
+      <View className="h-32 w-full rounded-3xl bg-mortar"></View>
+      <View className="h-28 w-full rounded-3xl bg-medusa"></View>
+
       <PremiumCard
         title="Upgrade to PRO"
         onPress={() => console.log("premium")}

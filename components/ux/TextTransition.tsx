@@ -1,5 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, TextStyle } from "react-native";
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import {
+  View,
+  StyleSheet,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,258 +13,332 @@ import Animated, {
   withDelay,
   Easing,
   cancelAnimation,
+  AnimatedStyleProp,
 } from "react-native-reanimated";
 
-const ANIMATION_DURATION = 1000;
-const STAGGER_DURATION = 200;
+interface AnimatedTextCyclerProps {
+  /** Array of strings to cycle through */
+  textArray?: string[];
+  /** Time in milliseconds between transitions */
+  cycleTime?: number;
+  /** Style for the text characters */
+  textStyle?: StyleProp<TextStyle>;
+  /** Style for the container */
+  containerStyle?: StyleProp<ViewStyle>;
+  /** Additional time in milliseconds to hold text steady before transition */
+  steadyDisplayTime?: number;
+}
 
-export const ElementTransition = ({
+interface AnimatedCharacterProps {
+  /** The current character to display */
+  currentChar: string;
+  /** The next character to transition to */
+  nextChar: string;
+  /** Index of this character in the string */
+  index: number;
+  /** Total number of characters in the longest string */
+  totalChars: number;
+  /** Time in milliseconds between transitions */
+  cycleTime: number;
+  /** Style for the text character */
+  textStyle?: StyleProp<TextStyle>;
+}
+
+interface RandomValues {
+  rotation: number;
+  translateX: number;
+  translateY: number;
+  scale: number;
+}
+
+/**
+ * A component that cycles through an array of strings with animated transitions
+ */
+export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
   textArray = ["Futuristic", "Animated", "Text", "Component"],
   cycleTime = 5000,
   textStyle = {},
   containerStyle = {},
+  steadyDisplayTime = 3000,
 }) => {
-  const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const [characters, setCharacters] = useState<string[]>([]);
-  const [nextCharacters, setNextCharacters] = useState<string[]>([]);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [maxCharCount, setMaxCharCount] = useState(0);
+  // Use refs to keep track of state without triggering re-renders
+  const currentIndexRef = useRef<number>(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    let animationTimeout: NodeJS.Timeout;
-    let initialTimeout: NodeJS.Timeout;
+  // State to force render updates at the right time
+  const [renderKey, setRenderKey] = useState<number>(0);
 
-    const charCounts = textArray.map((e) => e.length);
-    setMaxCharCount(Math.max(...charCounts));
-
-    if (textArray.length > 0) {
-      // Pad shorter string with spaces to match longer string length
-      const firstWord = textArray[0];
-      const secondWord = textArray[1] ?? textArray[0];
-      const maxLength = Math.max(firstWord.length, secondWord.length);
-
-      setCharacters([...firstWord.padEnd(maxLength).split("")]);
-      setNextCharacters([...secondWord.padEnd(maxLength).split("")]);
+  // Memoize the current and next text
+  const { currentText, nextText } = useMemo(() => {
+    if (!textArray || textArray.length === 0) {
+      return { currentText: [], nextText: [] };
     }
 
-    const startNextCycle = () => {
-      const nextIndex = (currentTextIndex + 1) % textArray.length;
-      const currentText = textArray[currentTextIndex];
-      const nextText = textArray[nextIndex];
+    const current = textArray[currentIndexRef.current] || "";
+    const next =
+      textArray[(currentIndexRef.current + 1) % textArray.length] || "";
 
-      // Pad strings to match the longer length
-      const maxLength = Math.max(currentText.length, nextText.length);
-
-      setIsAnimating(true);
-      setCharacters([...currentText.padEnd(maxLength).split("")]);
-      setNextCharacters([...nextText.padEnd(maxLength).split("")]);
-
-      if (animationTimeout) clearTimeout(animationTimeout);
-
-      animationTimeout = setTimeout(() => {
-        setCurrentTextIndex(nextIndex);
-        setIsAnimating(false);
-      }, ANIMATION_DURATION + STAGGER_DURATION);
+    return {
+      currentText: current.split(""),
+      nextText: next.split(""),
     };
+  }, [textArray, renderKey]);
 
-    // Initial delay
-    initialTimeout = setTimeout(() => {
-      // Set up recurring cycle
-      intervalId = setInterval(startNextCycle, cycleTime);
-    }, 100);
-
-    // Cleanup function
-    return () => {
-      clearTimeout(initialTimeout);
-      clearTimeout(animationTimeout);
-      clearInterval(intervalId);
-    };
-  }, [textArray, cycleTime, currentTextIndex]);
-
+  // Set up cycle timer
   useEffect(() => {
-    if (isAnimating) console.log(characters.join(""));
-    if (!isAnimating) console.log("!", characters.join(""));
-  }, [isAnimating, characters]);
+    if (!textArray || textArray.length <= 1) return;
+
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    // Set up new timer
+    timerRef.current = setInterval(() => {
+      // Update the index
+      currentIndexRef.current =
+        (currentIndexRef.current + 1) % textArray.length;
+      // Force a re-render
+      setRenderKey((prev) => prev + 1);
+    }, cycleTime);
+
+    // Cleanup on unmount
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [textArray, cycleTime]);
+
+  // Calculate the max length for the display
+  const maxLength = Math.max(currentText.length, nextText.length);
+
+  // Create an array of the right length to map over
+  const displayArray = Array.from({ length: maxLength });
+
+  if (textArray.length === 0) {
+    return null;
+  }
+
+  // Inside AnimatedTextCycler component:
+  useEffect(() => {
+    if (!textArray || textArray.length <= 1) return;
+
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    // Set up new timer with steady display time
+    timerRef.current = setInterval(() => {
+      // Update the index
+      currentIndexRef.current =
+        (currentIndexRef.current + 1) % textArray.length;
+      // Force a re-render
+      setRenderKey((prev) => prev + 1);
+    }, cycleTime + steadyDisplayTime); // Add steady display time
+
+    // Rest of the effect remains the same...
+  }, [textArray, cycleTime, steadyDisplayTime]);
 
   return (
-    <View style={[containerStyle]}>
-      <View className="flex flex-row w-screen h-36 items-center overflow-hidden justify-center">
-        {characters.map((char, index) => (
-          <AnimatedChar
-            key={`${index}-${currentTextIndex}`}
-            char={char}
-            nextChar={nextCharacters[index]}
+    <View
+      style={[styles.container, containerStyle as any]}
+      className="h-20 border px-12 bg-black"
+    >
+      <View
+        style={styles.textContainer}
+        className="h-8 overflow-hidden border bg-white"
+      >
+        {displayArray.map((_, index) => (
+          <AnimatedCharacter
+            key={`${index}-${renderKey}`}
+            currentChar={index < currentText.length ? currentText[index] : ""}
+            nextChar={index < nextText.length ? nextText[index] : ""}
             index={index}
-            totalChars={characters.length}
-            animationDuration={ANIMATION_DURATION}
+            totalChars={maxLength}
+            cycleTime={cycleTime}
             textStyle={textStyle}
-            isAnimating={isAnimating}
           />
         ))}
-
-        {nextCharacters.length > characters.length &&
-          nextCharacters
-            .slice(characters.length)
-            .map((char, index) => (
-              <AnimatedChar
-                key={`extra-${index}-${currentTextIndex}`}
-                char=""
-                nextChar={char}
-                index={characters.length + index}
-                totalChars={nextCharacters.length}
-                animationDuration={ANIMATION_DURATION}
-                textStyle={textStyle}
-                isAnimating={isAnimating}
-                appearing={true}
-              />
-            ))}
       </View>
     </View>
   );
 };
 
-interface AnimatedCharProps {
-  char: string;
-  nextChar: string;
-  index: number;
-  totalChars: number;
-  animationDuration: number;
-  textStyle?: TextStyle;
-  appearing?: boolean;
-  isAnimating: boolean;
-}
-
-const AnimatedChar = ({
-  char,
+/**
+ * An individual character that animates between currentChar and nextChar
+ */
+const AnimatedCharacter: React.FC<AnimatedCharacterProps> = ({
+  currentChar,
   nextChar,
   index,
   totalChars,
+  cycleTime,
   textStyle = {},
-  appearing = false,
-  isAnimating,
-}: AnimatedCharProps) => {
-  const opacity = useSharedValue(appearing ? 0 : 1);
-  const translateY = useSharedValue(appearing ? -1 : 2);
-  const [displayChar, setDisplayChar] = useState(char);
+}) => {
+  // Animation values
+  const scale = useSharedValue<number>(1);
+  const opacity = useSharedValue<number>(1);
+  const translateY = useSharedValue<number>(0);
+  const translateX = useSharedValue<number>(0);
+  const rotation = useSharedValue<number>(0);
 
-  const getStaggerDelay = useCallback(() => {
-    return (index / 13) * STAGGER_DURATION; // Fixed 200ms stagger window
-  }, [index, totalChars]);
+  // State for displayed character
+  const [displayChar, setDisplayChar] = useState<string>(currentChar);
 
+  // Delay calculation for staggered animation
+  const getDelay = (): number => {
+    const baseDelay = cycleTime * 0.15; // 15% of the cycle time for the delay
+    const staggerDelay = (index / Math.max(1, totalChars)) * baseDelay;
+    return staggerDelay;
+  };
+
+  // Get random animation values - memoize to prevent recreation
+  const randomValues = useMemo<RandomValues>(
+    () => ({
+      rotation: Math.random() > 0.8 ? 25 : -12, // -30 to 30
+      translateX: Math.random() > 0.6 ? 60 : -60, // -10 to 10
+      translateY: Math.random() > 0.4 ? 90 : -90, // -15 to 15
+      scale: Math.random() > 0.2 ? 0.2 : 2.4, // -15 to 15
+    }),
+    [],
+  );
+
+  // Handle animation when a new character should be displayed
   useEffect(() => {
-    if (!isAnimating) return;
-
-    const staggerDelay = getStaggerDelay();
-
+    // Cancel any ongoing animations
     cancelAnimation(opacity);
+    cancelAnimation(scale);
     cancelAnimation(translateY);
+    cancelAnimation(translateX);
+    cancelAnimation(rotation);
 
-    // Exit animation
+    const delay = getDelay();
+    const firstPhaseDuration = cycleTime * 0.2;
+    const secondPhaseDuration = cycleTime * 0.2;
+
+    // Phase 1: Current character fades out with effects
     opacity.value = withDelay(
-      staggerDelay,
+      delay,
       withTiming(0, {
-        duration: STAGGER_DURATION,
-        easing: Easing.out(Easing.cubic),
+        duration: firstPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      }),
+    );
+
+    scale.value = withDelay(
+      delay,
+      withTiming(randomValues.scale, {
+        duration: firstPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       }),
     );
 
     translateY.value = withDelay(
-      staggerDelay,
-      withTiming(Math.random() > 0.35 ? -20 : 20, {
-        duration: STAGGER_DURATION,
-        easing: Easing.out(Easing.cubic),
+      delay,
+      withTiming(randomValues.translateY, {
+        duration: firstPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       }),
     );
-    // Character update and entry animation
-    const switchTimeout = setTimeout(
-      () => {
-        setDisplayChar(nextChar);
-        translateY.value = Math.random() > 0.65 ? 32 : -32;
 
-        // Immediate opacity and position animation
-        opacity.value = withTiming(1, {
-          duration: STAGGER_DURATION * 4,
-          easing: Easing.out(Easing.cubic),
-        });
-
-        translateY.value = withTiming(0, {
-          duration: STAGGER_DURATION,
-          easing: Easing.out(Easing.cubic),
-        });
-      },
-      staggerDelay + STAGGER_DURATION * 3.05,
+    translateX.value = withDelay(
+      delay,
+      withTiming(randomValues.translateX, {
+        duration: firstPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      }),
     );
 
-    return () => clearTimeout(switchTimeout);
-  }, [isAnimating, nextChar]);
+    rotation.value = withDelay(
+      delay,
+      withTiming(randomValues.rotation, {
+        duration: firstPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      }),
+    );
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-    width: char === " " && nextChar === " " ? 0 : undefined, // Collapse space width when both chars are spaces
-  }));
+    // Change the character at the midpoint of the animation
+    const characterChangeTimeout = setTimeout(() => {
+      setDisplayChar(nextChar);
+
+      // Phase 2: Next character fades in with reset position
+      opacity.value = withTiming(1, {
+        duration: secondPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      });
+
+      scale.value = withTiming(1, {
+        duration: secondPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      });
+
+      translateY.value = withTiming(0, {
+        duration: secondPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      });
+
+      translateX.value = withTiming(0, {
+        duration: secondPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      });
+
+      rotation.value = withTiming(0, {
+        duration: secondPhaseDuration,
+        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      });
+    }, delay + firstPhaseDuration);
+
+    // Cleanup
+    return () => {
+      clearTimeout(characterChangeTimeout);
+    };
+  }, [currentChar, nextChar, cycleTime, randomValues, getDelay]);
+
+  // Animated style
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [
+        { scale: scale.value },
+        { translateY: translateY.value },
+        { translateX: translateX.value },
+        { rotateZ: `${rotation.value}deg` },
+      ],
+    };
+  });
 
   return (
     <Animated.Text
-      style={[textStyle, animatedStyle]}
-      className="font-tight tracking-tighter whitespace-nowrap overflow-hidden uppercase text-royal dark:text-grei text-4xl"
+      style={[styles.character, animatedStyle]}
+      className="uppercase text-4xl font-hypertight leading-none tracking-tighter"
     >
-      {
-        char === " "
-          ? "\u00A0"
-          : char /* Use non-breaking space for visual spaces */
-      }
+      {displayChar}
     </Animated.Text>
   );
 };
 
-function equalizeStringLengths(arr: string[]) {
-  if (!arr || arr.length === 0) {
-    return [];
-  }
-
-  // Find the string with the maximum character count
-  const charCounts = arr.map((str) => str.length);
-  const maxCharCount = Math.max(...charCounts);
-
-  // Create a new array with padded strings
-  const equalizedArr = arr.map((str) => {
-    const difference = maxCharCount - str.length;
-    // Add non-breaking spaces to match the longest string
-    if (difference > 0) {
-      if (difference % 2 === 0) {
-        return (
-          "\u00A0".repeat(difference / 2) +
-          str +
-          "\u00A0".repeat(difference / 2)
-        );
-      }
-      const bigHalf = (difference % 2) + 1;
-      return (
-        "\u00A0".repeat(Math.floor(difference / 2)) +
-        str +
-        "\u00A0".repeat(difference + bigHalf)
-      );
-    }
-    return str;
-  });
-
-  return equalizedArr;
-}
-
 const styles = StyleSheet.create({
   container: {
+    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 20,
-    width: "100%",
+    paddingVertical: 0,
+    paddingHorizontal: 0,
   },
   textContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    // justifyContent: "space-around",
     alignItems: "center",
+    minWidth: "100%",
   },
   character: {
-    fontSize: 32,
     fontWeight: "bold",
+    color: "#14141b",
+    height: 40,
+    // minWidth: 12,
+    textAlign: "center",
   },
 });

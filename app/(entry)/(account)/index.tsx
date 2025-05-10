@@ -141,20 +141,16 @@ const ProfileScreen = ({ navigation }: any) => {
           end={{ x: 1, y: 1 }}
         >
           <TouchableOpacity
-            className="absolute top-16 z-10 left-8 size-10 rounded-full bg-grei dark:bg-gray-300/5 flex flex-row items-center justify-center"
+            className="absolute top-16 z-10 left-8 size-10 rounded-full flex flex-row items-center justify-center"
             onPress={goBack}
           >
             <Icon
+              size={28}
               name="arrow-to-left"
-              size={24}
-              color={isDarkMode ? Colors.dark.text : Colors.dark.royal}
               container="-rotate-90"
+              color={isDarkMode ? Colors.dark.text : Colors.dark.royal}
             />
           </TouchableOpacity>
-
-          {/* <TouchableOpacity className="hidden" style={styles.settingsButton}>
-            <Feather name="settings" size={22} color="#fff" />
-          </TouchableOpacity> */}
 
           <Animated.View
             className="mt-12 size-28 rounded-full border-4 dark:border-off-active/30 border-hyper-active/20 shadow-hyper-active shadow-2xl"
@@ -191,54 +187,66 @@ const ProfileScreen = ({ navigation }: any) => {
         {/* Account Settings */}
         <Animated.View
           entering={FadeInDown.delay(100).duration(300)}
-          className="py-12 px-6"
+          className="py-12 px-0"
         >
-          <Text className="h-14 font-ultratight tracking-tighter dark:text-chalk text-2xl">
-            Account Settings
+          <Text className="h-14 font-ultratight px-6 tracking-tighter dark:text-chalk text-2xl">
+            Settings
           </Text>
 
-          <View className="bg-neutral-50 dark:bg-neutral-300 py-1 rounded-3xl">
+          <View className="bg-neutral-50 dark:bg-hades py-1 rounded-3xl">
             <TouchableOpacity
+              activeOpacity={0.6}
               onPress={route("profile" as RelativePathString)}
-              className="flex flex-row items-center border-b-[0.0px] border-neutral-300 justify-between px-4 py-4"
+              className="flex flex-row items-center justify-between px-4 py-4"
             >
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
                   <Icon
                     size={24}
                     name="user-settings"
-                    color={Colors.light.text}
+                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
-                <Text className="font-quicksemi text-lg opacity-80 tracking-tight">
-                  Personal Information
-                </Text>
+                <Title
+                  label="Personal Info"
+                  subtext="Display name &middot; Phone number"
+                />
               </View>
-              <Icon name="chev-right-broken" color={Colors.dark.active} />
+              <Icon name="chev-right-linear" color={Colors.dark.active} />
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex h-[4.5rem] flex-row items-center justify-between px-4 py-4 border-y-[0.33px] border-neutral-300 dark:border-neutral-400/80">
+            <TouchableOpacity
+              activeOpacity={0.6}
+              className="flex h-[4.5rem] flex-row items-center justify-between px-4 py-4 border-y-[0.33px] border-neutral-300 dark:border-medusa"
+            >
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-                  <Icon name="chats" size={24} color="#14141b" />
+                  <Icon name="chats" size={24} color={Colors.dark.fade} />
                 </View>
-                <Text className="font-quicksemi opacity-80 text-lg tracking-tight">
+                <Text className="font-quicksemi opacity-50 text-lg dark:text-chalk tracking-tight">
                   Transactions
                 </Text>
               </View>
-              <Icon name="chev-right-linear" color={Colors.light.text} />
+              <View className="-rotate-45">
+                <Icon name="plus" color={Colors.dark.fade} />
+              </View>
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4">
+            <TouchableOpacity
+              activeOpacity={0.6}
+              className="flex flex-row items-center justify-between px-4 py-4"
+            >
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-                  <Icon name="wallet" size={24} color={Colors.light.text} />
+                  <Icon name="wallet" size={24} color={Colors.dark.fade} />
                 </View>
-                <Text className="font-quicksemi opacity-80 text-lg tracking-tight">
+                <Text className="font-quicksemi dark:text-mortar text-lg tracking-tight">
                   Rewards
                 </Text>
               </View>
-              <Icon name="chev-right-linear" color={Colors.light.text} />
+              <View className="-rotate-45">
+                <Icon name="plus" color={Colors.dark.fade} />
+              </View>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -246,14 +254,15 @@ const ProfileScreen = ({ navigation }: any) => {
         {/* Preferences */}
         <Animated.View
           entering={FadeInDown.delay(200).duration(300)}
-          className="py-6 px-6"
+          className="py-6 px-0"
         >
-          <Text className=" font-ultratight h-14 tracking-tight dark:text-chalk text-2xl">
+          <Text className=" font-ultratight h-14 px-8 tracking-tighter dark:text-chalk text-2xl">
             Preferences
           </Text>
 
-          <View className="bg-neutral-50 rounded-3xl dark:bg-neutral-300 py-1">
+          <View className="bg-neutral-50 rounded-3xl dark:bg-hades py-1">
             <TouchableOpacity
+              activeOpacity={0.8}
               onPress={toggleColorScheme}
               className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga"
             >
@@ -262,28 +271,36 @@ const ProfileScreen = ({ navigation }: any) => {
                   <Icon
                     name="paint-brush"
                     size={24}
-                    color={Colors.light.text}
+                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
-                <Text className="font-quicksemi text-lg dark:text-black tracking-tight">
+                <Text className="font-quickbold text-lg dark:text-chalk tracking-tight">
                   {isDarkMode ? "Light Mode" : "Dark Mode"}
                 </Text>
               </View>
               <Icon
-                name={isDarkMode ? "toggle-on" : "toggle-off"}
-                size={24}
-                color="#0F172A"
+                name={isDarkMode ? "fat-toggle-off" : "fat-toggle-on"}
+                size={40}
+                solid
+                fill={Colors.dark.fade}
+                color={isDarkMode ? Colors.dark.fade : Colors.dark.active}
               />
             </TouchableOpacity>
 
             <TouchableOpacity className="flex h-[4.5rem] flex-row items-center justify-between px-4 py-4 border-y-[0.33px] border-neutral-300 dark:border-neutral-400/80">
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-                  <Icon name="notification-square" size={24} color="#020202" />
+                  <Icon
+                    size={24}
+                    name="notification-square"
+                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
+                  />
                 </View>
-                <Text className="font-quicksemi text-lg dark:text-black tracking-tight">
-                  Notifications
-                </Text>
+                <Title
+                  label="Notifications"
+                  subtext="Enabled &middot; Do not disturb is off"
+                />
+                <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
               <Icon name="chev-right-linear" color={Colors.light.text} />
             </TouchableOpacity>
@@ -294,12 +311,10 @@ const ProfileScreen = ({ navigation }: any) => {
                   <Icon
                     name="fingerprint"
                     size={24}
-                    color={Colors.light.text}
+                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
-                <Text className="font-quicksemi text-lg dark:text-black tracking-tight">
-                  Passkeys
-                </Text>
+                <Title label="Passkeys" subtext="Create a new passkey" />
               </View>
               <Icon name="chev-right-linear" color={Colors.light.text} />
             </TouchableOpacity>
@@ -372,6 +387,24 @@ const ProfileScreen = ({ navigation }: any) => {
 export const Separator = () => (
   <View className="h-px bg-neutral-200 dark:bg-neutral-400/60" />
 );
+
+interface TitleProps {
+  label: string;
+  subtext?: string;
+  description?: string;
+}
+const Title = ({ label, subtext }: TitleProps) => {
+  return (
+    <View>
+      <Text className="font-quickbold text-lg tracking-tight dark:text-chalk">
+        {label}
+      </Text>
+      <Text className="text-sm font-quick tracking-tighter opacity-70 dark:text-chalk">
+        {subtext}
+      </Text>
+    </View>
+  );
+};
 
 export default ProfileScreen;
 

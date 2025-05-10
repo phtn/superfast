@@ -7,10 +7,6 @@ import { useRouter } from "expo-router";
 import { Icon } from "../icons";
 import { Colors } from "@/constants/Colors";
 
-interface HeaderProps {
-  v?: number;
-}
-
 export const Header = () => {
   const { user } = useAuth();
   const router = useRouter();
@@ -31,17 +27,17 @@ export const Header = () => {
               source={{
                 uri: user?.user_metadata?.avatar_url,
               }}
-              style={{ width: 32, height: 32, borderRadius: 16 }}
               className="border-2 border-ga mr-3"
+              style={{ width: 32, height: 32, borderRadius: 16 }}
             />
             <Text className="dark:text-chalk font-tight">
               {user?.user_metadata?.name?.split(" ").shift()}
             </Text>
             <View className="size-6 pt-0.5">
               <Icon
-                name="chev-right-broken"
                 size={24}
-                color={Colors.dark.active}
+                name="chev-right-broken"
+                color={Colors.dark.ultra}
               />
             </View>
           </View>

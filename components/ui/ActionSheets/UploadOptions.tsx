@@ -4,98 +4,113 @@ import { FlexRow } from "../FlexRow";
 import { FlexCol } from "../FlexCol";
 import { Icon } from "@/app/_components/icons";
 import { RelativePathString, useRouter } from "expo-router";
-import { memo, useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import Animated, {
   FadeInDown,
+  SlideInUp,
   useSharedValue,
   withDelay,
   withSpring,
+  ZoomInEasyDown,
 } from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "nativewind";
-import { CarType, useCTPLCtx } from "@/app/_ctx/ctpl-ctx";
+import { LinearGradient } from "expo-linear-gradient";
 import { HyperList } from "@/components/HyperList";
 import clsx from "clsx";
-import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
-import { SheetHeader } from "./components";
+import { IconName } from "@/app/_components/icons/types";
+import { useCTPLCtx } from "@/app/_ctx/ctpl-ctx";
 
-const GetStartedSheet = () => {
+function UploadOptionSheet() {
   const { colorScheme } = useColorScheme();
   const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
-
-  // Memoize the styles to prevent recreation on each render
-  const sheetStyles = useMemo(
-    () => ({
-      indicator: {
+  return (
+    <ActionSheet
+      indicatorStyle={{
         position: "absolute",
         top: -7,
         zIndex: 1,
         backgroundColor: isDark ? Colors.dark.active : Colors.light.royal,
-      },
-      container: {
-        elevation: 0,
-        shadowOpacity: 0,
+      }}
+      containerStyle={{
+        paddingHorizontal: 0,
         paddingBottom: 0,
         overflow: "hidden",
+        shadowOpacity: 0,
         shadowColor: "none",
-        paddingHorizontal: 0,
-        borderTopEndRadius: 36,
-        borderTopStartRadius: 36,
-        backgroundColor: "transparent",
         shadowOffset: { width: 0, height: 0 },
-      },
-    }),
-    [isDark],
-  );
-
-  return (
-    <ActionSheet
+        elevation: 0,
+        borderTopStartRadius: 36,
+        borderTopEndRadius: 36,
+        backgroundColor: "transparent",
+      }}
       elevation={0}
-      gestureEnabled
-      key="get-started-sheet"
       defaultOverlayOpacity={0.15}
-      indicatorStyle={sheetStyles.indicator as ViewStyle}
-      containerStyle={sheetStyles.container as ViewStyle}
+      gestureEnabled
     >
       <View className="px-0">
         <FlexCol
           style={{ borderTopStartRadius: 24, borderTopEndRadius: 24 }}
           className="justify-start relative bg-white dark:bg-cronus py-8"
         >
-          <GetStartedOptions isDark={isDark} />
+          <UploadOptions isDark={isDark} />
         </FlexCol>
       </View>
     </ActionSheet>
   );
-};
+}
 
-interface GetStartedOptionsProps {
+interface UploadOptionsProps {
   isDark: boolean;
 }
-const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
+const UploadOptions = ({ isDark }: UploadOptionsProps) => {
+  const { pickImage } = useCTPLCtx();
+
+  const handleSelect = useCallback(async () => {
+    await SheetManager.hide("upload-options");
+  }, []);
+
   const router = useRouter();
-  const route = useCallback(() => {
-    router.navigate("/(entry)/(ctpl)" as RelativePathString);
-  }, [router]);
 
-  const { carTypes, onSelect } = useCTPLCtx();
+  const useCamera = useCallback(async () => {
+    await handleSelect();
+    router.navigate("/camera" as RelativePathString);
+  }, [router, handleSelect]);
 
-  const handleSelect = useCallback(
-    (id: string) => () => {
-      SheetManager.hide("get-started").then(route);
-      onSelect(id);
-    },
-    [route, onSelect],
+  const usePicker = useCallback(async () => {
+    await handleSelect();
+    pickImage();
+  }, [handleSelect, pickImage]);
+
+  const upload_options = useMemo(
+    () =>
+      [
+        {
+          id: 0,
+          label: "Use camera",
+          description: "",
+          icon: "camera",
+          onSelect: useCamera,
+        },
+        {
+          id: 1,
+          label: "Browse files",
+          description: "",
+          icon: "folder",
+          onSelect: usePicker,
+        },
+      ] as IOption[],
+    [useCamera],
   );
 
-  const CarTypeItem = useCallback(
-    ({ id, label, subtext, icon }: CarType) => (
+  const OptionItem = useCallback(
+    ({ id, label, subtext, icon, onSelect }: IOption) => (
       <TouchableOpacity
         activeOpacity={0.6}
-        onPress={handleSelect(id)}
+        onPress={onSelect}
         className={clsx(
           "flex flex-row items-center justify-between py-4 border-b border-grei dark:border-dark-ga/60",
-          { "border-b-0": id === "motors" },
+          { "border-b-0": id === 1 },
         )}
       >
         <View className="flex flex-row items-center gap-x-4">
@@ -127,7 +142,7 @@ const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
         />
       </TouchableOpacity>
     ),
-    [isDark, handleSelect],
+    [],
   );
 
   return (
@@ -135,14 +150,62 @@ const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
       entering={FadeInDown.delay(100).duration(300)}
       className="py-4 px-2"
     >
-      <SheetHeader title="Select Vehicle Type" />
+      <Animated.View
+        entering={ZoomInEasyDown.delay(0).duration(500).damping(8).mass(2)}
+        className="h-16 overflow-hidden bg-royal dark:bg-void relative flex flex-col rounded-3xl items-center justify-center mx-4"
+      >
+        <Animated.View
+          entering={SlideInUp.delay(600)
+            .duration(1750)
+            .damping(5)
+            .mass(3)
+            .withInitialValues({ originY: 224 })}
+          className="absolute -top-56 bg-dark-active skew-x-12 -rotate-[30deg] w-[36rem] rounded-full"
+        >
+          <LinearGradient
+            colors={["#99f6e4", "#53A9FF", "#53A9FF", "#0A84FF"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <View className="h-16" />
+          </LinearGradient>
+        </Animated.View>
+        <Animated.View
+          entering={SlideInUp.delay(500)
+            .duration(1600)
+            .damping(8)
+            .mass(1)
+            .withInitialValues({ originY: 192, height: 1 })}
+          className="absolute -top-48 bg-white -rotate-[30deg] h-2 w-[36rem] rounded-full"
+        />
+        <Animated.Text
+          entering={ZoomInEasyDown.delay(70).duration(500).damping(5)}
+          className="font-ultratight origin-center tracking-tight text-white text-2xl"
+        >
+          Upload Options
+        </Animated.Text>
+      </Animated.View>
 
       <View className="rounded-3xl py-6">
-        <HyperList data={carTypes} component={CarTypeItem} keyId="id" />
+        <HyperList
+          containerStyle={"h-56"}
+          data={upload_options}
+          component={OptionItem}
+          keyId="id"
+        />
       </View>
     </Animated.View>
   );
-});
+};
+
+interface IOption {
+  id: number;
+  icon: IconName;
+  label: string;
+  subtext: string;
+  description?: string;
+  onSelect: () => Promise<void>;
+}
 
 const EntryFormOptions = () => {
   return (
@@ -183,4 +246,4 @@ const Flare = () => {
   );
 };
 
-export default GetStartedSheet;
+export default UploadOptionSheet;
