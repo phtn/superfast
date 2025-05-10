@@ -38,7 +38,9 @@ export const TextInput = ({
       className={`px-4 bg-gray-100 shadow-inner rounded-2xl ${containerClassName}`}
     >
       {label && (
-        <Text className={`text-gray-700 font-medium mb-1 ${labelClassName}`}>
+        <Text
+          className={`text-gray-500 mt-0.5 font-quick text-xs ${labelClassName}`}
+        >
           {label}
         </Text>
       )}

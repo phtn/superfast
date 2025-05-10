@@ -17,6 +17,8 @@ import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
 import { Icon } from "@/app/_components/icons";
 import { RelativePathString, useRouter } from "expo-router";
+import { FlexRow } from "@/components/ui/FlexRow";
+import { Colors } from "@/constants/Colors";
 
 type ExtendedCameraCapturedPicture = CameraCapturedPicture & {
   base64?: string;
@@ -31,13 +33,10 @@ export default function CameraScreen() {
   const cameraRef = useRef<CameraView | null>(null);
 
   const router = useRouter();
-
-  const toggleCameraType = useCallback(() => {
-    setType((prevType) => (prevType === "back" ? "front" : "back"));
-  }, []);
-
-  const viewImageList = useCallback(() => {
-    router.push("camera/preview" as RelativePathString);
+  const gallery = useCallback(() => {
+    const uri = capturedImage?.uri;
+    if (uri)
+      router.push(`camera/preview/?photoUri=${uri}` as RelativePathString);
   }, [router]);
 
   useEffect(() => {
@@ -53,7 +52,6 @@ export default function CameraScreen() {
 
     // Check if there's a saved image on load
     loadSavedImage();
-
     return () => {
       mounted = false;
     };
@@ -98,7 +96,6 @@ export default function CameraScreen() {
           String(capturedImage.height),
         );
       }
-      Alert.alert("Success", "Image saved securely!");
     } catch (error) {
       Alert.alert(
         "Error",
@@ -150,7 +147,6 @@ export default function CameraScreen() {
         SecureStore.deleteItemAsync("savedImageHeight"),
       ]);
       setCapturedImage(undefined);
-      Alert.alert("Success", "Image deleted");
     } catch (error) {
       Alert.alert(
         "Error",
@@ -184,38 +180,67 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
 
       {capturedImage ? (
-        <View style={styles.previewContainer}>
+        <View style={styles.previewContainer} className="relative">
+          <TouchableOpacity
+            onPress={gallery}
+            activeOpacity={0.7}
+            className="absolute top-16 right-6 z-50"
+          >
+            <FlexRow>
+              <Icon
+                name="gallery-wide-bold-duotone"
+                solid
+                size={32}
+                color={Colors.dark.text}
+              />
+              <Icon name="chev-right" color={Colors.dark.text} />
+            </FlexRow>
+          </TouchableOpacity>
           <Image source={{ uri: capturedImage.uri }} style={styles.preview} />
-          <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.button} onPress={resetCamera}>
-              <Text style={styles.buttonText}>New Photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.deleteButton]}
-              onPress={deleteImage}
-            >
-              <Text style={styles.buttonText}>Delete</Text>
-            </TouchableOpacity>
-          </View>
+          <FlexRow className="justify-between pt-4 px-12">
+            <View className="flex-1">
+              <Text className="text-chalk text-xl -tracking-[0.05em] font-quick">
+                Save image?
+              </Text>
+            </View>
+            <FlexRow className="gap-16">
+              <TouchableOpacity onPress={resetCamera}>
+                <View className="-rotate-45">
+                  <Icon
+                    name="plus"
+                    size={40}
+                    color="red"
+                    className="rotate-45"
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={resetCamera}>
+                <Icon name="new-image" color={Colors.dark.hyper} size={28} />
+              </TouchableOpacity>
+            </FlexRow>
+          </FlexRow>
         </View>
       ) : (
         <View style={styles.cameraContainer}>
           <CameraView style={styles.camera} facing={type} ref={cameraRef}>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.flipButton}
-                onPress={viewImageList}
-              >
-                <Icon name="images" size={24} color="#fff" />
+              <TouchableOpacity style={styles.flipButton} onPress={gallery}>
+                <Icon
+                  name="gallery-wide-bold-duotone"
+                  solid
+                  size={32}
+                  color="#fff"
+                />
               </TouchableOpacity>
+
               <TouchableOpacity
-                style={styles.captureButton}
+                className="size-[4.5rem] rounded-full bg-transparent border-4 border-white flex flex-row items-center justify-center"
                 onPress={takePicture}
               >
-                <View style={styles.captureButtonInner} />
+                <View className="size-14 rounded-full bg-ultra-active" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.flipButton} onPress={flipCamera}>
                 <Icon name="camera-rotate" size={32} color="#fff" />
@@ -226,11 +251,6 @@ export default function CameraScreen() {
       )}
     </View>
   );
-}
-
-interface CamProps {
-  toggleCameraFacing: () => void;
-  facing: CameraType;
 }
 
 const styles = StyleSheet.create({
@@ -264,7 +284,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    borderWidth: 5,
+    borderWidth: 4,
     borderColor: "#fff",
     backgroundColor: "transparent",
     alignItems: "center",
@@ -274,7 +294,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "#fff",
+    backgroundColor: "#53A9FF",
   },
   buttonText: {
     fontSize: 16,
@@ -289,7 +309,7 @@ const styles = StyleSheet.create({
   },
   preview: {
     width: "90%",
-    height: "70%",
+    height: "69%",
     borderRadius: 10,
   },
   buttonRow: {

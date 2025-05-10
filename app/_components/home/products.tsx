@@ -10,10 +10,13 @@ import Animated, {
   FadeInDown,
   useAnimatedScrollHandler,
   useSharedValue,
+  ZoomInEasyDown,
+  ZoomInEasyUp,
 } from "react-native-reanimated";
 import { Icon } from "../icons";
 import { FlashList } from "@shopify/flash-list";
 import { useColorScheme } from "nativewind";
+import { PremiumCard } from "../cards/premium";
 
 export interface IProductItem {
   id: number;
@@ -33,6 +36,19 @@ interface Props {
 }
 
 const ItemSep = () => <View style={{ height: 48 }} />;
+const ListHeader = ({ title }: { title: string }) => (
+  <Animated.View
+    entering={ZoomInEasyUp.delay(0).duration(500).damping(8).mass(2)}
+    className="h-12 overflow-hidden relative flex flex-col rounded-3xl items-start justify-center px-2"
+  >
+    <Animated.Text
+      entering={ZoomInEasyDown.delay(70).duration(500).damping(5)}
+      className="h-12 font-quickbold origin-center text-royal dark:text-chalk text-xl tracking-tighter"
+    >
+      {title}
+    </Animated.Text>
+  </Animated.View>
+);
 
 export const Products = ({ isDark, list }: Props) => {
   const scrollY = useSharedValue(0);
@@ -43,21 +59,31 @@ export const Products = ({ isDark, list }: Props) => {
   });
 
   const renderItem = useCallback(({ item }: { item: IProductItem }) => {
-    return <ProductItem {...item} />;
+    return <ProductItem {...item} isDark={isDark} />;
   }, []);
+
+  const ProductHeader = useCallback(
+    () => <ListHeader title="Car Insurance" />,
+    [],
+  );
 
   return (
     <Animated.ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 16, gap: 32 }}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingHorizontal: 16, gap: 48 }}
     >
       <FlashList
         data={list}
         estimatedItemSize={10}
         renderItem={renderItem}
         ItemSeparatorComponent={ItemSep}
+        ListHeaderComponent={ProductHeader}
+      />
+      <PremiumCard
+        title="Upgrade to PRO"
+        onPress={() => console.log("premium")}
       />
       <View className="h-28"></View>
     </Animated.ScrollView>
@@ -74,26 +100,16 @@ export const UserProducts = ({ isDark, list }: Props) => {
   });
 
   const renderItem = useCallback(({ item }: { item: IProductItem }) => {
-    return (
-      <ProductItem
-        id={item.id}
-        name={item.name}
-        subtext={item.subtext}
-        description={item.description}
-        image={item.image}
-      />
-    );
+    return <ProductItem {...item} isDark={isDark} />;
   }, []);
 
   return (
     <Animated.ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 16, gap: 32 }}
+      contentContainerStyle={{ paddingHorizontal: 16, gap: 48 }}
       onScroll={scrollHandler}
       scrollEventThrottle={16}
     >
-      {/* Spacer to account for categories */}
-
       <FlexRow className="justify-between h-16 -mb-6 px-3">
         <View className="flex flex-row items-center">
           <Text className="font-courg text-2xl text-dark-active -tracking-[0.16rem] dark:text-hyper-active">
@@ -120,7 +136,10 @@ export const UserProducts = ({ isDark, list }: Props) => {
         estimatedItemSize={10}
         ItemSeparatorComponent={ItemSep}
       />
-      <SpecialOffer />
+      <PremiumCard
+        title="Upgrade to PRO"
+        onPress={() => console.log("premium")}
+      />
       <View className="h-28"></View>
     </Animated.ScrollView>
   );
@@ -300,27 +319,16 @@ const uri = `${baseUrl}/${fileName}?alt=media&token=${storageToken}`;
 const ProductItem = ({
   id,
   name,
-  description,
   image,
-  subtext,
   textStyles,
-}: IProductItem) => {
-  const { colorScheme } = useColorScheme();
-  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
+  description,
+  isDark,
+}: IProductItem & { isDark: boolean }) => {
   const buttonGradients: readonly [string, string, ...string[]] = useMemo(
     () =>
       isDark
-        ? ["#95959b", "#939398", "#909096", "#8e8e93"]
-        : [
-            "#f2f2f2",
-            "#f2f2f2",
-            "#f2f2f2",
-            "#ebebeb",
-            "#ebebeb",
-            "#ebebeb",
-            "#eaeaea",
-            "#eaeaea",
-          ],
+        ? ["#14141b", "#14141b", "#14141b"]
+        : ["#14141b", "#14141b", "#14141b"],
     [isDark],
   );
   const productGradients: readonly [string, string, ...string[]] = useMemo(
@@ -370,6 +378,7 @@ const ProductItem = ({
     console.log("Get Started button pressed");
     SheetManager.show("get-started");
   }, []);
+
   return (
     <Animated.View
       key={id}
@@ -397,7 +406,7 @@ const ProductItem = ({
 
         <LinearGradient
           className="flex size-full items-center justify-center flex-row"
-          colors={productGradients}
+          colors={isDark ? ["#b8b8bd", "#ffffff"] : ["#f2f2f2", "#ffffff"]}
           start={{ x: 0.5, y: 0 }}
         >
           <View className="size-full flex items-center justify-center flex-row">
@@ -418,7 +427,7 @@ const ProductItem = ({
           </Text>
           <FlexRow className="gap-x-1 w-fit">
             <Text className="font-quick tracking-tighter text-void">
-              {subtext}
+              Insurance
             </Text>
           </FlexRow>
         </View>
@@ -439,18 +448,19 @@ const ProductItem = ({
                 className={clsx(
                   "font-quickbold tracking-tighter",
                   Platform.OS === "ios" ? "mb-0.5" : "mb-1",
-                  isDark ? "text-white" : "text-zark",
+                  isDark ? "text-white" : "text-white",
                 )}
               >
                 Get Started
               </Text>
               <FlexRow className="rounded-full size-6">
-                <Ionicons
-                  name="arrow-forward"
+                <Icon
+                  name="arrow-right-up-broken"
                   size={20}
                   color={isDark ? "#53A9FF" : "#53A9FF"}
                   className={clsx(
-                    "-rotate-45",
+                    // "-rotate-45",
+                    "",
                     isDark ? " drop-shadow-xs" : "",
                   )}
                 />

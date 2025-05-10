@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { useAuth } from "@/app/_ctx/auth";
+import { CTPLCtxProvider } from "@/app/_ctx/ctpl-ctx";
 
 export default function Layout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -43,6 +44,7 @@ export default function Layout() {
                 presentation: "fullScreenModal",
               }}
             />
+            <Stack.Screen name="/(ctpl)" options={{ headerShown: false }} />
           </Stack>
         ) : (
           <Stack.Screen name="sign-in" options={{ headerShown: false }} />

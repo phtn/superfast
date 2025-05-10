@@ -14,10 +14,11 @@ import Animated, {
 import { useEffect, useMemo, useState } from "react";
 import { useColorScheme } from "nativewind";
 import { SheetProvider } from "react-native-actions-sheet";
+import "@/components/ui/ActionSheets/sheets";
 
 const ShopScreen = () => {
   const { colorScheme } = useColorScheme();
-  const [isDarkMode] = useState(colorScheme === "dark");
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const svo = useScrollViewOffset(scrollRef);
@@ -38,7 +39,7 @@ const ShopScreen = () => {
           subtext: "Compulsory",
           price: 999,
           image:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Flagoon.png?alt=media",
+            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Flayer-2-light.png?alt=media",
           description: "Compulsory Third Party Liability",
           rating: 95,
           textStyles: "text-void",
@@ -49,9 +50,10 @@ const ShopScreen = () => {
           subtext: "Full Coverage",
           price: 899,
           image:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Fga-waves.png?alt=media",
-          description: "Comprehensive Coverage",
+            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Flayer-3-dark.png?alt=media",
+          description: "Comprehensive Insurance Coverage",
           rating: 90,
+          textStyles: "text-void",
         },
       ] as IProductItem[],
     [],
@@ -68,10 +70,12 @@ const ShopScreen = () => {
 
       <ParallaxView
         scrollRef={scrollRef}
-        height={120}
-        header={<Categories isDark={isDarkMode} />}
+        height={140}
+        header={<Categories isDark={isDark} />}
       >
-        <Products list={products} isDark={isDarkMode} />
+        <SheetProvider>
+          <Products list={products} isDark={isDark} />
+        </SheetProvider>
       </ParallaxView>
     </View>
   );

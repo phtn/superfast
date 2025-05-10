@@ -19,8 +19,8 @@ export const Header = () => {
   };
 
   return (
-    <View className={`justify-between h-14 flex flex-row px-5 z-10`}>
-      <FlexCol className="items-start justify-center h-14">
+    <View className={`justify-between h-16 flex flex-row px-5 z-10`}>
+      <FlexCol className="items-start justify-center">
         <TouchableOpacity
           activeOpacity={0.65}
           onPress={navigateToProfile}
@@ -38,13 +38,17 @@ export const Header = () => {
               {user?.user_metadata?.name?.split(" ").shift()}
             </Text>
             <View className="size-6 pt-0.5">
-              <Icon name="chev-right" size={24} color={Colors.dark.active} />
+              <Icon
+                name="chev-right-broken"
+                size={24}
+                color={Colors.dark.active}
+              />
             </View>
           </View>
         </TouchableOpacity>
       </FlexCol>
       <FlexRow>
-        <Text className="font-courg text-dark-active mt-0.5 tracking-tighter dark:text-hyper-active">
+        <Text className="font-courg text-dark-active mt-0.5 tracking-tighter text-lg dark:text-hyper-active">
           My
         </Text>
         <Text className="font-quickbold text-royal -tracking-widest text-lg dark:text-chalk">
@@ -57,7 +61,7 @@ export const Header = () => {
 
 export const SearchBar = () => {
   return (
-    <View className="px-4 pt-2 items-center z-10">
+    <View className="px-4 pt-1 items-center z-10">
       <FlexRow className="ps-5 pe-2 justify-between h-14 rounded-2xl bg-grei/80 dark:bg-neutral-200">
         <TextInput
           placeholder="Search"

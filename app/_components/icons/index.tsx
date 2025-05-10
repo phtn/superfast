@@ -9,7 +9,7 @@ export const Icon = memo((props: IconProps) => {
   const { symbol } = icons[props.name] as IconData;
   const icon = toRN(symbol);
 
-  const baseStyle = `size-${(props.size ?? 6) / 4}`;
+  const baseStyle = props.size ? `size-${props.size / 4}` : "size-5";
   return (
     <FlexRow className={`${baseStyle} ${props.container}`}>
       <Svg
@@ -18,7 +18,7 @@ export const Icon = memo((props: IconProps) => {
         width={props.width}
         height={props.height}
         stroke={props.stroke ?? props.color}
-        strokeWidth={props.strokeWidth ?? 1.5}
+        strokeWidth={props.solid ? 0 : (props.strokeWidth ?? 1.5)}
         className={props.className}
       >
         {icon.g && (

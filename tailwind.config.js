@@ -37,6 +37,8 @@ module.exports = {
         "dark-ga": "#5d5d63",
         "light-ga": "#c7c7cb",
         fade: "#f3f4f6",
+        hades: "#222229",
+        cronus: "#1e2029",
       },
 
       keyframes: {

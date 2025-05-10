@@ -1,41 +1,54 @@
 import { FlexCol } from "@/components/ui/FlexCol";
 import { FlexRow } from "@/components/ui/FlexRow";
+import { Colors } from "@/constants/Colors";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { clsx } from "clsx";
-import { useCallback, useState } from "react";
-import {
-  Animated,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Animated, { ZoomInEasyDown } from "react-native-reanimated";
+import { IconName } from "../icons/types";
+import { Icon } from "../icons";
 
-interface Props {
+interface ICategory {
+  id: number;
+  name: string;
+  description?: string;
+  subtext?: string;
+  icon: IconName;
+  path?: string;
+  active?: boolean;
+}
+interface CategoryProps {
   isDark: boolean;
 }
-export const Categories = ({ isDark }: Props) => {
+export const Categories = ({ isDark }: CategoryProps) => {
   const [activeCategory, setActiveCategory] = useState(1);
-  const categories = [
-    { id: 1, name: "Car", icon: "car-sport" },
-    { id: 2, name: "Personal", icon: "user-injured" },
-    { id: 3, name: "Fire", icon: "fire-alt" },
-    { id: 4, name: "Health", icon: "heartbeat" },
-    { id: 5, name: "Life", icon: "star-of-life" },
-  ] as Array<{ id: number; name: string; icon: any }>;
+
+  const categories = useMemo(
+    () =>
+      [
+        { id: 1, name: "Car", icon: "tesla" },
+        { id: 2, name: "Personal", icon: "patient" },
+        { id: 3, name: "Fire", icon: "fire" },
+        { id: 4, name: "Health", icon: "wellness" },
+        { id: 5, name: "Life", icon: "shield-keyhole" },
+      ] as ICategory[],
+    [],
+  );
+
+  const ic = useMemo(
+    () =>
+      isDark
+        ? { active: Colors.dark.text, inactive: Colors.light.ga }
+        : { active: Colors.dark.text, inactive: Colors.light.text },
+    [isDark],
+  );
 
   const handleSetCategory = useCallback(
     (id: number) => () => {
       setActiveCategory(id);
     },
     [],
-  );
-
-  const getCategoryColor = useCallback(
-    (id: number) => {
-      return isDark ? "#FFFFFF" : id === activeCategory ? "#FFFFFF" : "#0F172A";
-    },
-    [activeCategory, isDark],
   );
 
   return (
@@ -45,13 +58,16 @@ export const Categories = ({ isDark }: Props) => {
         showsHorizontalScrollIndicator={false}
         className="scroll-smooth"
         contentContainerStyle={{
-          paddingVertical: 24,
+          paddingVertical: 36,
           paddingHorizontal: 20,
           gap: 24,
         }}
       >
-        {categories.map((category) => (
-          <Animated.View key={category.id}>
+        {categories.map((category, index) => (
+          <Animated.View
+            entering={ZoomInEasyDown.delay(index * 50).duration(300)}
+            key={category.id}
+          >
             <TouchableOpacity
               className={clsx(
                 `size-16 flex flex-col gap-y-2 items-center justify-center rounded-2xl`,
@@ -63,24 +79,14 @@ export const Categories = ({ isDark }: Props) => {
                   `rounded-2xl w-14 h-12 ${activeCategory === category.id ? "dark:bg-hyper-active bg-dark-active" : "bg-grei/80 dark:bg-chalk/10"}`,
                 )}
               >
-                {category.name === "Car" ? (
-                  <Ionicons
-                    name={category.icon}
-                    size={24}
-                    color={getCategoryColor(category.id)}
-                    className={
-                      activeCategory === category.id
-                        ? "shadow-lg shadow-hyper-active"
-                        : ""
-                    }
-                  />
-                ) : (
-                  <FontAwesome5
-                    name={category.icon}
-                    size={18}
-                    color={getCategoryColor(category.id)}
-                  />
-                )}
+                <Icon
+                  name={category.icon}
+                  solid={category.name === "Car"}
+                  color={
+                    activeCategory === category.id ? ic.active : ic.inactive
+                  }
+                  size={category.name === "Car" ? 32 : 24}
+                />
               </FlexRow>
               <Text
                 className={clsx(
@@ -105,19 +111,21 @@ interface IUserCategory {
 }
 interface UserCategoryProps {
   isDark: boolean;
-  scrollValue: number;
 }
 
-export const UserCategories = ({ isDark, scrollValue }: UserCategoryProps) => {
+export const UserCategories = ({ isDark }: UserCategoryProps) => {
   const [activeCategory, setActiveCategory] = useState(1);
-  const categories = [
-    { id: 1, active: true, name: "Auto", icon: "car-sport" },
-    { id: 2, active: true, name: "Personal", icon: "user-injured" },
-    { id: 3, active: true, name: "Fire", icon: "fire-alt" },
-    { id: 4, active: true, name: "Health", icon: "heartbeat" },
-    { id: 5, active: true, name: "Life", icon: "star-of-life" },
-  ] as Array<IUserCategory>;
-
+  const categories = useMemo(
+    () =>
+      [
+        { id: 1, name: "Car", icon: "tesla" },
+        { id: 2, name: "Personal", icon: "patient" },
+        { id: 3, name: "Fire", icon: "fire" },
+        { id: 4, name: "Health", icon: "wellness" },
+        { id: 5, name: "Life", icon: "shield-keyhole" },
+      ] as ICategory[],
+    [],
+  );
   const handleSetCategory = useCallback(
     (id: number) => () => {
       setActiveCategory(id);
@@ -127,14 +135,34 @@ export const UserCategories = ({ isDark, scrollValue }: UserCategoryProps) => {
 
   const getCategoryColor = useCallback(
     (id: number) => {
+      const color =
+        isDark && activeCategory === id
+          ? Colors.dark.royal
+          : activeCategory !== id && !isDark
+            ? Colors.dark.royal
+            : Colors.dark.ga;
+
       const isActiveAndDark = id === activeCategory && isDark;
-      return isActiveAndDark
+      const old = isActiveAndDark
         ? "#0F172A"
         : !isDark && id !== activeCategory
           ? "#0F172A"
           : "#FFFFFF";
+      return color;
     },
     [activeCategory, isDark],
+  );
+
+  useEffect(() => {
+    console.log(isDark);
+  }, [isDark]);
+
+  const ic = useMemo(
+    () =>
+      isDark
+        ? { active: Colors.dark.active, inactive: Colors.dark.ga }
+        : { active: Colors.dark.text, inactive: Colors.light.text },
+    [isDark],
   );
   return (
     <FlexCol>
@@ -144,19 +172,20 @@ export const UserCategories = ({ isDark, scrollValue }: UserCategoryProps) => {
           showsHorizontalScrollIndicator={false}
           className="scroll-smooth"
           contentContainerStyle={{
+            gap: 18,
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
             paddingVertical: 24,
             paddingHorizontal: 16,
-            gap: 18,
-            display: "flex",
             flexDirection: "row",
-            alignItems: "center",
             justifyContent: "space-between",
-            width: "100%",
           }}
         >
           {categories.map((category) => (
             <Animated.View key={category.id}>
               <TouchableOpacity
+                activeOpacity={0.8}
                 className={clsx(
                   `size-16 flex flex-col gap-y-2 items-center justify-center rounded-2xl`,
                 )}
@@ -164,22 +193,17 @@ export const UserCategories = ({ isDark, scrollValue }: UserCategoryProps) => {
               >
                 <FlexRow
                   className={clsx(
-                    `rounded-2xl w-14 h-12 ${activeCategory === category.id ? "bg-royal dark:bg-white" : "bg-white dark:bg-chalk/10"}`,
+                    `rounded-2xl w-[3.25rem] h-12 ${activeCategory === category.id ? "bg-royal dark:bg-white" : "bg-white dark:bg-chalk/10"}`,
                   )}
                 >
-                  {category.name === "Auto" ? (
-                    <Ionicons
-                      name={category.icon}
-                      size={24}
-                      color={getCategoryColor(category.id)}
-                    />
-                  ) : (
-                    <FontAwesome5
-                      name={category.icon}
-                      size={18}
-                      color={getCategoryColor(category.id)}
-                    />
-                  )}
+                  <Icon
+                    name={category.icon}
+                    solid={category.name === "Car"}
+                    color={
+                      activeCategory === category.id ? ic.active : ic.inactive
+                    }
+                    size={category.name === "Car" ? 32 : 24}
+                  />
                 </FlexRow>
                 <Text
                   className={clsx(
@@ -194,10 +218,10 @@ export const UserCategories = ({ isDark, scrollValue }: UserCategoryProps) => {
         </ScrollView>
       </View>
       <View className="w-full px-8">
-        <Animated.View
+        {/* <Animated.View
           style={{ transform: [{ scaleX: scrollValue }] }}
           className="h-1 w-full drop-shadow-sm shadow-royal rounded-full bg-void/5 dark:bg-chalk/5"
-        />
+        /> */}
       </View>
     </FlexCol>
   );

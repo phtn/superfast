@@ -3,10 +3,16 @@ import { Paginator } from "@/components/ux/Paginator";
 import { SwipeLeftIndicator } from "@/components/ux/SwipeIndicator";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect, RelativePathString, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useColorScheme } from "nativewind";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Animated,
   Dimensions,
@@ -18,6 +24,7 @@ import {
   ViewToken,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "../_ctx/auth";
 
 export interface OnboardingData {
   id: string;
@@ -62,6 +69,15 @@ const OnboardingScreen = () => {
         : ["#fff", "#fafafa", "rgb(232, 237, 255)"],
     [colorScheme],
   );
+
+  const { session } = useAuth();
+
+  useEffect(() => {
+    if (session?.access_token) {
+      router.replace("/(home)/shop" as RelativePathString);
+    }
+  }, [session]);
+
   const inset = useSafeAreaInsets();
   const scrollX = useRef(new Animated.Value(0)).current;
   const slidesRef = useRef<FlatList<OnboardingData>>(null);

@@ -3,10 +3,9 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",
+    "typeRoots": ["./node_modules/@webgpu/types"],
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [

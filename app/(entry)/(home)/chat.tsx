@@ -1,26 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInUp } from "react-native-reanimated";
+import { Text, View, Platform } from "react-native";
+import Animated from "react-native-reanimated";
 
-// Components
-import ActionButton from "@/components/ui/ActionButton";
-import TransactionItem from "@/components/ui/TransactionItem";
-import CardCarousel from "@/components/ui/CardCarousel";
-import { Header } from "@/app/_components/home/components";
-import { FlexRow } from "@/components/ui/FlexRow";
 import { FlexCol } from "@/components/ui/FlexCol";
-import HyperParallax from "@/components/HyperParallax";
+import { MinimalistCard } from "@/app/_components/cards/minimalist";
+import { WordTransition } from "@/components/ux/WordTransition";
 
 export default function ChatScreen() {
   return (
@@ -34,7 +20,13 @@ export default function ChatScreen() {
           Chats
         </Text>
       </FlexCol>
-      <HyperParallax />
+      <Animated.ScrollView>
+        <MinimalistCard
+          title="Minimalist Card"
+          onPress={() => console.log("")}
+        />
+        <WordTransition cycleTime={6000} />
+      </Animated.ScrollView>
     </View>
   );
 }

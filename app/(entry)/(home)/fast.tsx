@@ -20,7 +20,7 @@ import Animated, {
 
 const FastScreen = () => {
   const { colorScheme } = useColorScheme();
-  const [isDarkMode] = useState(colorScheme === "dark");
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const svo = useScrollViewOffset(scrollRef);
@@ -44,6 +44,7 @@ const FastScreen = () => {
           image: "@/assets/images/car-cover-light.png",
           description: "My First Car",
           rating: 95,
+          textStyles: "text-void",
         },
         {
           id: 1,
@@ -53,6 +54,7 @@ const FastScreen = () => {
           image: "@/assets/images/gray-icon.png",
           description: "Hyper SUV",
           rating: 90,
+          textStyles: "text-void",
         },
       ] as IProductItem[],
     [],
@@ -71,12 +73,10 @@ const FastScreen = () => {
       <ParallaxView
         scrollRef={scrollRef}
         height={120}
-        header={
-          <UserCategories scrollValue={scrollValue.value} isDark={isDarkMode} />
-        }
+        header={<UserCategories isDark={isDark} />}
       >
         {/* Main Scrollable Content */}
-        <UserProducts list={products} isDark={isDarkMode} />
+        <UserProducts list={products} isDark={isDark} />
       </ParallaxView>
     </View>
   );

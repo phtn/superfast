@@ -1,7 +1,7 @@
 {
   "name": "superfast",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "0.2.4",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -58,13 +58,15 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "react-native-wgpu": "^0.1.23"
+    "react-native-wgpu": "^0.1.23",
+    "typegpu": "^0.5.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/jest": "^29.5.12",
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.3.0",
+    "@webgpu/types": "^0.1.60",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
     "jest": "^29.2.1",
@@ -72,7 +74,8 @@
     "prettier": "^3.5.3",
     "react-test-renderer": "18.3.1",
     "tailwindcss": "3.4.17",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "unplugin-typegpu": "^0.1.0"
   },
   "private": true
 }

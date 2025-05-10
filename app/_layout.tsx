@@ -13,7 +13,7 @@ import "@/global.css";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider } from "@/app/_ctx/auth";
-import { SheetProvider } from "react-native-actions-sheet";
+import { CTPLCtxProvider } from "./_ctx/ctpl-ctx";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -47,13 +47,13 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <SheetProvider>
+        <CTPLCtxProvider>
           <Stack>
             <Stack.Screen name="(entry)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
-        </SheetProvider>
+        </CTPLCtxProvider>
       </AuthProvider>
     </ThemeProvider>
   );
