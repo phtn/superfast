@@ -1,13 +1,14 @@
+import { DText, SText } from "@/components/FontScaling";
 import { FlexRow } from "@/components/ui/FlexRow";
+import { Colors } from "@/constants/Colors";
 import { clsx } from "clsx";
 import { LinearGradient } from "expo-linear-gradient";
 import { useColorScheme } from "nativewind";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ReactNode } from "react";
+import { TouchableOpacity, View } from "react-native";
 import Animated, { Easing, FadeInUp } from "react-native-reanimated";
 import { Icon } from "../icons";
-import { Colors } from "@/constants/Colors";
 import { type IconName } from "../icons/types";
-import { ReactNode } from "react";
 
 interface PremiumCardProps {
   onPress?: VoidFunction;
@@ -52,13 +53,16 @@ export const MinimalistCard = (props: PremiumCardProps) => {
         </FlexRow>
         <View className="px-1 flex flex-row items-center w-full justify-between">
           <View className="gap-y-1">
-            <Text className="font-tight text-chalk/90 dark:text-void text-lg leading-none">
+            <DText
+              fontSize={11}
+              className="font-tight text-chalk/90 dark:text-void text-lg leading-none"
+            >
               {props.children}
               {props.title ?? "Upgrade to PRO!"}
-            </Text>
-            <Text className="dark:text-dark-ga text-neutral-300 text-sm font-quick max-w-full">
+            </DText>
+            <SText className="dark:text-dark-ga text-ga text-base font-quick max-w-full">
               {props.description ?? "Get coverage in minutes."}
-            </Text>
+            </SText>
           </View>
         </View>
         <TouchableOpacity
@@ -71,12 +75,12 @@ export const MinimalistCard = (props: PremiumCardProps) => {
         >
           <View className="h-full w-[2px] rounded-full dark:bg-royal/10 bg-chalk/15"></View>
           <FlexRow>
-            <Text className="font-quick text-white dark:text-royal mr-0.5 mb-2 text-xl">
+            <SText className="font-quick text-white dark:text-royal mr-0.5 mb-0.5 text-2xl">
               ₱
-            </Text>
-            <Text className="font-space text-white dark:text-royal text-2xl tracking-tighter">
+            </SText>
+            <SText className="font-space text-white dark:text-royal text-3xl tracking-tighter">
               {props.value ?? "420"}
-            </Text>
+            </SText>
           </FlexRow>
           <View className="h-full w-[3px] rounded-full bg-grei/0"></View>
         </TouchableOpacity>

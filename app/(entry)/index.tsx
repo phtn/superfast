@@ -1,4 +1,3 @@
-import { HText } from "@/components/HyperText";
 import { Paginator } from "@/components/ux/Paginator";
 import { SwipeLeftIndicator } from "@/components/ux/SwipeIndicator";
 import { Ionicons } from "@expo/vector-icons";
@@ -76,7 +75,7 @@ const OnboardingScreen = () => {
     if (session?.access_token) {
       router.replace("/(home)/shop" as RelativePathString);
     }
-  }, [session]);
+  }, [session, router]);
 
   const inset = useSafeAreaInsets();
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -116,7 +115,7 @@ const OnboardingScreen = () => {
       Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
         useNativeDriver: false,
       }),
-    [],
+    [scrollX],
   );
 
   const completeOnboarding = async () => {
@@ -134,12 +133,6 @@ const OnboardingScreen = () => {
     router.push("/(entry)/sign-in");
   };
 
-  const x1 = scrollX.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [40, 0, -40],
-    // extrapolate: "clamp",
-  });
-
   const renderItem = ({
     item,
     index,
@@ -155,7 +148,7 @@ const OnboardingScreen = () => {
           </Text>
         </View>
         <View className="w-full border-void dark:border-white px-8">
-          <View className="-skew-x-12">
+          <View>
             <Text className="text-[2.5rem] px-2 dark:text-orange-200 -tracking-[0.04em] text-void font-eaves">
               {item.subtext}
             </Text>
@@ -168,7 +161,7 @@ const OnboardingScreen = () => {
 
   const handleGetStarted = useCallback(() => {
     router.push("/(entry)/sign-in");
-  }, []);
+  }, [router]);
 
   const getItemLayout = useCallback(
     (_: ArrayLike<OnboardingData> | null | undefined, index: number) => ({
@@ -176,7 +169,7 @@ const OnboardingScreen = () => {
       offset: width * index,
       index,
     }),
-    [width],
+    [],
   );
 
   const Frames = useCallback(() => {
@@ -259,7 +252,7 @@ const OnboardingScreen = () => {
         <View className="h-3/4 w-auto aspect-square border-0 dark:border-chalk rounded-2xl"></View>
       </View>
     );
-  }, [currentIndex]);
+  }, [currentIndex, scrollX]);
 
   return (
     <LinearGradient

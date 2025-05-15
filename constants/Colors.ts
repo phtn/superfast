@@ -29,7 +29,7 @@ export const Colors = {
     tabIconSelected: tintColorDark,
     fade: "#808186",
     hyper: "#8FC6FC",
-    active: "#007AFE",
+    active: "#0A84FF",
     ultra: "#53A9FF",
     royal: "#0F172A",
     ga: "#b8b8bd",

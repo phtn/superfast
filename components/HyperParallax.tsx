@@ -1,10 +1,10 @@
+import { Text, View } from "react-native";
 import Animated, {
-  useSharedValue,
+  interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
-  interpolate,
+  useSharedValue,
 } from "react-native-reanimated";
-import { ScrollView, View, Text } from "react-native";
 import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
 import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 
@@ -15,8 +15,6 @@ const SCROLL_DISTANCE = 300;
 export default function HyperParallax() {
   const scrollY = useSharedValue(0);
   const velocity = useSharedValue(0);
-  const lastY = useSharedValue(0);
-  const lastTimestamp = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -53,7 +51,6 @@ export default function HyperParallax() {
 
     // Perspective effect
     const perspective = 800;
-    const zTranslate = interpolate(progress, [0, 1], [0, -50], "clamp");
 
     // Slight extra breathing from velocity (optional)
     const velocityBoost = Math.min(

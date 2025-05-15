@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import type { ReactNode } from "react";
+import { Text, TouchableOpacity } from "react-native";
 import { FlexCol } from "./FlexCol";
 
 interface ActionButtonProps {
@@ -30,32 +30,5 @@ const ActionButton = ({ icon, label }: ActionButtonProps) => {
     </FlexCol>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-  },
-  button: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  label: {
-    marginTop: 8,
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#334155",
-  },
-});
 
 export default ActionButton;

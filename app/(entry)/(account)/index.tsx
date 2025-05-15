@@ -1,8 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { PremiumCard } from "@/app/_components/cards/premium";
+import { Icon } from "@/app/_components/icons";
+import { useAuth } from "@/app/_ctx/auth";
+import { DText, SText } from "@/components/FontScaling";
+import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
+import { RelativePathString, useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Image, Text, TouchableOpacity, View, ViewStyle } from "react-native";
 import Animated, {
   FadeInDown,
   interpolate,
@@ -10,12 +17,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import { Icon } from "@/app/_components/icons";
-import { useAuth } from "@/app/_ctx/auth";
-import { RelativePathString, useRouter } from "expo-router";
-import { useColorScheme } from "nativewind";
-import { Colors } from "@/constants/Colors";
-import { PremiumCard } from "@/app/_components/cards/premium";
 
 const HEADER_HEIGHT = 280;
 
@@ -27,22 +28,22 @@ interface UserInfo {
 }
 
 const ProfileScreen = ({ navigation }: any) => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [notifications, setNotifications] = useState(true);
-  const [faceID, setFaceID] = useState(true);
-  const { user } = useAuth();
+  // const [darkMode, setDarkMode] = useState(false);
+  // const [notifications, setNotifications] = useState(true);
+  // const [faceID, setFaceID] = useState(true);
+  const { user, displayName } = useAuth();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   useEffect(() => {
     if (user) {
       setUserInfo({
         id: user.id,
-        name: user.user_metadata.name,
         email: user.email,
+        name: displayName ?? null,
         avatar: user.user_metadata.avatar_url,
       });
     }
-  }, [user]);
+  }, [user, displayName]);
 
   const router = useRouter();
   const goBack = useCallback(() => router.back(), [router]);
@@ -152,25 +153,21 @@ const ProfileScreen = ({ navigation }: any) => {
             />
           </TouchableOpacity>
 
+          <Avatar
+            isDark={isDarkMode}
+            uri={userInfo?.avatar}
+            containerStyle={avatarAnimatedStyle}
+          />
           <Animated.View
-            className="mt-12 size-28 rounded-full border-4 dark:border-off-active/30 border-hyper-active/20 shadow-hyper-active shadow-2xl"
-            style={[avatarAnimatedStyle]}
-          >
-            <Image
-              source={{ uri: userInfo?.avatar }}
-              className="size-full rounded-full"
-            />
-            <View className="absolute bottom-1 -right-2 size-8 flex overflow-hidden rounded-full flex-row items-center justify-center border-chalk border-3 bg-void/60">
-              <Icon name="pen-bold-duotone" color="#fafafa" solid />
-            </View>
-          </Animated.View>
-          <Animated.View
-            className="flex flex-row items-center mt-6"
+            className="flex flex-row items-center mt-6 max-w-[80%]"
             style={[nameAnimatedStyle]}
           >
-            <Text className="font-space dark:text-chalk text-void text-xl mb-2">
+            <DText
+              fontSize={10}
+              className="font-spacebold dark:text-off-active tracking-widest text-void mb-2"
+            >
               {userInfo?.name}
-            </Text>
+            </DText>
             {/* <Text style={styles.profileEmail}>{user?.email}</Text> */}
           </Animated.View>
         </LinearGradient>
@@ -187,11 +184,14 @@ const ProfileScreen = ({ navigation }: any) => {
         {/* Account Settings */}
         <Animated.View
           entering={FadeInDown.delay(100).duration(300)}
-          className="py-12 px-0"
+          className="py-12 px-2"
         >
-          <Text className="h-14 font-ultratight px-6 tracking-tighter dark:text-chalk text-2xl">
+          <DText
+            fontSize={12}
+            className="h-14 font-ultratight px-6 tracking-tighter dark:text-chalk text-2xl"
+          >
             Settings
-          </Text>
+          </DText>
 
           <View className="bg-neutral-50 dark:bg-hades py-1 rounded-3xl">
             <TouchableOpacity
@@ -216,19 +216,21 @@ const ProfileScreen = ({ navigation }: any) => {
             </TouchableOpacity>
 
             <TouchableOpacity
+              onPress={route("affiliate" as RelativePathString)}
               activeOpacity={0.6}
               className="flex h-[4.5rem] flex-row items-center justify-between px-4 py-4 border-y-[0.33px] border-neutral-300 dark:border-medusa"
             >
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-                  <Icon name="chats" size={24} color={Colors.dark.fade} />
+                  <Icon name="affiliate" size={24} color={Colors.dark.text} />
                 </View>
-                <Text className="font-quicksemi opacity-50 text-lg dark:text-chalk tracking-tight">
-                  Transactions
-                </Text>
+                <Title
+                  label="Affiliate Account"
+                  subtext="Revenue · Share QR code"
+                />
               </View>
-              <View className="-rotate-45">
-                <Icon name="plus" color={Colors.dark.fade} />
+              <View className="">
+                <Icon name="chev-right-linear" color={Colors.dark.active} />
               </View>
             </TouchableOpacity>
 
@@ -240,9 +242,8 @@ const ProfileScreen = ({ navigation }: any) => {
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
                   <Icon name="wallet" size={24} color={Colors.dark.fade} />
                 </View>
-                <Text className="font-quicksemi dark:text-mortar text-lg tracking-tight">
-                  Rewards
-                </Text>
+                <Title label="Rewards" subtext="Open rewards chest" />
+                <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
               <View className="-rotate-45">
                 <Icon name="plus" color={Colors.dark.fade} />
@@ -254,11 +255,14 @@ const ProfileScreen = ({ navigation }: any) => {
         {/* Preferences */}
         <Animated.View
           entering={FadeInDown.delay(200).duration(300)}
-          className="py-6 px-0"
+          className="pt-6 pb-12 px-2"
         >
-          <Text className=" font-ultratight h-14 px-8 tracking-tighter dark:text-chalk text-2xl">
+          <DText
+            fontSize={12}
+            className=" font-ultratight h-14 px-8 tracking-tighter dark:text-chalk text-2xl"
+          >
             Preferences
-          </Text>
+          </DText>
 
           <View className="bg-neutral-50 rounded-3xl dark:bg-hades py-1">
             <TouchableOpacity
@@ -274,9 +278,11 @@ const ProfileScreen = ({ navigation }: any) => {
                     color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
-                <Text className="font-quickbold text-lg dark:text-chalk tracking-tight">
-                  {isDarkMode ? "Light Mode" : "Dark Mode"}
-                </Text>
+                <Title
+                  label={isDarkMode ? "Light Mode" : "Dark Mode"}
+                  subtext="Toggle dark or light mode"
+                />
+                <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
               <Icon
                 name={isDarkMode ? "fat-toggle-off" : "fat-toggle-on"}
@@ -327,24 +333,30 @@ const ProfileScreen = ({ navigation }: any) => {
         {/* Support */}
         <Animated.View
           entering={FadeInDown.delay(300).duration(300)}
-          className="py-12 px-6"
+          className="py-12 px-2"
         >
-          <Text className=" font-ultratight dark:text-chalk h-14 text-2xl">
-            Support
-          </Text>
-          <View className="bg-neutral-50 dark:bg-neutral-300 rounded-3xl py-1">
+          <DText
+            fontSize={12}
+            className=" font-ultratight h-14 px-8 tracking-tighter dark:text-chalk text-2xl"
+          >
+            Preferences
+          </DText>
+
+          <View className="bg-neutral-50 rounded-3xl dark:bg-hades py-1">
             <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga">
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
                   <Icon
                     name="document-linear"
                     size={24}
-                    color={Colors.light.text}
+                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
-                <Text className="font-quicksemi text-lg tracking-tighter">
-                  Help Center
-                </Text>
+                <Title
+                  label="HelpCenter"
+                  subtext="Enabled &middot; Do not disturb is off"
+                />
+                <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
               <Icon
                 name="chev-right-linear"
@@ -357,11 +369,17 @@ const ProfileScreen = ({ navigation }: any) => {
             <TouchableOpacity className="flex h-[4.5rem] flex-row items-center justify-between px-4 py-4 border-y-[0.33px] border-neutral-300 dark:border-neutral-400/80">
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-                  <Icon name="chats" size={24} color={Colors.light.text} />
+                  <Icon
+                    name="chats"
+                    size={24}
+                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
+                  />
                 </View>
-                <Text className="font-quicksemi text-lg tracking-tighter">
-                  Contact Support
-                </Text>
+                <Title
+                  label="Contact Support"
+                  subtext="Enabled &middot; Do not disturb is off"
+                />
+                <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
               <Icon name="chev-right-linear" color={Colors.light.text} />
             </TouchableOpacity>
@@ -369,18 +387,51 @@ const ProfileScreen = ({ navigation }: any) => {
             <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga">
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-                  <Icon name="wallet" size={24} color={Colors.light.text} />
+                  <Icon
+                    name="wallet"
+                    size={24}
+                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
+                  />
                 </View>
-                <Text className="font-quicksemi text-lg tracking-tighter">
-                  FastInsure Guide
-                </Text>
+                <Title
+                  label="User Guide"
+                  subtext="Enabled &middot; Do not disturb is off"
+                />
+                <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
-              <Icon name="chev-right-linear" color={Colors.light.text} />
+              <Icon
+                name="chev-right-linear"
+                color={isDarkMode ? Colors.dark.text : Colors.light.text}
+              />
             </TouchableOpacity>
           </View>
         </Animated.View>
       </Animated.ScrollView>
     </View>
+  );
+};
+
+interface AvatarProps {
+  containerStyle: ViewStyle;
+  uri: string | undefined;
+  isDark: boolean;
+}
+const Avatar = ({ isDark, containerStyle, uri }: AvatarProps) => {
+  return (
+    <Animated.View
+      className="mt-12 size-28 rounded-full border-4 dark:border-hyper-active border-dark-active"
+      style={containerStyle}
+    >
+      <Image source={{ uri }} className="size-full rounded-full" />
+      <View className="absolute bottom-1 -right-2 size-8 flex overflow-hidden rounded-full flex-row items-center justify-center border-chalk border-3 bg-void/60 dark:bg-medusa">
+        <Icon
+          solid
+          // size={16}
+          color={isDark ? Colors.dark.text : Colors.dark.text}
+          name="pen-bold-duotone"
+        />
+      </View>
+    </Animated.View>
   );
 };
 
@@ -396,12 +447,15 @@ interface TitleProps {
 const Title = ({ label, subtext }: TitleProps) => {
   return (
     <View>
-      <Text className="font-quickbold text-lg tracking-tight dark:text-chalk">
+      <DText
+        fontSize={12}
+        className="font-quickbold text-lg tracking-tight dark:text-chalk"
+      >
         {label}
-      </Text>
-      <Text className="text-sm font-quick tracking-tighter opacity-70 dark:text-chalk">
+      </DText>
+      <SText className="text-sm font-quick tracking-tighter opacity-70 dark:text-chalk">
         {subtext}
-      </Text>
+      </SText>
     </View>
   );
 };

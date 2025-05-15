@@ -1,25 +1,24 @@
-import {
-  TextInput as RNTextInput,
-  View,
-  Text,
-  TextInputProps,
-} from "react-native";
-import { type IconName } from "../app/_components/icons/types";
+import { TextInputProps, View } from "react-native";
 import { Icon } from "../app/_components/icons";
+import { type IconName } from "../app/_components/icons/types";
+import { DText, DTextInput } from "./FontScaling";
 
 interface Props extends TextInputProps {
   label?: string;
   icon?: IconName;
+  solidIcon?: boolean;
   error?: string;
   labelClassName?: string;
   containerClassName?: string;
   errorClassName?: string;
+  fontSize?: number;
 }
 
-export const TextInput = ({
+export const HyperInput = ({
   label,
   value,
   icon,
+  solidIcon = false,
   onChangeText,
   placeholder,
   secureTextEntry = false,
@@ -31,6 +30,7 @@ export const TextInput = ({
   labelClassName = "",
   containerClassName = "",
   errorClassName = "",
+  fontSize = 14,
   ...props
 }: Props) => {
   return (
@@ -38,15 +38,17 @@ export const TextInput = ({
       className={`px-4 bg-gray-100 shadow-inner rounded-2xl ${containerClassName}`}
     >
       {label && (
-        <Text
-          className={`text-gray-500 mt-0.5 font-quick text-xs ${labelClassName}`}
+        <DText
+          fontSize={9}
+          className={`text-gray-500 mt-0.5 tracking-teen font-quick text-xs ${labelClassName}`}
         >
           {label}
-        </Text>
+        </DText>
       )}
       <View className="flex flex-row items-center justify-start">
-        {icon && <Icon name={icon} size={24} color="gray" />}
-        <RNTextInput
+        {icon && <Icon name={icon} solid={solidIcon} size={24} color="gray" />}
+        <DTextInput
+          fontSize={10}
           className={`px-4 h-16 py-2 font-quick placeholder:text-dark-ga ${error ? "border-red-500" : ""} ${className}`}
           value={value}
           onChangeText={onChangeText}
@@ -59,9 +61,12 @@ export const TextInput = ({
         />
       </View>
       {error && (
-        <Text className={`text-red-500 text-sm mt-1 ${errorClassName}`}>
+        <DText
+          fontSize={8}
+          className={`text-red-500 text-sm mt-1 ${errorClassName}`}
+        >
           {error}
-        </Text>
+        </DText>
       )}
     </View>
   );

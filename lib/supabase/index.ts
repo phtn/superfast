@@ -6,7 +6,7 @@ const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase credentials. Please check your environment variables.');
+  throw Error("Missing supabase creds");
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

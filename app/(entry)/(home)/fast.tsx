@@ -11,7 +11,7 @@ import {
 import ParallaxView from "@/components/ParallaxView";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import Animated, {
   useAnimatedRef,
   useScrollViewOffset,

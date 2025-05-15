@@ -1,13 +1,14 @@
-import { LogoDark, LogoLight } from "@/components/svg/Logo";
-import { FlexRow } from "@/components/ui/FlexRow";
-import { useCallback, useMemo, useState } from "react";
-import { TouchableOpacity, StyleSheet, Platform, Text } from "react-native";
-import { RelativePathString, router } from "expo-router";
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { IconName } from "@/app/_components/icons/types";
 import { Icon } from "@/app/_components/icons";
+import { IconName } from "@/app/_components/icons/types";
+import { FlexRow } from "@/components/ui/FlexRow";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { clsx } from "clsx";
+import { LinearGradient } from "expo-linear-gradient";
+import { RelativePathString, router } from "expo-router";
 import { useColorScheme } from "nativewind";
+import { useCallback, useMemo, useState } from "react";
+import { TouchableOpacity } from "react-native";
+import Animated, { SlideInUp } from "react-native-reanimated";
 
 export interface ITabItem {
   id: number;
@@ -18,12 +19,7 @@ export interface ITabItem {
   color?: string;
   route: string;
 }
-interface BottomTabProps extends BottomTabBarProps {}
-export const BottomTab = ({
-  state,
-  descriptors,
-  navigation,
-}: BottomTabProps) => {
+export const BottomTab = (_: BottomTabBarProps) => {
   const [active, setActive] = useState(1);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -47,10 +43,10 @@ export const BottomTab = ({
         },
         {
           id: 2,
-          name: "chat",
-          active: "chats",
-          icon: "chats",
-          route: "chat",
+          name: "News",
+          active: "feed",
+          icon: "feed",
+          route: "feed",
         },
         {
           id: 3,
@@ -60,7 +56,7 @@ export const BottomTab = ({
           route: "wallet",
         },
       ] as ITabItem[],
-    [active],
+    [],
   );
 
   const handleTabRoute = useCallback(
@@ -68,7 +64,7 @@ export const BottomTab = ({
       setActive(index);
       router.navigate(`/(entry)/(home)/${route}` as RelativePathString);
     },
-    [router],
+    [],
   );
 
   const getTabColor = useCallback(
@@ -86,8 +82,43 @@ export const BottomTab = ({
 
   const Tabs = useCallback(() => {
     return tabs?.map((tab, index) => (
-      <TouchableOpacity onPress={handleTabRoute(tab.route, index)} key={index}>
-        <FlexRow className={clsx(`rounded-2xl size-12 `, getTabColor(index))}>
+      <TouchableOpacity
+        className=""
+        onPress={handleTabRoute(tab.route, index)}
+        key={index}
+      >
+        <FlexRow
+          className={clsx(
+            `relative rounded-2xl overflow-hidden size-12`,
+            getTabColor(index),
+          )}
+        >
+          <Animated.View
+            entering={SlideInUp.delay(600)
+              .duration(2000)
+              .damping(5)
+              .mass(3)
+              .withInitialValues({ originY: 144 })}
+            className={clsx(
+              `absolute -top-36 left-6 ${index !== active && " hidden"}`,
+            )}
+          >
+            <LinearGradient
+              start={{ x: 3, y: -1 }}
+              colors={["#99f6e4", "#53A9FF", "#53A9FF", "#0A84FF"]}
+              className=" w-6 h-28 rotate-[60deg] rounded-full"
+            />
+          </Animated.View>
+          <Animated.View
+            entering={SlideInUp.delay(800)
+              .duration(1850)
+              .damping(5)
+              .mass(3)
+              .withInitialValues({ originY: 128 })}
+            className={clsx(
+              `absolute -top-32 w-1 h-36 rotate-[60deg] bg-royal dark:bg-white left-8 ${index !== active && " hidden"}`,
+            )}
+          />
           <Icon
             name={tab.active}
             size={24}
@@ -105,7 +136,7 @@ export const BottomTab = ({
         </FlexRow>
       </TouchableOpacity>
     ));
-  }, [active, handleTabRoute, tabs, colorScheme]);
+  }, [active, handleTabRoute, tabs, getTabColor, isDark]);
 
   return (
     <FlexRow className="w-full px-16">
@@ -119,82 +150,4 @@ export const BottomTab = ({
       </FlexRow>
     </FlexRow>
   );
-};
-
-const styles = StyleSheet.create({
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingVertical: 15,
-    paddingBottom: Platform.OS === "ios" ? 30 : 15,
-    borderTopLeftRadius: 38,
-    borderTopRightRadius: 36,
-    borderCurve: "continuous",
-    position: "absolute",
-    borderTopWidth: 0,
-    borderTopColor: "#eeeeee",
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 50,
-    height: 50,
-  },
-  navItemActive: {
-    transform: [{ translateY: -20 }],
-  },
-  activeNavBackground: {
-    width: 42,
-    height: 42,
-    borderRadius: 30,
-    backgroundColor: "#0F172A",
-    shadowColor: "rgba(0, 122, 254, 1)",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.6,
-    shadowRadius: 3,
-    elevation: 3,
-    marginBottom: 6,
-  },
-});
-
-interface FastIconProps {
-  isActive: boolean;
-}
-
-const FastIcon = ({ isActive }: FastIconProps) => {
-  return (
-    <FlexRow className="h-14 w-14">
-      {isActive ? (
-        <LogoDark height={56} width={56} />
-      ) : (
-        <LogoLight height={56} width={56} />
-      )}
-    </FlexRow>
-  );
-};
-
-const Tab = () => {
-  return null;
-  // <FlexCol>
-  //   {index === active ? (
-  //     <FlexRow className="size-14 bg-void rounded-[18px] shadow-2xl shadow-active/80">
-  //       {tab.id === 0 ? (
-  //         <FastIcon isActive={false} />
-  //       ) : (
-  //         <Icon name={tab.active} size={24} color="#FFFFFF" />
-  //       )}
-  //     </FlexRow>
-  //   ) : tab.id === 0 ? (
-  //     <FastIcon isActive={index === 0} />
-  //   ) : (
-  //     <Icon name={tab.active} size={24} color={"#14141b"} />
-  //   )}
-  // </FlexCol>
 };

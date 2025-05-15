@@ -1,34 +1,36 @@
 "use client";
 
 import { Platform, View } from "react-native";
-
-import { StatusBar } from "expo-status-bar";
-import { Header, SearchBar } from "@/app/_components/home/components";
-import ParallaxView from "@/components/ParallaxView";
 import { Categories } from "@/app/_components/home/categories";
+import { Header, SearchBar } from "@/app/_components/home/components";
 import { IProductItem, Products } from "@/app/_components/home/products";
-import Animated, {
-  useAnimatedRef,
-  useScrollViewOffset,
-} from "react-native-reanimated";
-import { useEffect, useMemo, useState } from "react";
-import { useColorScheme } from "nativewind";
-import { SheetProvider } from "react-native-actions-sheet";
+import { useConfigCtx } from "@/app/_ctx/config";
+import ParallaxView from "@/components/ParallaxView";
 import "@/components/ui/ActionSheets/sheets";
+import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "nativewind";
+import { useMemo } from "react";
+import { SheetProvider } from "react-native-actions-sheet";
+import Animated, { useAnimatedRef } from "react-native-reanimated";
 
 const ShopScreen = () => {
   const { colorScheme } = useColorScheme();
   const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  const svo = useScrollViewOffset(scrollRef);
-  const [scrollValue, setScrollValue] = useState(0);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      setScrollValue(svo.value);
-    }
-  }, [svo, scrollRef]);
+  const { getFileUri } = useConfigCtx();
+
+  const ctplImageUri = useMemo(
+    () =>
+      isDark ? getFileUri("CTPL_DARK2.png") : getFileUri("CTPL_LIGHT4.png"),
+    [isDark, getFileUri],
+  );
+  const fullImageUri = useMemo(
+    () =>
+      isDark ? getFileUri("FULL_DARK5.png") : getFileUri("FULL_LIGHT5.png"),
+    [isDark, getFileUri],
+  );
 
   const products = useMemo(
     () =>
@@ -36,27 +38,23 @@ const ShopScreen = () => {
         {
           id: 0,
           name: "CTPL",
-          subtext: "Compulsory",
-          price: 999,
-          image:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2FCTPL_LIGHT3.png?alt=media",
+          subtext: "Compulsory Third Party Liability",
+          image: ctplImageUri,
           description: "Compulsory Third Party Liability",
-          rating: 95,
           textStyles: "text-void",
+          tag: "car insurance",
         },
         {
           id: 1,
-          name: "Comprehensive",
-          subtext: "Full Coverage",
-          price: 899,
-          image:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Flayer-3-dark.png?alt=media",
+          name: "Full Coverage",
+          subtext: "Comprehensive Insurance Coverage",
+          image: fullImageUri,
           description: "Comprehensive Insurance Coverage",
-          rating: 90,
           textStyles: "text-void",
+          tag: "car insurance",
         },
       ] as IProductItem[],
-    [],
+    [ctplImageUri, fullImageUri],
   );
 
   return (
@@ -70,7 +68,7 @@ const ShopScreen = () => {
 
       <ParallaxView
         scrollRef={scrollRef}
-        height={140}
+        height={120}
         header={<Categories isDark={isDark} />}
       >
         <SheetProvider>

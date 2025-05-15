@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { View, TextStyle } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withDelay,
   Easing,
   cancelAnimation,
 } from "react-native-reanimated";
@@ -24,9 +23,9 @@ export const WordTransition = ({
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    let animationTimeout: NodeJS.Timeout;
-    let initialTimeout: NodeJS.Timeout;
+    let intervalId: number;
+    let animationTimeout: number;
+    let initialTimeout: number;
 
     const startNextCycle = () => {
       const nextIndex = (currentIndex + 1) % textArray.length;
@@ -108,7 +107,7 @@ const AnimatedWord = ({ word, nextWord, isAnimating }: AnimatedWordProps) => {
     }, ANIMATION_DURATION);
 
     return () => clearTimeout(switchTimeout);
-  }, [isAnimating, nextWord]);
+  }, [isAnimating, nextWord, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],

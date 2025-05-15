@@ -8,7 +8,6 @@ import {
   TextStyle,
 } from "react-native";
 import Svg, {
-  Path,
   Rect,
   Line,
   Polygon,

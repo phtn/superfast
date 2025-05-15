@@ -1,24 +1,24 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from "react-native";
+import { Icon } from "@/app/_components/icons";
+import { FlexRow } from "@/components/ui/FlexRow";
+import { Colors } from "@/constants/Colors";
 import {
   Camera,
   CameraCapturedPicture,
   CameraType,
   CameraView,
 } from "expo-camera";
+import { RelativePathString, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
-import { Icon } from "@/app/_components/icons";
-import { RelativePathString, useRouter } from "expo-router";
-import { FlexRow } from "@/components/ui/FlexRow";
-import { Colors } from "@/constants/Colors";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type ExtendedCameraCapturedPicture = CameraCapturedPicture & {
   base64?: string;
@@ -42,7 +42,7 @@ export default function CameraScreen() {
     const uri = capturedImage?.uri;
     if (uri)
       router.push(`camera/preview/?photoUri=${uri}` as RelativePathString);
-  }, [router]);
+  }, [router, capturedImage?.uri]);
 
   useEffect(() => {
     let mounted = true;
@@ -123,6 +123,7 @@ export default function CameraScreen() {
           width: parseInt(savedWidth),
           height: parseInt(savedHeight),
           base64: savedBase64 || undefined,
+          format: "png",
         });
       }
     } catch (error) {

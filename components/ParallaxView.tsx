@@ -1,24 +1,19 @@
-import { useMemo, type PropsWithChildren, type ReactElement } from "react";
+import { type PropsWithChildren, type ReactElement } from "react";
 import Animated, {
   AnimatedRef,
   interpolate,
-  SharedValue,
-  useSharedValue,
-  useAnimatedStyle,
   useAnimatedScrollHandler,
-  useAnimatedProps,
+  useAnimatedStyle,
   useScrollViewOffset,
+  useSharedValue,
 } from "react-native-reanimated";
-
-import { TextInput, View, ViewStyle } from "react-native";
-import { DefaultStyle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
+import { View } from "react-native";
 
 type Props = PropsWithChildren<{
   height: number;
   header: ReactElement;
   scrollRef?: AnimatedRef<Animated.ScrollView>;
 }>;
-const SCROLL_DISTANCE = 300;
 export default function ParallaxView({
   children,
   height,

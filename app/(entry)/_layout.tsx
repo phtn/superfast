@@ -1,9 +1,11 @@
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
-import * as SecureStore from "expo-secure-store";
 import { useAuth } from "@/app/_ctx/auth";
-import { CTPLCtxProvider } from "@/app/_ctx/ctpl-ctx";
+import { FlexRow } from "@/components/ui/FlexRow";
+import { Stack } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useMemo, useState } from "react";
+import { Image } from "react-native";
+import { useConfigCtx } from "../_ctx/config";
 
 export default function Layout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -27,8 +29,7 @@ export default function Layout() {
   }, []);
 
   if (isLoading || authLoading) {
-    // You could return a splash screen here
-    return null;
+    return <GlassSplash />;
   }
 
   return (
@@ -54,3 +55,19 @@ export default function Layout() {
     </>
   );
 }
+
+const GlassSplash = () => {
+  const { getFileUri } = useConfigCtx();
+  const glass = useMemo(() => getFileUri("TORQ2.png"), [getFileUri]);
+  return (
+    <FlexRow className="size-full">
+      <Image
+        source={{
+          uri: glass,
+        }}
+        resizeMode="contain"
+        className="h-16 w-auto aspect-auto"
+      />
+    </FlexRow>
+  );
+};

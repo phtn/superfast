@@ -1,36 +1,30 @@
-import { Text, TouchableOpacity, View } from "react-native";
-import ActionSheet, { SheetManager } from "react-native-actions-sheet";
-import { FlexRow } from "../FlexRow";
-import { FlexCol } from "../FlexCol";
 import { Icon } from "@/app/_components/icons";
-import { RelativePathString, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo } from "react";
-import Animated, {
-  FadeInDown,
-  SlideInUp,
-  useSharedValue,
-  withDelay,
-  withSpring,
-  ZoomInEasyDown,
-} from "react-native-reanimated";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "nativewind";
-import { LinearGradient } from "expo-linear-gradient";
-import { HyperList } from "@/components/HyperList";
-import clsx from "clsx";
 import { IconName } from "@/app/_components/icons/types";
-import { useCTPLCtx } from "@/app/_ctx/ctpl-ctx";
+import { DocType, useCTPLCtx } from "@/app/_ctx/ctpl-ctx";
+import { DText, SText } from "@/components/FontScaling";
+import { HyperList } from "@/components/HyperList";
+import { Colors } from "@/constants/Colors";
+import clsx from "clsx";
+import { RelativePathString, useRouter } from "expo-router";
+import { useCallback, useMemo } from "react";
+import { TouchableOpacity, View } from "react-native";
+import ActionSheet, {
+  SheetManager,
+  SheetProps,
+} from "react-native-actions-sheet";
+import { FlexCol } from "../FlexCol";
+import { SheetHeader } from "./components";
 
-function UploadOptionSheet() {
-  const { colorScheme } = useColorScheme();
-  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
+function UploadOptionSheet({ payload }: SheetProps<"upload-options">) {
   return (
     <ActionSheet
       indicatorStyle={{
         position: "absolute",
         top: -7,
         zIndex: 1,
-        backgroundColor: isDark ? Colors.dark.active : Colors.light.royal,
+        backgroundColor: payload.isDark
+          ? Colors.dark.hyper
+          : Colors.light.active,
       }}
       containerStyle={{
         paddingHorizontal: 0,
@@ -53,7 +47,7 @@ function UploadOptionSheet() {
           style={{ borderTopStartRadius: 24, borderTopEndRadius: 24 }}
           className="justify-start relative bg-white dark:bg-cronus py-8"
         >
-          <UploadOptions isDark={isDark} />
+          <UploadOptions isDark={payload.isDark} docType={payload.docType} />
         </FlexCol>
       </View>
     </ActionSheet>
@@ -62,8 +56,9 @@ function UploadOptionSheet() {
 
 interface UploadOptionsProps {
   isDark: boolean;
+  docType: DocType;
 }
-const UploadOptions = ({ isDark }: UploadOptionsProps) => {
+const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
   const { pickImage } = useCTPLCtx();
 
   const handleSelect = useCallback(async () => {
@@ -72,15 +67,16 @@ const UploadOptions = ({ isDark }: UploadOptionsProps) => {
 
   const router = useRouter();
 
-  const useCamera = useCallback(async () => {
+  const onCameraSelect = useCallback(async () => {
     await handleSelect();
     router.navigate("/camera" as RelativePathString);
   }, [router, handleSelect]);
 
-  const usePicker = useCallback(async () => {
+  const onPickerSelect = useCallback(async () => {
     await handleSelect();
-    pickImage();
-  }, [handleSelect, pickImage]);
+    console.log(docType);
+    pickImage(docType);
+  }, [handleSelect, pickImage, docType]);
 
   const upload_options = useMemo(
     () =>
@@ -88,19 +84,19 @@ const UploadOptions = ({ isDark }: UploadOptionsProps) => {
         {
           id: 0,
           label: "Use camera",
-          description: "",
-          icon: "camera",
-          onSelect: useCamera,
+          subtext: "Take a photo of your document to upload.",
+          icon: "camera-outline",
+          onSelect: onCameraSelect,
         },
         {
           id: 1,
           label: "Browse files",
-          description: "",
+          subtext: "Browse device files to select the document to upload.",
           icon: "folder",
-          onSelect: usePicker,
+          onSelect: onPickerSelect,
         },
       ] as IOption[],
-    [useCamera],
+    [onCameraSelect, onPickerSelect],
   );
 
   const OptionItem = useCallback(
@@ -109,7 +105,7 @@ const UploadOptions = ({ isDark }: UploadOptionsProps) => {
         activeOpacity={0.6}
         onPress={onSelect}
         className={clsx(
-          "flex flex-row items-center justify-between py-4 border-b border-grei dark:border-dark-ga/60",
+          "flex flex-row items-center justify-between py-5 border-b border-grei dark:border-dark-ga/60",
           { "border-b-0": id === 1 },
         )}
       >
@@ -126,13 +122,16 @@ const UploadOptions = ({ isDark }: UploadOptionsProps) => {
               "flex flex-row items-center": !subtext,
             })}
           >
-            <Text className="font-quicksemi text-lg dark:text-grei tracking-tight">
+            <DText
+              fontSize={10}
+              className="font-quicksemi text-lg dark:text-grei tracking-teen"
+            >
               {label}
-            </Text>
+            </DText>
             {subtext && (
-              <Text className="text-xs dark:text-grei opacity-80">
+              <SText className="text-base dark:text-grei opacity-80">
                 {subtext}
-              </Text>
+              </SText>
             )}
           </View>
         </View>
@@ -142,59 +141,22 @@ const UploadOptions = ({ isDark }: UploadOptionsProps) => {
         />
       </TouchableOpacity>
     ),
-    [],
+    [isDark],
   );
 
   return (
-    <Animated.View
-      entering={FadeInDown.delay(100).duration(300)}
-      className="py-4 px-2"
-    >
-      <Animated.View
-        entering={ZoomInEasyDown.delay(0).duration(500).damping(8).mass(2)}
-        className="h-16 overflow-hidden bg-royal dark:bg-void relative flex flex-col rounded-3xl items-center justify-center mx-4"
-      >
-        <Animated.View
-          entering={SlideInUp.delay(600)
-            .duration(1750)
-            .damping(5)
-            .mass(3)
-            .withInitialValues({ originY: 224 })}
-          className="absolute -top-56 bg-dark-active skew-x-12 -rotate-[30deg] w-[36rem] rounded-full"
-        >
-          <LinearGradient
-            colors={["#99f6e4", "#53A9FF", "#53A9FF", "#0A84FF"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <View className="h-16" />
-          </LinearGradient>
-        </Animated.View>
-        <Animated.View
-          entering={SlideInUp.delay(500)
-            .duration(1600)
-            .damping(8)
-            .mass(1)
-            .withInitialValues({ originY: 192, height: 1 })}
-          className="absolute -top-48 bg-white -rotate-[30deg] h-2 w-[36rem] rounded-full"
-        />
-        <Animated.Text
-          entering={ZoomInEasyDown.delay(70).duration(500).damping(5)}
-          className="font-ultratight origin-center tracking-tight text-white text-2xl"
-        >
-          Upload Options
-        </Animated.Text>
-      </Animated.View>
-
+    <View className="py-4 px-2">
+      <SheetHeader title="Upload Options" />
       <View className="rounded-3xl py-6">
         <HyperList
-          containerStyle={"h-56"}
-          data={upload_options}
-          component={OptionItem}
           keyId="id"
+          delay={500}
+          data={upload_options}
+          containerStyle={"h-56"}
+          component={OptionItem}
         />
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
@@ -206,44 +168,5 @@ interface IOption {
   description?: string;
   onSelect: () => Promise<void>;
 }
-
-const EntryFormOptions = () => {
-  return (
-    <View>
-      <TouchableOpacity className="h-24 flex-row items-center px-8 justify-start gap-3">
-        <FlexRow className="size-14 rounded-2xl bg-grei">
-          <Icon name="camera-outline" size={24} color="#14141B" />
-        </FlexRow>
-        <Text className="font-quicksemi w-2/3 tracking-tight text-lg px-2">
-          Use camera
-        </Text>
-      </TouchableOpacity>
-      {/* <View className="w-full bg-grei" style={{ height: 2 }} /> */}
-      <TouchableOpacity className="h-24 flex-row items-center px-8 justify-start gap-3">
-        <FlexRow className="size-14 rounded-2xl bg-grei">
-          <Icon name="document-linear" size={24} color="#14141B" />
-        </FlexRow>
-        <Text className="font-quicksemi text-lg w-2/3 text-royal px-2">
-          Enter vehicle details
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const Flare = () => {
-  const width = useSharedValue(0);
-  useEffect(() => {
-    width.value = withDelay(500, withSpring(width.value + 50));
-  }, []);
-  return (
-    <View className="h-20 border overflow-hidden border-grei relative flex flex-col items-center justify-center">
-      <Animated.View
-        style={{ width }}
-        className="h-6 w-12 bg-hyper-active rounded-3xl "
-      />
-    </View>
-  );
-};
 
 export default UploadOptionSheet;

@@ -1,18 +1,17 @@
-import React, { useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { useColorScheme } from "nativewind";
+import React, { useEffect, useMemo } from "react";
+import { Text, ViewStyle } from "react-native";
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  withDelay,
+  cancelAnimation,
   Easing,
   interpolate,
-  withSequence,
-  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withTiming,
 } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
-import { useColorScheme } from "nativewind";
 import { FlexRow } from "../ui/FlexRow";
 
 interface SwipeLeftIndicatorProps {
@@ -21,12 +20,13 @@ interface SwipeLeftIndicatorProps {
   hasSwiped?: boolean;
   dots?: number;
 }
+const CONTAINER_WIDTH = 256;
 
 export const SwipeLeftIndicator = ({
   onComplete,
   hasSwiped,
   isLastScreen = false,
-  dots = 5,
+  dots = 7,
 }: SwipeLeftIndicatorProps) => {
   const progress = useSharedValue(0);
   const { colorScheme } = useColorScheme();
@@ -45,8 +45,11 @@ export const SwipeLeftIndicator = ({
         -1,
         false,
       );
+    } else {
+      progress.value = 0;
     }
-  }, [isLastScreen]);
+    return () => cancelAnimation(progress);
+  }, [isLastScreen, progress]);
 
   useEffect(() => {
     if (hasSwiped) {
@@ -54,90 +57,90 @@ export const SwipeLeftIndicator = ({
     }
   }, [hasSwiped, progress]);
 
-  // Arrow animation styles
+  const dotsAnima = useMemo(() => {
+    const spacing = (0.75 * CONTAINER_WIDTH) / (dots - 1);
+    const arrowX = interpolate(
+      progress.value,
+      [0, 1],
+      [CONTAINER_WIDTH, CONTAINER_WIDTH * 1.5],
+    );
+    return {
+      dotY: (i: number) =>
+        interpolate(progress.value, [0, 0.7, 1], [15 - i * 2, 0, 5 + i * 2]),
+      dotX: (i: number) => arrowX - i * spacing * 1.15,
+      fade: (i: number) => 1 - i / (dots - 1),
+    };
+  }, [dots, progress]);
+
+  const Dot = ({ style, i }: { style: ViewStyle; i: number }) => {
+    return (
+      <Animated.View
+        key={i}
+        style={[
+          !hasSwiped && {
+            width: 6,
+            height: 6,
+            borderRadius: 3,
+          },
+          style,
+          {
+            backgroundColor: colorScheme === "dark" ? "#ffedd5" : "#14141b",
+            position: "absolute",
+            top: 0,
+          },
+        ]}
+      />
+    );
+  };
+
+  // Dots expand to cover the full container width, synchronized with the arrow
+  const Dots = () => {
+    return Array(dots)
+      .fill(0)
+      .map((_, i) => (
+        <Dot
+          key={i}
+          style={{
+            opacity: interpolate(dotsAnima.fade(i), [0, 1], [0.8, 0]),
+            transform: [
+              { translateX: dotsAnima.dotX(i) },
+              { translateY: dotsAnima.dotY(i) },
+              { scale: interpolate(dotsAnima.fade(i), [0, 1], [1, 0.1]) },
+            ],
+          }}
+          i={i}
+        />
+      ));
+  };
+
+  // Arrow animation styles (sync with rightmost dot)
   const arrowAnimatedStyle = useAnimatedStyle(() => {
+    const containerWidth = 256;
     return {
       transform: [
         {
-          translateX: interpolate(progress.value, [0, 1], [250, -250]),
+          translateX: interpolate(
+            progress.value,
+            [0, 1],
+            [containerWidth, -containerWidth],
+          ),
+        },
+        {
+          translateY: interpolate(progress.value, [0, 0.6, 1], [15, -5, 5]),
+        },
+        {
+          rotate: `${interpolate(progress.value, [0, 0.6, 1], [6, 0, -6])}deg`,
         },
       ],
       opacity: interpolate(progress.value, [0.2, 0.6, 1], [0.6, 1, 0.2]),
     };
   });
 
-  // Generate dots
-  const Dots = () => {
-    return Array(dots)
-      .fill(0)
-      .map((_, index) => {
-        const dotProgress = useSharedValue(0);
-
-        useEffect(() => {
-          if (!isLastScreen) {
-            dotProgress.value = withDelay(
-              1000,
-              withRepeat(
-                withSequence(
-                  withTiming(1, {
-                    duration: 2000,
-                    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-                  }),
-                ),
-                -1,
-                false,
-              ),
-            );
-          }
-        }, [isLastScreen]);
-
-        // Animated style for each dot
-        const dotStyle = useAnimatedStyle(() => {
-          return {
-            opacity: interpolate(dotProgress.value, [0, 1], [1, 0.8]),
-            transform: [
-              {
-                translateX: interpolate(
-                  dotProgress.value,
-                  [0, 1],
-                  [0, 10 * index * 3],
-                ),
-              },
-              {
-                scale: interpolate(
-                  dotProgress.value,
-                  [0, 1],
-                  [1, 0.8 - index * 0.15],
-                ),
-              },
-            ],
-          };
-        });
-
-        return (
-          <Animated.View
-            key={index}
-            style={[
-              !hasSwiped && {
-                width: 5,
-                height: 5,
-                borderRadius: 3,
-              },
-              dotStyle,
-              {
-                backgroundColor: colorScheme === "dark" ? "#ffedd5" : "#14141b",
-              },
-            ]}
-          />
-        );
-      });
-  };
-
   return (
-    <View style={styles.container}>
+    <FlexRow className="w-64 h-36 relative overflow-hidden px-5">
       <Animated.View
         style={[arrowAnimatedStyle]}
-        className="py-2 pe-6 mr-2 flex flex-row items-center absolute right-0"
+        className="py-4 pe-6 mr-2 top-4 flex flex-row items-center absolute"
       >
         <Svg
           width={24}
@@ -155,16 +158,7 @@ export const SwipeLeftIndicator = ({
           />
         </Svg>
 
-        <FlexRow
-          className="relative w-12 px-3"
-          // style={{
-          //   height: 16,
-          //   width: 50,
-          //   display: "flex",
-          //   alignItems: "center",
-          //   position: "relative",
-          // }}
-        >
+        <FlexRow className="relative w-12 -mt-4">
           <Dots />
         </FlexRow>
       </Animated.View>
@@ -173,28 +167,6 @@ export const SwipeLeftIndicator = ({
           {isLastScreen ? "Are you ready?" : "Swipe left to continue"}
         </Text>
       </FlexRow>
-    </View>
+    </FlexRow>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "stretch",
-    height: 100,
-    width: 200,
-    paddingHorizontal: 20,
-    position: "relative",
-    overflow: "hidden",
-  },
-  arrowContainer: {
-    padding: 8,
-    position: "absolute",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    right: 0,
-  },
-  // dot: ,
-});

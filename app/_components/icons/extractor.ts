@@ -26,7 +26,7 @@ function extractProps(svgString: string): ExtractedSvgProps {
   let elementMatch: RegExpExecArray | null;
 
   while ((elementMatch = elementRegex.exec(svgString)) !== null) {
-    const [_, elementType, propsStr] = elementMatch;
+    const [, elementType, propsStr] = elementMatch;
     const props: SvgElementProps = {};
 
     // Extract each property
@@ -34,7 +34,7 @@ function extractProps(svgString: string): ExtractedSvgProps {
     let propMatch: RegExpExecArray | null;
 
     while ((propMatch = propRegex.exec(propsStr)) !== null) {
-      const [_, key, value] = propMatch;
+      const [, key, value] = propMatch;
       // Convert kebab-case to camelCase
       const camelKey: string = key.replace(
         /-([a-z])/g,

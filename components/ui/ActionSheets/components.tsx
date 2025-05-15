@@ -4,6 +4,7 @@ import { Dimensions, View } from "react-native";
 import { memo } from "react";
 import Animated, { SlideInUp, ZoomInEasyDown } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
+import { DAnimatedText } from "@/components/FontScaling";
 
 export const Handle = () => {
   const width = Dimensions.get("screen").width;
@@ -64,11 +65,13 @@ export const SheetHeader = memo(({ title }: { title: string }) => (
         .withInitialValues({ originY: 192, height: 1 })}
       className="absolute -top-48 bg-white -rotate-[30deg] h-2 w-[36rem] rounded-full"
     />
-    <Animated.Text
+    <DAnimatedText
+      fontSize={20}
       entering={ZoomInEasyDown.delay(150).duration(500).damping(5)}
-      className="font-ultratight origin-center tracking-tight text-white text-2xl"
+      className="font-ultratight origin-center tracking-tight text-white"
     >
       {title}
-    </Animated.Text>
+    </DAnimatedText>
   </Animated.View>
 ));
+SheetHeader.displayName = "SheetHeader";

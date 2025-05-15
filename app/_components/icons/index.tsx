@@ -1,9 +1,9 @@
-import Svg, { G, Path } from "react-native-svg";
-import { IconProps, IconData } from "./types";
-import { icons } from "./icons";
-import { toRN } from "./extractor";
 import { memo } from "react";
+import Svg, { G, Path } from "react-native-svg";
 import { FlexRow } from "../../../components/ui/FlexRow";
+import { toRN } from "./extractor";
+import { icons } from "./icons";
+import { IconData, IconProps } from "./types";
 
 export const Icon = memo((props: IconProps) => {
   const { symbol } = icons[props.name] as IconData;
@@ -44,3 +44,4 @@ export const Icon = memo((props: IconProps) => {
     </FlexRow>
   );
 });
+Icon.displayName = "Icon";

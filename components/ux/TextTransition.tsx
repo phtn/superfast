@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   View,
   StyleSheet,
@@ -13,7 +19,6 @@ import Animated, {
   withDelay,
   Easing,
   cancelAnimation,
-  AnimatedStyleProp,
 } from "react-native-reanimated";
 
 interface AnimatedTextCyclerProps {
@@ -63,7 +68,7 @@ export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
 }) => {
   // Use refs to keep track of state without triggering re-renders
   const currentIndexRef = useRef<number>(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   // State to force render updates at the right time
   const [renderKey, setRenderKey] = useState<number>(0);
@@ -82,7 +87,7 @@ export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
       currentText: current.split(""),
       nextText: next.split(""),
     };
-  }, [textArray, renderKey]);
+  }, [textArray]);
 
   // Set up cycle timer
   useEffect(() => {
@@ -117,10 +122,6 @@ export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
   // Create an array of the right length to map over
   const displayArray = Array.from({ length: maxLength });
 
-  if (textArray.length === 0) {
-    return null;
-  }
-
   // Inside AnimatedTextCycler component:
   useEffect(() => {
     if (!textArray || textArray.length <= 1) return;
@@ -145,12 +146,9 @@ export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
   return (
     <View
       style={[styles.container, containerStyle as any]}
-      className="h-20 border px-12 bg-black"
+      className="h-20 px-2"
     >
-      <View
-        style={styles.textContainer}
-        className="h-8 overflow-hidden border bg-white"
-      >
+      <View style={styles.textContainer} className="h-9 overflow-hidden">
         {displayArray.map((_, index) => (
           <AnimatedCharacter
             key={`${index}-${renderKey}`}
@@ -189,11 +187,11 @@ const AnimatedCharacter: React.FC<AnimatedCharacterProps> = ({
   const [displayChar, setDisplayChar] = useState<string>(currentChar);
 
   // Delay calculation for staggered animation
-  const getDelay = (): number => {
+  const getDelay = useCallback((): number => {
     const baseDelay = cycleTime * 0.15; // 15% of the cycle time for the delay
     const staggerDelay = (index / Math.max(1, totalChars)) * baseDelay;
     return staggerDelay;
-  };
+  }, [totalChars, cycleTime, index]);
 
   // Get random animation values - memoize to prevent recreation
   const randomValues = useMemo<RandomValues>(
@@ -295,7 +293,18 @@ const AnimatedCharacter: React.FC<AnimatedCharacterProps> = ({
     return () => {
       clearTimeout(characterChangeTimeout);
     };
-  }, [currentChar, nextChar, cycleTime, randomValues, getDelay]);
+  }, [
+    currentChar,
+    nextChar,
+    cycleTime,
+    randomValues,
+    getDelay,
+    rotation,
+    opacity,
+    scale,
+    translateX,
+    translateY,
+  ]);
 
   // Animated style
   const animatedStyle = useAnimatedStyle(() => {
@@ -312,8 +321,8 @@ const AnimatedCharacter: React.FC<AnimatedCharacterProps> = ({
 
   return (
     <Animated.Text
-      style={[styles.character, animatedStyle]}
-      className="uppercase text-4xl font-hypertight leading-none tracking-tighter"
+      style={[animatedStyle]}
+      className="uppercase text-4xl dark:text-chalk font-hypertight leading-none -tracking-widest"
     >
       {displayChar}
     </Animated.Text>
@@ -338,7 +347,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#14141b",
     height: 40,
-    // minWidth: 12,
     textAlign: "center",
   },
 });

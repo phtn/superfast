@@ -48,8 +48,9 @@ export const Paginator = memo(
           />
         );
       });
-    }, [scrollX, slides.length, width, isDark]);
+    }, [scrollX, width, isDark, slides]);
 
     return <FlexRow className="h-16">{dots}</FlexRow>;
   },
 );
+Paginator.displayName = "Paginator";

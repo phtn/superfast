@@ -1,14 +1,14 @@
 // app/camera/preview.js
-import React from "react";
-import { View, Image, TouchableOpacity, Text } from "react-native";
+import { Icon } from "@/app/_components/icons";
+import { FlexRow } from "@/components/ui/FlexRow";
+import { Colors } from "@/constants/Colors";
 import {
   RelativePathString,
   useLocalSearchParams,
   useRouter,
 } from "expo-router";
-import { FlexRow } from "@/components/ui/FlexRow";
-import { Icon } from "@/app/_components/icons";
-import { Colors } from "@/constants/Colors";
+import React from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 export default function PhotoPreviewScreen() {
   const { photoUri } = useLocalSearchParams();

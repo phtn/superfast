@@ -1,29 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Alert, View, AppState, Text, Dimensions } from "react-native";
-import { supabase } from "@/lib/supabase";
-import { SupabaseClient } from "@supabase/supabase-js";
+import { useAuth } from "@/app/_ctx/auth";
+import { useColorScheme } from "nativewind";
+import React, { useState } from "react";
+import { Text, View } from "react-native";
 import { Icon } from "../app/_components/icons";
-import { FlexRow } from "./ui/FlexRow";
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
-import { RelativePathString, useRouter } from "expo-router";
 import { Button } from "./StyledButton";
 import { TextInput } from "./StyledComponents";
-import { useColorScheme } from "nativewind";
-import { useAuth } from "@/app/_ctx/auth";
+import { FlexRow } from "./ui/FlexRow";
 
 // Tells Supabase Auth to continuously refresh the session automatically if
 // the app is in the foreground. When this is added, you will continue to receive
 // `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
 // if the user's session is terminated. This should only be registered once.
 
-const WIDTH = Dimensions.get("screen").width;
-
 export function SBAuth() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password] = useState("");
 
   const { signInWithGoogle, googleLoading, signInWithEmail, loading } =
     useAuth();

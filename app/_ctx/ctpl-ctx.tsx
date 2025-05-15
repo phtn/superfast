@@ -1,16 +1,21 @@
 "use client";
 
+import { useCodeConverter } from "@/hooks/useCodeConverter";
+import { supabase } from "@/lib/supabase";
+import * as ImagePicker from "expo-image-picker";
 import {
   createContext,
   useCallback,
   useContext,
   useMemo,
   useState,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
 } from "react";
 import { type IconName } from "../_components/icons/types";
-import * as ImagePicker from "expo-image-picker";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "./auth";
+import { useConfigCtx } from "./config";
 
 export interface CarType {
   id: string;
@@ -20,31 +25,53 @@ export interface CarType {
   keywords: string[];
   price: number;
   icon: IconName;
+  iconSolid?: boolean;
   imageUri: string;
 }
 
+interface Doc {
+  uri: string;
+  mimeType?: string;
+}
+
+interface VehicleDocs {
+  or?: Doc;
+  cr?: Doc;
+  id?: Doc;
+}
+
+export type DocType = "or" | "cr" | "id";
 interface CTPLCtxValues {
   carTypes: CarType[];
   onSelect: (id: string) => void;
   carType: CarType | undefined;
-  pickImage: () => Promise<void>;
-  image: string | null;
-  documents: { or?: { uri: string; base64?: string }; cr?: { uri: string; base64?: string } };
-  setDocuments: React.Dispatch<React.SetStateAction<{ or?: { uri: string; base64?: string }; cr?: { uri: string; base64?: string } }>>;
+  pickImage: (docType: DocType) => Promise<void>;
+  or_image: Doc | null;
+  cr_image: Doc | null;
+  id_image: Doc | null;
+  documents: VehicleDocs;
+  setDocuments: Dispatch<SetStateAction<VehicleDocs>>;
   /**
    * Upload a document to Supabase Storage and return its public URL
    */
-  uploadDocument: (fileUri: string, fileName: string) => Promise<string>;
+  uploadDocument: (doc: Doc, fileName: string) => Promise<string | undefined>;
   /**
    * Submit all uploaded documents to the vehicle_documents table
    */
-  submitDocuments: (userId: string) => Promise<void>;
+  submitDocuments: () => Promise<void>;
+  uploading: boolean;
 }
 export const CTPLCtx = createContext<CTPLCtxValues | undefined>(undefined);
 
+const BUCKET_NAME = "cars";
 export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
   const [carType, setSelectedCarType] = useState<CarType>();
-  const [documents, setDocuments] = useState<{ or?: { uri: string; base64?: string }; cr?: { uri: string; base64?: string } }>({});
+  const [documents, setDocuments] = useState<VehicleDocs>({});
+  const [uploading, setUploading] = useState(false);
+
+  const { getFileUri } = useConfigCtx();
+  const { user } = useAuth();
+  const { gsec } = useCodeConverter();
 
   const carTypes = useMemo(
     () =>
@@ -52,19 +79,19 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
         {
           id: "private",
           label: "Private Cars",
-          subtext: "Include jeeps and utility vehicles",
+          subtext: "Including jeepneys and utility vehicles",
           description: "Private Cars",
           icon: "taxi",
           price: 600,
           keywords: [
-            "jeepneys",
+            "private cars",
             "suv",
             "sedans",
             "utility vans",
+            "jeepneys",
             "family vans",
           ],
-          imageUri:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Fbike.png?alt=media",
+          imageUri: getFileUri("TESLA1.png"),
         },
         {
           id: "lm_trucks",
@@ -74,8 +101,7 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
           icon: "tow-truck",
           price: 650,
           keywords: ["light trucks", "medium trucks", "elf trucks"],
-          imageUri:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Flight_truck.png?alt=media",
+          imageUri: getFileUri("LIGHT_TRUCK3.png"),
         },
         {
           id: "hv_trucks",
@@ -86,21 +112,20 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
 
           price: 1245,
           keywords: ["heavy trucks", "private buses"],
-          imageUri:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Fbike.png?alt=media",
+          imageUri: getFileUri("HEAVY_TRUCK.png"),
         },
         {
           id: "motors",
           label: "Motorcycles · Tricycles · Trailers",
           description: "Motors",
-          icon: "motorcycle",
+          icon: "bigbike",
+          iconSolid: true,
           price: 600,
           keywords: ["motorcycles", "tricycles", "trailers"],
-          imageUri:
-            "https://firebasestorage.googleapis.com/v0/b/fastinsure-f1801.appspot.com/o/public%2Fbike.png?alt=media",
+          imageUri: getFileUri("MOTORCYCLE.png"),
         },
       ] as CarType[],
-    [],
+    [getFileUri],
   );
 
   const onSelect = useCallback(
@@ -111,50 +136,127 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
     [carTypes],
   );
 
-  const [image, setImage] = useState<string | null>(null);
+  const [or_image, setORImage] = useState<Doc | null>(null);
+  const [cr_image, setCRImage] = useState<Doc | null>(null);
+  const [id_image, setIDImage] = useState<Doc | null>(null);
 
-  const pickImage = useCallback(async () => {
+  const pickImage = useCallback(async (docType: DocType) => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
+      mediaTypes: ["images", "videos", "livePhotos"],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    console.log(result);
+    const doc = {
+      uri: result.assets?.[0].uri,
+      mimeType: result.assets?.[0].mimeType,
+    } as Doc;
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      switch (docType) {
+        case "or":
+          return setORImage(doc);
+        case "cr":
+          return setCRImage(doc);
+        case "id":
+          return setIDImage(doc);
+      }
     }
   }, []);
 
   // Upload a document to Supabase Storage and return its public URL
-  const uploadDocument = useCallback(async (fileUri: string, fileName: string) => {
-    const response = await fetch(fileUri);
-    const blob = await response.blob();
-    const { error } = await supabase.storage
-      .from("documents")
-      .upload(fileName, blob, { upsert: true });
-    if (error) throw error;
-    const { data } = supabase.storage.from("documents").getPublicUrl(fileName);
-    return data.publicUrl;
-  }, []);
+  const uploadDocument = useCallback(
+    async (doc: Doc, fileName: string) => {
+      try {
+        // await ensureBucketExists();
+
+        const fileExt = doc.uri.split(".").pop()?.toLowerCase();
+        const filePath = `${user?.id}/${fileName}.${fileExt}`;
+
+        console.log("Uploading to path:", filePath);
+        const fileBody = await fetch(doc.uri).then((res) => res.arrayBuffer());
+
+        const { error } = await supabase.storage
+          .from(BUCKET_NAME)
+          .upload(filePath, fileBody, {
+            upsert: true,
+            contentType: doc.mimeType,
+          });
+
+        if (error) {
+          console.error("Upload error:", error);
+          return undefined;
+        }
+
+        const { data: urlData, error: urlError } = await supabase.storage
+          .from(BUCKET_NAME)
+          .createSignedUrl(filePath, 36000);
+
+        if (urlError) {
+          console.error("Signed URL error:", urlError);
+          return undefined;
+        }
+
+        return urlData?.signedUrl;
+      } catch (err) {
+        console.error("Error in uploadDocument:", err);
+        return undefined;
+      }
+    },
+    [user?.id],
+  );
 
   // Submit all uploaded documents to the vehicle_documents table
-  const submitDocuments = useCallback(async (userId: string) => {
-    if (!documents.or?.uri || !documents.cr?.uri) throw new Error("Both OR and CR documents are required");
-    // Upload both documents
-    const orUrl = await uploadDocument(documents.or.uri, `or_${userId}_${Date.now()}`);
-    const crUrl = await uploadDocument(documents.cr.uri, `cr_${userId}_${Date.now()}`);
-    // Insert into vehicle_documents table
-    const { error } = await supabase.from("vehicle_documents").insert({
-      user_id: userId,
-      or_url: orUrl,
-      cr_url: crUrl,
-    });
-    if (error) throw error;
-  }, [documents, uploadDocument]);
+  const submitDocuments = useCallback(async () => {
+    if (!user) {
+      console.error("No user found");
+      setUploading(false);
+      return;
+    }
+    const vid = await gsec();
+    setUploading(true);
+    try {
+      let orUrl, crUrl;
+
+      if (or_image) {
+        console.log("Uploading OR image:", or_image);
+        orUrl = await uploadDocument(or_image, `or_${vid.substring(0, 6)}`);
+        console.log("OR_URL", orUrl);
+      } else {
+        console.log("No OR image to upload");
+      }
+
+      if (cr_image) {
+        console.log("Uploading CR image:", cr_image);
+        crUrl = await uploadDocument(cr_image, `cr_${vid.substring(0, 6)}`);
+        console.log("CR_URL", crUrl);
+      } else {
+        console.log("No CR image to upload");
+      }
+
+      const vehicle = {
+        vid,
+        id: user.id,
+        or_url: orUrl,
+        cr_url: crUrl,
+      };
+
+      console.log("Inserting vehicle record:", vehicle);
+
+      const { error } = await supabase.from("vehicle_docs").insert(vehicle);
+
+      if (error) {
+        console.error("Supabase insert error:", error);
+      }
+      console.log("Vehicle record inserted successfully");
+    } catch (err) {
+      console.error("Error in submitDocuments:", err);
+    } finally {
+      setUploading(false);
+    }
+  }, [user, cr_image, or_image, uploadDocument, gsec]);
 
   const value = useMemo(
     () => ({
@@ -162,13 +264,29 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
       onSelect,
       carType,
       pickImage,
-      image,
+      or_image,
+      cr_image,
+      id_image,
       documents,
       setDocuments,
       uploadDocument,
       submitDocuments,
+      uploading,
     }),
-    [carTypes, onSelect, carType, pickImage, image, documents, setDocuments, uploadDocument, submitDocuments],
+    [
+      carTypes,
+      onSelect,
+      carType,
+      pickImage,
+      or_image,
+      cr_image,
+      id_image,
+      documents,
+      setDocuments,
+      uploadDocument,
+      submitDocuments,
+      uploading,
+    ],
   );
   return <CTPLCtx.Provider value={value}>{children}</CTPLCtx.Provider>;
 };

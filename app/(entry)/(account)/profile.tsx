@@ -1,111 +1,42 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
-import {
-  StyleSheet,
-  View,
-  Alert,
-  Text,
-  Image,
-  TouchableOpacity,
-} from "react-native";
-import { TextInput } from "@/components/StyledComponents";
-import { Button } from "@/components/StyledButton";
-import { useAuth } from "@/app/_ctx/auth";
-import { FlexRow } from "@/components/ui/FlexRow";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { Icon } from "@/app/_components/icons";
+import { useAuth } from "@/app/_ctx/auth";
+import { DText } from "@/components/FontScaling";
+import { Button } from "@/components/StyledButton";
+import { HyperInput } from "@/components/StyledComponents";
+import { FlexRow } from "@/components/ui/FlexRow";
 import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "nativewind";
 import { router } from "expo-router";
+import { useColorScheme } from "nativewind";
+import { useCallback, useMemo, useState } from "react";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 export default function Profile() {
-  const [loading, setLoading] = useState(true);
-  const [displayName, setDisplayName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [website, setWebsite] = useState("");
-  const { session, signOut } = useAuth();
+  const [newDisplayName, setNewDisplayName] = useState<string | undefined>();
+  const [newPhone, setNewPhone] = useState<string | undefined>();
+
+  const { session, signOut, phone, displayName, updateProfile, loading } =
+    useAuth();
 
   const { colorScheme } = useColorScheme();
-  const isDarkMode = useMemo(() => colorScheme === "dark", [colorScheme]);
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
   const goBack = () => {
     router.back();
   };
 
-  useEffect(() => {
-    if (session) {
-      getProfile();
-    }
-  }, [session]);
-
-  async function getProfile() {
-    try {
-      setLoading(true);
-      if (!session?.user) throw new Error("No user on the session!");
-
-      const { data, error, status } = await supabase
-        .from("profiles")
-        .select(`display_name, phone, website`)
-        .eq("id", session?.user.id)
-        .single();
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      if (data) {
-        setDisplayName(data.display_name);
-        setPhone(data.phone);
-        setWebsite(data.website);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function updateProfile({
-    display_name,
-    phone,
-    website,
-  }: {
-    display_name: string;
-    phone: string;
-    website: string;
-  }) {
-    try {
-      setLoading(true);
-      if (!session?.user) throw new Error("No user on the session!");
-
-      const updates = {
-        id: session?.user.id,
-        display_name,
-        phone,
-        website,
-        updated_at: new Date(),
-      };
-
-      const { error } = await supabase.from("user_profiles").upsert(updates);
-
-      if (error) {
-        console.log(error);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
   const displayNameChange = useCallback((text: string) => {
-    setDisplayName(text);
+    setNewDisplayName(text);
   }, []);
   const phoneChange = useCallback((text: string) => {
-    setPhone(text);
+    setNewPhone(text);
   }, []);
+
+  const handleUpdate = useCallback(() => {
+    updateProfile({
+      display_name: newDisplayName ?? displayName,
+      phone: newPhone ?? phone,
+    });
+  }, [newDisplayName, newPhone, displayName, phone, updateProfile]);
 
   return (
     <View className="pt-16 pb-6 h-full bg-gray-200 dark:bg-transparent relative">
@@ -116,22 +47,28 @@ export default function Profile() {
         <Icon
           name="arrow-to-left"
           size={28}
-          color={isDarkMode ? Colors.dark.text : Colors.dark.royal}
+          color={isDark ? Colors.dark.text : Colors.dark.royal}
           container="-rotate-90"
         />
       </TouchableOpacity>
       <Animated.View
         entering={FadeInDown.delay(100).duration(300)}
-        className="py-12 px-6"
+        className="pt-12 px-6"
       >
         <FlexRow className="justify-between">
           <View>
-            <Text className="h-8 font-ultratight tracking-tighter dark:text-chalk text-2xl">
+            <DText
+              fontSize={12}
+              className="h-8 font-ultratight tracking-tighter dark:text-chalk text-2xl"
+            >
               Account
-            </Text>
-            <Text className="text-sm font-quick dark:text-hyper-active">
+            </DText>
+            <DText
+              fontSize={8}
+              className="text-sm font-quick dark:text-hyper-active"
+            >
               {session?.user?.email}
-            </Text>
+            </DText>
           </View>
           <Image
             source={{ uri: session?.user.user_metadata.avatar_url }}
@@ -149,42 +86,46 @@ export default function Profile() {
           entering={FadeInDown.delay(100).duration(300)}
           className="py-12 px-6"
         >
-          <Text className="h-10 font-ultratight tracking-tighter dark:text-chalk text-lg">
+          <DText
+            fontSize={12}
+            className="h-12 font-ultratight tracking-tighter dark:text-chalk text-lg"
+          >
             Personal Info
-          </Text>
+          </DText>
 
           <View className="gap-y-4">
-            <TextInput
+            <HyperInput
+              fontSize={10}
               icon={"user-settings"}
               autoCapitalize={"none"}
               label="Display name"
-              defaultValue={session?.user?.user_metadata.name}
+              defaultValue={displayName}
               placeholder="name"
               onChangeText={displayNameChange}
             />
-            <TextInput
+            <HyperInput
+              fontSize={10}
               icon={"camera-outline"}
               label="Phone number"
               autoCapitalize={"none"}
-              value={session?.user?.user_metadata.phone}
+              defaultValue={phone}
               placeholder="63"
               onChangeText={phoneChange}
             />
-            <TextInput
-              icon="gallery-wide-bold-duotone"
+            {/* <TextInput
+              solidIcon
               label="Website"
               value={website ?? ""}
-              placeholder="https://mysite.com"
               className="text-dark-active"
+              placeholder="https://mysite.com"
+              icon="gallery-wide-bold-duotone"
               onChangeText={(text) => setWebsite(text)}
-            />
+            /> */}
             <View style={styles.verticallySpaced}>
               <Button
                 variant="secondary"
                 title={loading ? "Loading ..." : "Update"}
-                onPress={() =>
-                  updateProfile({ display_name: displayName, phone, website })
-                }
+                onPress={handleUpdate}
                 disabled={loading}
               />
             </View>

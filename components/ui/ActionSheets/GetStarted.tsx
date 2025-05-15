@@ -1,37 +1,32 @@
-import { Text, TouchableOpacity, View } from "react-native";
-import ActionSheet, { SheetManager } from "react-native-actions-sheet";
-import { FlexRow } from "../FlexRow";
-import { FlexCol } from "../FlexCol";
 import { Icon } from "@/app/_components/icons";
-import { RelativePathString, useRouter } from "expo-router";
-import { memo, useCallback, useEffect, useMemo } from "react";
-import Animated, {
-  FadeInDown,
-  useSharedValue,
-  withDelay,
-  withSpring,
-} from "react-native-reanimated";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "nativewind";
 import { CarType, useCTPLCtx } from "@/app/_ctx/ctpl-ctx";
 import { HyperList } from "@/components/HyperList";
+import { Colors } from "@/constants/Colors";
 import clsx from "clsx";
+import { RelativePathString, useRouter } from "expo-router";
+import { memo, useCallback, useMemo } from "react";
+import { TouchableOpacity, View } from "react-native";
+import ActionSheet, {
+  SheetManager,
+  SheetProps,
+} from "react-native-actions-sheet";
 import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
+import { FlexCol } from "../FlexCol";
 import { SheetHeader } from "./components";
+import { DText, SText } from "@/components/FontScaling";
 
-const GetStartedSheet = () => {
-  const { colorScheme } = useColorScheme();
-  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
-
+const GetStartedSheet = ({ payload }: SheetProps<"get-started">) => {
   // Memoize the styles to prevent recreation on each render
   const sheetStyles = useMemo(
     () => ({
       indicator: {
-        position: "absolute",
         top: -7,
         zIndex: 1,
-        backgroundColor: isDark ? Colors.dark.active : Colors.light.royal,
-      },
+        position: "absolute",
+        backgroundColor: payload?.isDark
+          ? Colors.dark.hyper
+          : Colors.dark.active,
+      } as ViewStyle,
       container: {
         elevation: 0,
         shadowOpacity: 0,
@@ -43,9 +38,9 @@ const GetStartedSheet = () => {
         borderTopStartRadius: 36,
         backgroundColor: "transparent",
         shadowOffset: { width: 0, height: 0 },
-      },
+      } as ViewStyle,
     }),
-    [isDark],
+    [payload],
   );
 
   return (
@@ -54,15 +49,15 @@ const GetStartedSheet = () => {
       gestureEnabled
       key="get-started-sheet"
       defaultOverlayOpacity={0.15}
-      indicatorStyle={sheetStyles.indicator as ViewStyle}
-      containerStyle={sheetStyles.container as ViewStyle}
+      indicatorStyle={sheetStyles.indicator}
+      containerStyle={sheetStyles.container}
     >
       <View className="px-0">
         <FlexCol
           style={{ borderTopStartRadius: 24, borderTopEndRadius: 24 }}
           className="justify-start relative bg-white dark:bg-cronus py-8"
         >
-          <GetStartedOptions isDark={isDark} />
+          <GetStartedOptions isDark={payload.isDark} />
         </FlexCol>
       </View>
     </ActionSheet>
@@ -89,21 +84,22 @@ const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
   );
 
   const CarTypeItem = useCallback(
-    ({ id, label, subtext, icon }: CarType) => (
+    ({ id, label, subtext, icon, iconSolid }: CarType) => (
       <TouchableOpacity
         activeOpacity={0.6}
         onPress={handleSelect(id)}
         className={clsx(
-          "flex flex-row items-center justify-between py-4 border-b border-grei dark:border-dark-ga/60",
+          "flex flex-row items-center justify-between py-5 border-b border-grei dark:border-dark-ga/60",
           { "border-b-0": id === "motors" },
         )}
       >
         <View className="flex flex-row items-center gap-x-4">
           <View className="size-10 rounded-xl flex flex-row items-center justify-center">
             <Icon
-              size={24}
+              size={28}
               name={icon}
               color={isDark ? Colors.dark.text : Colors.light.text}
+              solid={iconSolid}
             />
           </View>
           <View
@@ -111,13 +107,16 @@ const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
               "flex flex-row items-center": !subtext,
             })}
           >
-            <Text className="font-quicksemi text-lg dark:text-grei tracking-tight">
+            <DText
+              fontSize={10}
+              className="font-quicksemi dark:text-grei tracking-teen"
+            >
               {label}
-            </Text>
+            </DText>
             {subtext && (
-              <Text className="text-xs dark:text-grei opacity-80">
+              <SText className="text-base dark:text-grei opacity-70">
                 {subtext}
-              </Text>
+              </SText>
             )}
           </View>
         </View>
@@ -131,56 +130,20 @@ const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
   );
 
   return (
-    <Animated.View
-      entering={FadeInDown.delay(100).duration(300)}
-      className="py-4 px-2"
-    >
+    <View className="py-4 px-2">
       <SheetHeader title="Select Vehicle Type" />
-
       <View className="rounded-3xl py-6">
-        <HyperList data={carTypes} component={CarTypeItem} keyId="id" />
+        <HyperList
+          containerStyle="h-[26rem]"
+          keyId="id"
+          delay={500}
+          data={carTypes}
+          component={CarTypeItem}
+        />
       </View>
-    </Animated.View>
+    </View>
   );
 });
-
-const EntryFormOptions = () => {
-  return (
-    <View>
-      <TouchableOpacity className="h-24 flex-row items-center px-8 justify-start gap-3">
-        <FlexRow className="size-14 rounded-2xl bg-grei">
-          <Icon name="camera-outline" size={24} color="#14141B" />
-        </FlexRow>
-        <Text className="font-quicksemi w-2/3 tracking-tight text-lg px-2">
-          Use camera
-        </Text>
-      </TouchableOpacity>
-      {/* <View className="w-full bg-grei" style={{ height: 2 }} /> */}
-      <TouchableOpacity className="h-24 flex-row items-center px-8 justify-start gap-3">
-        <FlexRow className="size-14 rounded-2xl bg-grei">
-          <Icon name="document-linear" size={24} color="#14141B" />
-        </FlexRow>
-        <Text className="font-quicksemi text-lg w-2/3 text-royal px-2">
-          Enter vehicle details
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-const Flare = () => {
-  const width = useSharedValue(0);
-  useEffect(() => {
-    width.value = withDelay(500, withSpring(width.value + 50));
-  }, []);
-  return (
-    <View className="h-20 border overflow-hidden border-grei relative flex flex-col items-center justify-center">
-      <Animated.View
-        style={{ width }}
-        className="h-6 w-12 bg-hyper-active rounded-3xl "
-      />
-    </View>
-  );
-};
+GetStartedOptions.displayName = "GetStartedOptions";
 
 export default GetStartedSheet;

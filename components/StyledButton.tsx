@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 import {
-  TouchableOpacity,
-  Text,
   ActivityIndicator,
+  TouchableOpacity,
   TouchableOpacityProps,
 } from "react-native";
+import { DText } from "./FontScaling";
 
 interface Props extends TouchableOpacityProps {
   title: string;
@@ -47,7 +47,7 @@ export const Button = ({
     outline: "bg-transparent border-blue-200",
     danger: "bg-red-600 border-red-600",
     light: "bg-gray-300 border-gray-300",
-    gray: "bg-gray-400 border-gray-400",
+    gray: "bg-medusa border-mortar",
     ghost: "bg-transparent border-transparent",
     active: "bg-active border-active",
   };
@@ -61,7 +61,7 @@ export const Button = ({
     light: "text-void",
     ghost: "text-royal",
     active: "text-white",
-    gray: "text-void/90",
+    gray: "text-chalk",
   };
 
   // Define size styles
@@ -94,14 +94,15 @@ export const Button = ({
         ${className} `}
       {...props}
     >
-      <Text
-        className={`font-quickbold px-6
+      <DText
+        fontSize={10}
+        className={`font-quickbold tracking-teen px-6
                   ${textSizeStyles[size]}
                   ${textStyles[variant]}
                   ${textClassName} `}
       >
         {title}
-      </Text>
+      </DText>
       {loading ? (
         <ActivityIndicator
           size="small"

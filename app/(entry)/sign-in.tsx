@@ -1,177 +1,93 @@
-import { useCallback, useEffect, useState } from "react";
+import { SBAuth } from "@/components/Auth";
+import { FlexRow } from "@/components/ui/FlexRow";
+import { supabase } from "@/lib/supabase";
+import { Session, SupabaseClient } from "@supabase/supabase-js";
+import { RelativePathString, useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
+import { StatusBar } from "expo-status-bar";
 import {
-  View,
-  StyleSheet,
+  Image,
   KeyboardAvoidingView,
   Platform,
-  StatusBar,
   Text,
+  View,
 } from "react-native";
-import * as SecureStore from "expo-secure-store";
-import { RelativePathString, useRouter } from "expo-router";
-import { FlexRow } from "@/components/ui/FlexRow";
-import { SBAuth } from "@/components/Auth";
-import { Session, SupabaseClient } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { BrandLogo } from "@/components/ui/BrandLogo";
+import { useConfigCtx } from "../_ctx/config";
+import pkg from "../../package.json";
 
 const SignInScreen = () => {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [session, setSession] = useState<Session | null>(null);
-
-  const handleSignIn = async () => {
-    if (email.trim() === "" || password.trim() === "") {
-      setError("Please enter both email and password");
-      return;
-    }
-
-    setError("");
-    setIsLoading(true);
-
-    try {
-      // Simulate API call with timeout
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // In a real app, you would validate credentials with your backend
-      // For this example, we'll simulate a successful login
-
-      // Store authentication token
-      await SecureStore.setItemAsync("userToken", "dummy-auth-token");
-
-      setIsLoading(false);
-      router.navigate("/(entry)/(home)" as RelativePathString);
-    } catch (error) {
-      setIsLoading(false);
-      setError("Authentication failed. Please try again.");
-      console.log("Error signing in:", error);
-    }
-  };
-
-  const handleSkip = useCallback(() => {
-    setIsLoading(false);
-    router.push("/(entry)/(home)" as RelativePathString);
-  }, []);
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState("");
+  const [session] = useState<Session | null>(null);
+  const { getFileUri } = useConfigCtx();
+  const re_up_logo = useMemo(
+    () => getFileUri("RE_UP_LOGO_DARK_MONO.png"),
+    [getFileUri],
+  );
+  const fast_logo = useMemo(
+    () => getFileUri("FAST_LOGO_DARK_MONO.png"),
+    [getFileUri],
+  );
 
   useEffect(() => {
     if (supabase instanceof SupabaseClient) {
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
-          console.log(session.user);
           router.navigate("/(entry)/(home)" as RelativePathString);
         }
       });
     }
-  }, [session]);
+  }, [session, router]);
 
   return (
     <View className="flex-1 bg-white dark:bg-void pt-20">
-      <StatusBar translucent backgroundColor="transparent" />
+      <StatusBar style="auto" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
         <FlexRow className="h-48">
-          <Text className="font-courg -tracking-[0.25rem] text-hyper-active text-4xl">
-            My
-          </Text>
-
-          <Text className="font-quickbold -tracking-[0.12rem] text-4xl text-royal dark:text-white">
-            FastInsure
-          </Text>
+          <BrandLogo />
         </FlexRow>
 
-        <View className="px-4">
+        <View className="px-4 flex">
           <SBAuth />
         </View>
+        <FlexRow className="absolute dark:bg-indigo-300/80 px-8 w-full justify-between bottom-0 h-12 bg-grei">
+          <FlexRow className="gap-4 w-24">
+            <View className="opacity-30 dark:opacity-100">
+              <Image
+                source={{ uri: re_up_logo }}
+                className="size-4"
+                resizeMode="contain"
+              />
+            </View>
+            <View className="opacity-30 dark:opacity-100">
+              <Image
+                source={{ uri: fast_logo }}
+                className="size-14"
+                resizeMode="contain"
+              />
+            </View>
+          </FlexRow>
+          <Text className="opacity-40 dark:opacity-100 text-sm font-quick">
+            TEST&middot;&middot;BUILD
+          </Text>
+          <FlexRow className="w-24">
+            <View className="flex-1" />
+            <Text className="opacity-40 dark:opacity-100 text-sm text-end font-quick">
+              v{pkg.version}
+            </Text>
+          </FlexRow>
+        </FlexRow>
       </KeyboardAvoidingView>
     </View>
   );
 };
-
-// Styles for SignInScreen
-const styles = StyleSheet.create({
-  keyboardView: {
-    flex: 1,
-  },
-  header: {
-    alignItems: "center",
-    marginTop: 60,
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-  },
-  form: {
-    paddingHorizontal: 24,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    backgroundColor: "#f9f9f9",
-    borderRadius: 12,
-    marginBottom: 16,
-    paddingHorizontal: 20,
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    height: 55,
-    fontSize: 16,
-  },
-  errorText: {
-    color: "#ff3b30",
-    marginBottom: 16,
-    marginLeft: 8,
-  },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: 24,
-  },
-  forgotPasswordText: {
-    color: "#46515F",
-    fontSize: 14,
-  },
-  signInButton: {
-    backgroundColor: "#46515F",
-    borderRadius: 12,
-    height: 55,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  signInButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 40,
-  },
-  footerText: {
-    color: "#666",
-    fontSize: 16,
-  },
-  signUpText: {
-    color: "#46515F",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});
 
 export default SignInScreen;
 // const getPhoneNumber = async () => {

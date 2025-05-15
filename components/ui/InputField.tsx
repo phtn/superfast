@@ -1,8 +1,6 @@
 import { TextInput, TextInputProps, View } from "react-native";
-import { IconName } from "../icons/types";
-import { FlexRow } from "./FlexRow";
-import { Icon } from "../icons";
-import { clsx } from "clsx";
+import { IconName } from "@/app/_components/icons/types";
+import { Icon } from "@/app/_components/icons";
 
 interface InputProps extends TextInputProps {
   icon?: IconName;

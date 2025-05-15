@@ -17,6 +17,7 @@ module.exports = {
         ultratight: ["TightSemi"],
         hypertight: ["TightBold"],
         eaves: ["Eaves"],
+        garamond: ["Garamond"],
       },
       colors: {
         active: "#007AFE",
@@ -58,6 +59,10 @@ module.exports = {
       backgroundPosition: {
         "p-0": "0% 0%",
         "p-100": "100% 100%",
+      },
+      letterSpacing: {
+        snug: "-0.045em",
+        teen: "-0.05em",
       },
     },
   },

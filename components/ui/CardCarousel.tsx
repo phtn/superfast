@@ -10,7 +10,6 @@ import {
   Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { FlexRow } from "./FlexRow";
 import { FlexCol } from "./FlexCol";
 
 const { width } = Dimensions.get("window");

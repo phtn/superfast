@@ -1,12 +1,13 @@
+import { SText } from "@/components/FontScaling";
 import { FlexCol } from "@/components/ui/FlexCol";
 import { FlexRow } from "@/components/ui/FlexRow";
 import { Colors } from "@/constants/Colors";
 import { clsx } from "clsx";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import Animated, { ZoomInEasyDown } from "react-native-reanimated";
-import { IconName } from "../icons/types";
 import { Icon } from "../icons";
+import { IconName } from "../icons/types";
 
 interface ICategory {
   id: number;
@@ -31,6 +32,7 @@ export const Categories = ({ isDark }: CategoryProps) => {
         { id: 3, name: "Fire", icon: "fire" },
         { id: 4, name: "Health", icon: "wellness" },
         { id: 5, name: "Life", icon: "shield-keyhole" },
+        { id: 6, name: "Phone", icon: "mobile-shield" },
       ] as ICategory[],
     [],
   );
@@ -87,13 +89,13 @@ export const Categories = ({ isDark }: CategoryProps) => {
                   size={category.name === "Car" ? 32 : 24}
                 />
               </FlexRow>
-              <Text
+              <SText
                 className={clsx(
-                  `tracking-tighter text-sm text-dark-active font-quicksemi ${activeCategory === category.id ? "text-dark-active dark:text-hyper-active" : "text-void/70 dark:text-chalk/80"}`,
+                  `tracking-tighter text-base text-dark-active font-quicksemi ${activeCategory === category.id ? "text-dark-active dark:text-hyper-active" : "text-void/70 dark:text-chalk/80"}`,
                 )}
               >
                 {category.name}
-              </Text>
+              </SText>
             </TouchableOpacity>
           </Animated.View>
         ))}
@@ -102,12 +104,6 @@ export const Categories = ({ isDark }: CategoryProps) => {
   );
 };
 
-interface IUserCategory {
-  id: number;
-  name: string;
-  active: boolean;
-  icon: any;
-}
 interface UserCategoryProps {
   isDark: boolean;
 }
@@ -122,6 +118,7 @@ export const UserCategories = ({ isDark }: UserCategoryProps) => {
         { id: 3, name: "Fire", icon: "fire" },
         { id: 4, name: "Health", icon: "wellness" },
         { id: 5, name: "Life", icon: "shield-keyhole" },
+        { id: 6, name: "Phone", icon: "mobile-shield" },
       ] as ICategory[],
     [],
   );
@@ -131,30 +128,6 @@ export const UserCategories = ({ isDark }: UserCategoryProps) => {
     },
     [],
   );
-
-  const getCategoryColor = useCallback(
-    (id: number) => {
-      const color =
-        isDark && activeCategory === id
-          ? Colors.dark.royal
-          : activeCategory !== id && !isDark
-            ? Colors.dark.royal
-            : Colors.dark.ga;
-
-      const isActiveAndDark = id === activeCategory && isDark;
-      const old = isActiveAndDark
-        ? "#0F172A"
-        : !isDark && id !== activeCategory
-          ? "#0F172A"
-          : "#FFFFFF";
-      return color;
-    },
-    [activeCategory, isDark],
-  );
-
-  useEffect(() => {
-    console.log(isDark);
-  }, [isDark]);
 
   const ic = useMemo(
     () =>
@@ -204,13 +177,13 @@ export const UserCategories = ({ isDark }: UserCategoryProps) => {
                     size={category.name === "Car" ? 32 : 24}
                   />
                 </FlexRow>
-                <Text
+                <SText
                   className={clsx(
-                    `tracking-tighter text-sm dark:chalk text-active font-quicksemi ${activeCategory === category.id ? "text-royal dark:text-white" : "text-void/60 dark:text-chalk/80"}`,
+                    `tracking-tighter text-base dark:chalk text-active font-quicksemi ${activeCategory === category.id ? "text-royal dark:text-white" : "text-void/60 dark:text-chalk/80"}`,
                   )}
                 >
                   {category.name}
-                </Text>
+                </SText>
               </TouchableOpacity>
             </Animated.View>
           ))}

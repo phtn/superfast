@@ -1,3 +1,4 @@
+import "@/global.css";
 import {
   DarkTheme,
   DefaultTheme,
@@ -9,11 +10,12 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import "@/global.css";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthProvider } from "@/app/_ctx/auth";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { ConfigCtxProvider } from "./_ctx/config";
 import { CTPLCtxProvider } from "./_ctx/ctpl-ctx";
+import { PixelRatio } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -23,6 +25,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     SpaceBold: require("../assets/fonts/SpaceMono-Bold.ttf"),
+    Garamond: require("../assets/fonts/Garamond-Classico-BoldItalic.ttf"),
     Satisfy: require("../assets/fonts/Satisfy-Regular.ttf"),
     Courgette: require("../assets/fonts/Courgette-Regular.ttf"),
     Quicksand: require("../assets/fonts/Quicksand-Medium.ttf"),
@@ -35,6 +38,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    console.log(PixelRatio.getFontScale());
     if (loaded) {
       SplashScreen.hideAsync();
     }
@@ -46,15 +50,17 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
-        <CTPLCtxProvider>
-          <Stack>
-            <Stack.Screen name="(entry)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </CTPLCtxProvider>
-      </AuthProvider>
+      <ConfigCtxProvider>
+        <AuthProvider>
+          <CTPLCtxProvider>
+            <Stack>
+              <Stack.Screen name="(entry)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="auto" />
+          </CTPLCtxProvider>
+        </AuthProvider>
+      </ConfigCtxProvider>
     </ThemeProvider>
   );
 }

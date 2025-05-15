@@ -1,26 +1,35 @@
+import { useAuth } from "@/app/_ctx/auth";
+import { SText } from "@/components/FontScaling";
 import { FlexCol } from "@/components/ui/FlexCol";
 import { FlexRow } from "@/components/ui/FlexRow";
-import { useAuth } from "@/app/_ctx/auth";
-import { Feather } from "@expo/vector-icons";
-import { Image, TouchableOpacity, View, TextInput, Text } from "react-native";
-import { useRouter } from "expo-router";
-import { Icon } from "../icons";
 import { Colors } from "@/constants/Colors";
+import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useCallback } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Icon } from "../icons";
 
 export const Header = () => {
-  const { user } = useAuth();
+  const { user, displayName, loading } = useAuth();
   const router = useRouter();
-  const navigateToProfile = () => {
-    router.push("/(entry)/(account)");
-  };
+  const navigateToProfile = useCallback(() => {
+    router.navigate("/(entry)/(account)");
+  }, [router]);
 
   return (
-    <View className={`justify-between h-16 flex flex-row px-5 z-10`}>
+    <View className={`justify-between h-16 flex flex-row pt-1 px-5 z-10`}>
       <FlexCol className="items-start justify-center">
         <TouchableOpacity
+          disabled={loading || !displayName}
           activeOpacity={0.65}
           onPress={navigateToProfile}
-          className="items-start flex-col flex"
+          className="items-start max-w-[95%] overflow-hidden flex-col flex"
         >
           <View className="w-full flex items-center flex-row">
             <Image
@@ -30,26 +39,32 @@ export const Header = () => {
               className="border-2 border-ga mr-3"
               style={{ width: 32, height: 32, borderRadius: 16 }}
             />
-            <Text className="dark:text-chalk font-tight">
-              {user?.user_metadata?.name?.split(" ").shift()}
-            </Text>
-            <View className="size-6 pt-0.5">
-              <Icon
-                size={24}
-                name="chev-right-broken"
-                color={Colors.dark.ultra}
-              />
-            </View>
+            {loading ? (
+              <ActivityIndicator color={Colors.dark.hyper} />
+            ) : (
+              <View className=" flex flex-row px-2 justify-start whitespace-nowrap overflow-hidden">
+                <SText className="max-w-[80%] text-lg dark:text-chalk font-quicksemi whitespace-nowrap">
+                  {displayName}
+                </SText>
+                <View className="size-6 pt-0.5">
+                  <Icon
+                    size={24}
+                    name="chev-right-linear"
+                    color={Colors.dark.ultra}
+                  />
+                </View>
+              </View>
+            )}
           </View>
         </TouchableOpacity>
       </FlexCol>
       <FlexRow>
-        <Text className="font-courg text-dark-active mt-0.5 tracking-tighter text-lg dark:text-hyper-active">
+        <SText className="font-courg text-dark-active tracking-teen text-xl dark:text-hyper-active">
           My
-        </Text>
-        <Text className="font-quickbold text-royal -tracking-widest text-lg dark:text-chalk">
+        </SText>
+        <SText className="font-quickbold text-royal -tracking-widest text-xl dark:text-chalk">
           FastInsure
-        </Text>
+        </SText>
       </FlexRow>
     </View>
   );
