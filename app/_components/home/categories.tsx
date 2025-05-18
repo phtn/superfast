@@ -165,7 +165,7 @@ export const UserCategories = ({ isDark }: UserCategoryProps) => {
               >
                 <FlexRow
                   className={clsx(
-                    `rounded-2xl w-[3.25rem] h-12 ${activeCategory === category.id ? "bg-royal dark:bg-white" : "bg-white dark:bg-chalk/10"}`,
+                    `rounded-2xl w-[3.25rem] h-12 border-[0.33px] ${activeCategory === category.id ? "bg-royal dark:bg-white border-royal" : "bg-white dark:bg-chalk/10 border-royal/5"}`,
                   )}
                 >
                   <Icon

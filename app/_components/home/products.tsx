@@ -17,6 +17,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { PremiumCard } from "../cards/premium";
 import { Icon } from "../icons";
+import { useRouter } from "expo-router";
+import { ClassName } from "@/types";
 
 export interface IProductItem {
   id: number;
@@ -36,23 +38,11 @@ interface Props {
   list: IProductItem[];
 }
 
-const ItemSep = () => <View style={{ height: 48 }} />;
-const ListHeader = ({ title }: { title: string }) => (
-  <Animated.View
-    entering={ZoomInEasyUp.delay(0).duration(500).damping(8).mass(2)}
-    className="h-14 overflow-hidden relative flex flex-col rounded-3xl items-start justify-center px-2"
-  >
-    <DAnimatedText
-      fontSize={16}
-      entering={ZoomInEasyDown.delay(70).duration(500).damping(5)}
-      className="h-12 font-quickbold origin-center text-royal dark:text-chalk text-xl tracking-tighter"
-    >
-      {title}
-    </DAnimatedText>
-  </Animated.View>
-);
-
 export const Products = ({ isDark, list }: Props) => {
+  const router = useRouter();
+  const routeToDocs = useCallback(() => {
+    router.navigate("/(entry)/(docs)");
+  }, [router]);
   const scrollY = useSharedValue(0);
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -77,18 +67,16 @@ export const Products = ({ isDark, list }: Props) => {
       onScroll={scrollHandler}
       scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 16, gap: 32 }}
+      contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
     >
-      <PremiumCard
-        title="Upgrade to PRO"
-        onPress={() => console.log("premium")}
-      />
+      <PremiumCard title="Upgrade to PRO" onPress={routeToDocs} />
       <FlashList
         data={list}
         estimatedItemSize={10}
         renderItem={renderItem}
         ItemSeparatorComponent={ItemSep}
         ListHeaderComponent={ProductHeader}
+        // contentContainerClassName="border"
       />
 
       <View className="h-28"></View>
@@ -107,7 +95,9 @@ export const UserProducts = ({ isDark, list }: Props) => {
 
   const renderItem = useCallback(
     ({ item }: { item: IProductItem }) => {
-      return <ProductItem {...item} isDark={isDark} />;
+      return (
+        <ProductItem {...item} isDark={isDark} itemStyle="border border-ga" />
+      );
     },
     [isDark],
   );
@@ -145,19 +135,25 @@ export const UserProducts = ({ isDark, list }: Props) => {
         renderItem={renderItem}
         ItemSeparatorComponent={ItemSep}
       />
-
-      {/* <View className="h-48 w-full rounded-3xl overflow-hidden">
-        <View className="dark:bg-ga flex-1"></View>
-        <View className="bg-mortar flex-1"></View>
-      </View>
-      <View className="h-32 w-full rounded-3xl bg-mortar"></View>
-      <View className="h-28 w-full rounded-3xl bg-medusa"></View> */}
-
       <View className="h-28"></View>
     </Animated.ScrollView>
   );
 };
-
+const ItemSep = () => <View style={{ height: 48 }} />;
+const ListHeader = ({ title }: { title: string }) => (
+  <Animated.View
+    entering={ZoomInEasyUp.delay(0).duration(500).damping(8).mass(2)}
+    className="h-14 overflow-hidden relative flex flex-col rounded-3xl items-start justify-center px-2"
+  >
+    <DAnimatedText
+      fontSize={12}
+      entering={ZoomInEasyDown.delay(70).duration(500).damping(5)}
+      className="h-12 font-tight origin-center text-royal dark:text-chalk tracking-snug"
+    >
+      {title}
+    </DAnimatedText>
+  </Animated.View>
+);
 const ProductItem = ({
   id,
   name,
@@ -166,15 +162,8 @@ const ProductItem = ({
   subtext,
   isDark,
   tag,
-}: IProductItem & { isDark: boolean }) => {
-  const buttonGradients: readonly [string, string, ...string[]] = useMemo(
-    () =>
-      isDark
-        ? ["#14141b", "#14141b", "#14141b"]
-        : ["#14141b", "#14141b", "#14141b"],
-    [isDark],
-  );
-
+  itemStyle,
+}: IProductItem & { isDark: boolean; itemStyle?: ClassName }) => {
   const handlePressGetStarted = useCallback(() => {
     console.log("Get Started button pressed");
     SheetManager.show("get-started", {
@@ -199,16 +188,17 @@ const ProductItem = ({
       key={id}
       entering={FadeInDown.delay(400 + 100 * id).duration(500)}
       className={clsx(
-        "overflow-hidden rounded-[36px] p-1.5 bg-grei dark:bg-ga",
+        `overflow-hidden rounded-[36px] p-1.5 bg-grei dark:bg-ga ${itemStyle}`,
+        itemStyle,
       )}
     >
-      <View className="relative rounded-b-3xl rounded-t-[32px] overflow-hidden h-64">
+      <View className="relative rounded-b-3xl rounded-t-[32px] overflow-hidden h-72">
         <FlexRow className="absolute z-10 top-4 left-0 w-full px-6 justify-between">
-          <View className="w-3/5 -space-y-1">
+          <View className="w-4/5 -space-y-1">
             <DText
-              fontSize={11}
+              fontSize={13}
               className={clsx(
-                "font-hypertight shadow-md shadow-active text-xl dark:text-white -tracking-wider",
+                "font-hypertight dark:text-white -tracking-wider",
                 textStyles ? textStyles : "text-chalk",
               )}
             >
@@ -216,7 +206,7 @@ const ProductItem = ({
             </DText>
             <SText
               className={clsx(
-                "font-tight text-lg -mt-1.5 text-hades dark:text-void opacity-80 tracking-snug",
+                "font-ultratight text-lg -mt-1.5 tracking-snug dark:text-white dark:opacity-95 opacity-70",
                 textStyles ? textStyles : "text-chalk",
               )}
             >
@@ -242,7 +232,7 @@ const ProductItem = ({
           </View>
         </LinearGradient>
       </View>
-      <FlexRow className="justify-between pt-1.5 px-3 h-20">
+      <FlexRow className="justify-between pt-1.5 px-3 h-[5.25rem]">
         <View className="flex-col items-start ps-2">
           <SText className="font-tight tracking-snug text-lg">{name}</SText>
           <FlexRow className="w-fit">
@@ -255,33 +245,24 @@ const ProductItem = ({
         <TouchableOpacity
           activeOpacity={0.75}
           onPress={handlePressGetStarted}
-          className="h-12 overflow-hidden rounded-full flex flex-row items-center justify-center"
+          className="rounded-full bg-void ps-5 pe-3.5 gap-x-1.5 h-[3.25rem] overflow-hidden flex flex-row items-center justify-center"
         >
-          <LinearGradient start={{ x: 0, y: 0 }} colors={buttonGradients}>
-            <FlexRow
-              className={clsx(
-                "h-12 ps-5 pe-3.5 border-[0.33px] bg-ga/15 rounded-full gap-x-1.5",
-                isDark ? "border-light-ga/80 bg-void/60" : "border-ga/40",
-              )}
-            >
-              <SText
-                className={clsx(
-                  "font-quickbold tracking-tighter mb-0.5 text-lg",
-                  isDark ? "text-white" : "text-white",
-                )}
-              >
-                Get Started
-              </SText>
-              <FlexRow className="rounded-full size-6">
-                <Icon
-                  name="arrow-right-up"
-                  size={24}
-                  color={isDark ? "#53A9FF" : "#53A9FF"}
-                  className={clsx("", isDark ? " drop-shadow-xs" : "")}
-                />
-              </FlexRow>
-            </FlexRow>
-          </LinearGradient>
+          <SText
+            className={clsx(
+              "font-quickbold tracking-tighter mb-0.5 text-lg",
+              isDark ? "text-white" : "text-white",
+            )}
+          >
+            Get Started
+          </SText>
+          <FlexRow className="rounded-full size-6">
+            <Icon
+              name="arrow-right-up"
+              size={24}
+              color={isDark ? "#53A9FF" : "#53A9FF"}
+              className={clsx("", isDark ? " drop-shadow-xs" : "")}
+            />
+          </FlexRow>
         </TouchableOpacity>
       </FlexRow>
     </Animated.View>

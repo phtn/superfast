@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Text, View } from "react-native";
 import { Icon } from "../app/_components/icons";
 import { Button } from "./StyledButton";
-import { TextInput } from "./StyledComponents";
+import { HyperInput } from "./StyledComponents";
 import { FlexRow } from "./ui/FlexRow";
 
 // Tells Supabase Auth to continuously refresh the session automatically if
@@ -24,7 +24,7 @@ export function SBAuth() {
   return (
     <View className="px-4">
       <View>
-        <TextInput
+        <HyperInput
           value={email}
           icon={"email"}
           autoCapitalize={"none"}

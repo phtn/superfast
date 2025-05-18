@@ -1,59 +1,55 @@
 import { type PropsWithChildren, type ReactElement } from "react";
+import { View } from "react-native";
 import Animated, {
   AnimatedRef,
   interpolate,
-  useAnimatedScrollHandler,
+  useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
-  useSharedValue,
 } from "react-native-reanimated";
-import { View } from "react-native";
 
 type Props = PropsWithChildren<{
-  height: number;
+  height?: number;
   header: ReactElement;
   scrollRef?: AnimatedRef<Animated.ScrollView>;
+  scaleOutput?: number;
+  withScaling?: boolean;
 }>;
+const HEIGHT = 320;
 export default function ParallaxView({
   children,
-  height,
+  height = HEIGHT,
   header,
   scrollRef,
+  scaleOutput = 0.9,
+  withScaling = true,
 }: Props) {
-  const svo = useScrollViewOffset(scrollRef ?? null);
-  const offset = useSharedValue(0);
-  const content = useSharedValue(0);
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      content.value = event.contentOffset.y;
-
-      if (svo) {
-        svo.value = offset.value;
-      }
-    },
-  });
+  const localRef = useAnimatedRef<Animated.ScrollView>();
+  const svo = useScrollViewOffset((scrollRef ??= localRef));
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            svo?.value ?? 0,
-            [-height, 0, height],
-            [-height / 2, 0, height / 3],
-          ),
-        },
-        {
-          // Use velocity to affect scale or other properties
-          scale: interpolate(
-            svo?.value ?? 0,
-            [-height, 0, height],
-            [1.1, 1, 0.9],
-          ),
-        },
-      ],
-    };
+    return (
+      svo && {
+        transform: [
+          {
+            translateY: interpolate(
+              svo.value,
+              [-height, 0, height],
+              [-height * 0.2, 0, height * 0.2],
+              "clamp",
+            ),
+          },
+          {
+            scale: interpolate(
+              svo.value,
+              [-height, 0, height],
+              [withScaling ? 1.05 : 1, 1, withScaling ? scaleOutput : 1],
+              "clamp",
+            ),
+          },
+        ],
+      }
+    );
   });
 
   return (
@@ -61,8 +57,7 @@ export default function ParallaxView({
       <Animated.ScrollView
         ref={scrollRef}
         scrollEventThrottle={16}
-        onScroll={scrollHandler}
-        contentContainerStyle={{ paddingBottom: 0 }}
+        // onScroll={scrollHandler}
       >
         <Animated.View
           style={[{ height, overflowY: "hidden" }, headerAnimatedStyle]}

@@ -3,14 +3,17 @@ import { FlexRow } from "@/components/ui/FlexRow";
 import { Colors } from "@/constants/Colors";
 import { clsx } from "clsx";
 import { LinearGradient } from "expo-linear-gradient";
-import { useColorScheme } from "nativewind";
 import { ReactNode } from "react";
 import { TouchableOpacity, View } from "react-native";
-import Animated, { Easing, FadeInUp } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  FadeInDown,
+  FadeInUp,
+} from "react-native-reanimated";
 import { Icon } from "../icons";
 import { type IconName } from "../icons/types";
 
-interface PremiumCardProps {
+interface CardProps {
   onPress?: VoidFunction;
   title?: string;
   icon?: IconName;
@@ -19,10 +22,9 @@ interface PremiumCardProps {
   description?: string;
   actionLabel?: string;
   children?: ReactNode;
+  isDark?: boolean;
 }
-export const MinimalistCard = (props: PremiumCardProps) => {
-  const { colorScheme } = useColorScheme();
-
+export const MinimalistCard = (props: CardProps) => {
   return (
     <Animated.View
       entering={FadeInUp.delay(300)
@@ -33,9 +35,7 @@ export const MinimalistCard = (props: PremiumCardProps) => {
       <View className="absolute dark:bg-void/15 bg-void/25 -bottom-2 left-0 rounded-lg scale-[0.97] px-2 w-full h-24 z-10" />
       <LinearGradient
         colors={
-          colorScheme === "light"
-            ? ["#020202", "#030303", "#040404"]
-            : ["#FFF", "#FFF"]
+          props.isDark ? ["#020202", "#030303", "#040404"] : ["#FFF", "#FFF"]
         }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -46,9 +46,7 @@ export const MinimalistCard = (props: PremiumCardProps) => {
             name={props.icon ?? "shield-bold-duotone"}
             solid
             size={32}
-            color={
-              colorScheme === "light" ? Colors.dark.hyper : Colors.light.active
-            }
+            color={props.isDark ? Colors.dark.hyper : Colors.light.active}
           />
         </FlexRow>
         <View className="px-1 flex flex-row items-center w-full justify-between">
@@ -85,6 +83,33 @@ export const MinimalistCard = (props: PremiumCardProps) => {
           <View className="h-full w-[3px] rounded-full bg-grei/0"></View>
         </TouchableOpacity>
       </LinearGradient>
+    </Animated.View>
+  );
+};
+
+export const MinimalistHeader = (props: CardProps) => {
+  return (
+    <Animated.View
+      entering={FadeInDown.delay(400)
+        .duration(700)
+        .withInitialValues({ marginTop: 8 })}
+      className="flex-row justify-between items-start p-6"
+    >
+      <View>
+        <DText className="text-3xl font-bold">{props.title}</DText>
+        <View className="flex-row items-center mt-2">
+          <Icon name="abacus" size={16} color="#10b981" />
+          <SText className="ml-1 text-green-600 font-medium">Subtext</SText>
+        </View>
+      </View>
+
+      <View className="items-end">
+        <View className="flex-row items-center">
+          <Icon name="taxi" size={18} color="#fbbf24" />
+          <SText className="ml-1 text-lg font-bold">Rating</SText>
+        </View>
+        <SText className="text-gray-500">0 reviews</SText>
+      </View>
     </Animated.View>
   );
 };

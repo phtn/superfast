@@ -15,7 +15,6 @@ import { AuthProvider } from "@/app/_ctx/auth";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ConfigCtxProvider } from "./_ctx/config";
 import { CTPLCtxProvider } from "./_ctx/ctpl-ctx";
-import { PixelRatio } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -38,7 +37,6 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    console.log(PixelRatio.getFontScale());
     if (loaded) {
       SplashScreen.hideAsync();
     }

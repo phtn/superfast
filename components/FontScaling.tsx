@@ -12,49 +12,64 @@ import {
 } from "react-native";
 import Animated, { AnimatedProps } from "react-native-reanimated";
 
+const BASE_WIDTH = 375;
+const MAX_SIZE = 0.95;
+const MIN_SIZE = 1.075;
+const FONT_SIZE = 15;
+
 interface DTextProps extends TextProps {
   fontSize?: number;
-  style?: TextStyle | TextStyle[];
+  style?: StyleProp<TextProps>;
   className?: ClassName;
 }
-interface STextProps extends TextProps {
-  style?: TextStyle | TextStyle[];
-  className?: ClassName;
-}
-
-const BASE_WIDTH = 375;
-export const DText = (props: DTextProps) => {
+export const DText = ({
+  className,
+  fontSize = FONT_SIZE,
+  style,
+  ...props
+}: DTextProps) => {
   const { width } = useWindowDimensions();
   const [scaleFactor, setScaleFactor] = useState<number>(1);
 
   useEffect(() => {
     const computed = width / BASE_WIDTH;
-    const bound = Math.max(1.05, Math.min(computed, 1.15));
+    const bound = Math.max(MAX_SIZE, Math.min(computed, MIN_SIZE));
     setScaleFactor(bound);
   }, [width]);
 
   return (
     <Text
       {...props}
-      style={[props.style, { fontSize: (props.fontSize ?? 14) * scaleFactor }]}
+      style={[style, { fontSize: fontSize * scaleFactor }]}
       allowFontScaling={true}
-      className={props.className}
+      className={className}
     />
   );
 };
-export const SText = (props: STextProps) => (
-  <Text {...props} allowFontScaling={false} className={props.className} />
+
+interface STextProps extends TextProps {
+  style?: StyleProp<TextProps>;
+  className?: ClassName;
+}
+
+export const SText = ({ className, style, ...props }: STextProps) => (
+  <Text
+    {...props}
+    style={style}
+    allowFontScaling={false}
+    className={className}
+  />
 );
 interface DAnimatedTextProps extends AnimatedProps<TextProps> {
   className?: ClassName;
-  style?: TextStyle | TextStyle[];
+  style?: StyleProp<TextProps>;
   fontSize?: number;
   children?: ReactNode;
 }
 export const DAnimatedText = ({
   className,
   children,
-  fontSize,
+  fontSize = FONT_SIZE,
   style,
   ...props
 }: DAnimatedTextProps) => {
@@ -63,15 +78,15 @@ export const DAnimatedText = ({
 
   useEffect(() => {
     const computed = width / BASE_WIDTH;
-    const bound = Math.max(1.05, Math.min(computed, 1.15));
+    const bound = Math.max(MAX_SIZE, Math.min(computed, MIN_SIZE));
     setScaleFactor(bound);
   }, [width]);
 
   return (
     <Animated.Text
       {...props}
-      style={[style, { fontSize: (fontSize ?? 14) * scaleFactor }]}
-      allowFontScaling={false}
+      style={[style, { fontSize: fontSize * scaleFactor }]}
+      allowFontScaling={true}
       className={className}
     >
       {children}
@@ -99,22 +114,29 @@ interface DTextInputProps extends TextInputProps {
   label?: string;
   style?: StyleProp<TextStyle>;
 }
-export const DTextInput = (props: DTextInputProps) => {
+export const DTextInput = ({
+  label,
+  icon,
+  className,
+  fontSize = FONT_SIZE,
+  style,
+  ...props
+}: DTextInputProps) => {
   const { width } = useWindowDimensions();
   const [scaleFactor, setScaleFactor] = useState<number>(1);
 
   useEffect(() => {
     const computed = width / BASE_WIDTH;
-    const bound = Math.max(1.05, Math.min(computed, 1.15));
+    const bound = Math.max(MAX_SIZE, Math.min(computed, MIN_SIZE));
     setScaleFactor(bound);
   }, [width]);
 
   return (
     <TextInput
       {...props}
-      style={[props.style, { fontSize: (props.fontSize ?? 14) * scaleFactor }]}
-      className={props.className}
+      style={[style, { fontSize: fontSize * scaleFactor }]}
       allowFontScaling={true}
+      className={className}
     />
   );
 };

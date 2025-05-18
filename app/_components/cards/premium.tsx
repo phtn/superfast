@@ -17,7 +17,7 @@ export const PremiumCard = (props: PremiumCardProps) => {
   return (
     <Animated.View
       entering={FadeInDown.delay(500).duration(700)}
-      className="px-3 my-6"
+      className="px-3 py-6"
     >
       <LinearGradient
         colors={

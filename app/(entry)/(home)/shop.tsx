@@ -2,7 +2,7 @@
 
 import { Platform, View } from "react-native";
 import { Categories } from "@/app/_components/home/categories";
-import { Header, SearchBar } from "@/app/_components/home/components";
+import { Header } from "@/app/_components/home/components";
 import { IProductItem, Products } from "@/app/_components/home/products";
 import { useConfigCtx } from "@/app/_ctx/config";
 import ParallaxView from "@/components/ParallaxView";
@@ -23,7 +23,7 @@ const ShopScreen = () => {
 
   const ctplImageUri = useMemo(
     () =>
-      isDark ? getFileUri("CTPL_DARK2.png") : getFileUri("CTPL_LIGHT4.png"),
+      isDark ? getFileUri("CTPL_DARK5.webp") : getFileUri("CTPL_LIGHT4.png"),
     [isDark, getFileUri],
   );
   const fullImageUri = useMemo(
@@ -41,7 +41,7 @@ const ShopScreen = () => {
           subtext: "Compulsory Third Party Liability",
           image: ctplImageUri,
           description: "Compulsory Third Party Liability",
-          textStyles: "text-void",
+          textStyles: "text-hades",
           tag: "car insurance",
         },
         {
@@ -50,7 +50,7 @@ const ShopScreen = () => {
           subtext: "Comprehensive Insurance Coverage",
           image: fullImageUri,
           description: "Comprehensive Insurance Coverage",
-          textStyles: "text-void",
+          textStyles: "text-hades",
           tag: "car insurance",
         },
       ] as IProductItem[],
@@ -64,11 +64,11 @@ const ShopScreen = () => {
       <StatusBar translucent backgroundColor="transparent" />
 
       <Header />
-      <SearchBar />
+      {/* <SearchBar /> */}
 
       <ParallaxView
+        height={100}
         scrollRef={scrollRef}
-        height={120}
         header={<Categories isDark={isDark} />}
       >
         <SheetProvider>

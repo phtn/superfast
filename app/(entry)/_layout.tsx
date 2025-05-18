@@ -1,11 +1,8 @@
 import { useAuth } from "@/app/_ctx/auth";
-import { FlexRow } from "@/components/ui/FlexRow";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useMemo, useState } from "react";
-import { Image } from "react-native";
-import { useConfigCtx } from "../_ctx/config";
+import { useEffect, useState } from "react";
 
 export default function Layout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,10 +25,6 @@ export default function Layout() {
     checkFirstLaunch();
   }, []);
 
-  if (isLoading || authLoading) {
-    return <GlassSplash />;
-  }
-
   return (
     <>
       <Stack screenOptions={{ headerShown: false }}>
@@ -39,35 +32,26 @@ export default function Layout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="/(account)" options={{ headerShown: false }} />
             <Stack.Screen
-              name="camera/index"
+              name="/camera"
               options={{
                 headerShown: false,
                 presentation: "fullScreenModal",
               }}
             />
             <Stack.Screen name="/(ctpl)" options={{ headerShown: false }} />
+            <Stack.Screen name="/(docs)" options={{ headerShown: false }} />
           </Stack>
         ) : (
-          <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+          <>
+            {isLoading || authLoading ? (
+              <Stack.Screen name="splash" options={{ headerShown: false }} />
+            ) : (
+              <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+            )}
+          </>
         )}
       </Stack>
       <StatusBar style="auto" />
     </>
   );
 }
-
-const GlassSplash = () => {
-  const { getFileUri } = useConfigCtx();
-  const glass = useMemo(() => getFileUri("TORQ2.png"), [getFileUri]);
-  return (
-    <FlexRow className="size-full">
-      <Image
-        source={{
-          uri: glass,
-        }}
-        resizeMode="contain"
-        className="h-16 w-auto aspect-auto"
-      />
-    </FlexRow>
-  );
-};

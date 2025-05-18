@@ -215,126 +215,103 @@ const OnboardingScreen = () => {
             borderCurve: "continuous",
           }}
         ></Animated.View>
-        {/* <Animated.View
-          style={{
-            transform: [
-              {
-                translateX: scrollX.interpolate({
-                  inputRange: [
-                    (currentIndex - 1) * 2 * width,
-                    currentIndex * width,
-                    (currentIndex + 1) * 2 * width,
-                  ],
-                  outputRange: [-200, 0, 0],
-                  extrapolate: "clamp",
-                }),
-              },
-              {
-                translateY: scrollX.interpolate({
-                  inputRange: [
-                    (currentIndex - 2) * width,
-                    currentIndex * 2 * width,
-                    (currentIndex + 2) * width,
-                  ],
-                  outputRange: [-200, 0, 0],
-                  extrapolate: "clamp",
-                }),
-              },
-            ],
-          }}
-          className="absolute top-10 border size-16 left-24 border-chalk flex flex-row items-center justify-center"
-        >
-          <Image
-            source={require("@/assets/images/adaptive-icon.png")}
-            className="absolute size-16 aspect-auto"
-          />
-        </Animated.View> */}
         <View className="h-3/4 w-auto aspect-square border-0 dark:border-chalk rounded-2xl"></View>
       </View>
     );
   }, [currentIndex, scrollX]);
 
-  return (
-    <LinearGradient
-      colors={gradients}
-      className="flex-1 bg-void antialiased"
-      style={{ paddingTop: inset.top, paddingBottom: inset.bottom }}
-    >
-      <View className="flex flex-col items-center">
-        <StatusBar translucent backgroundColor="transparent" />
+  const [staging, setStaging] = useState(true);
 
-        <View className="flex h-20 px-8 flex-row w-full items-center justify-between">
-          <Paginator
-            scrollX={scrollX}
-            slides={slides}
-            width={width}
-            isDark={isDark}
-          />
-          <View>
-            <Pressable onPress={handleSkip}>
-              <Text className="dark:text-chalk font-quick font-semibold">
-                Skip
-              </Text>
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setStaging(false);
+    }, 1000);
+    return () => clearTimeout(delay);
+  }, []);
+
+  return (
+    !staging && (
+      <LinearGradient
+        colors={gradients}
+        className="flex-1 bg-void antialiased"
+        style={{ paddingTop: inset.top, paddingBottom: inset.bottom }}
+      >
+        <View className="flex flex-col items-center">
+          <StatusBar translucent backgroundColor="transparent" />
+
+          <View className="flex h-20 px-8 flex-row w-full items-center justify-between">
+            <Paginator
+              scrollX={scrollX}
+              slides={slides}
+              width={width}
+              isDark={isDark}
+            />
+            <View>
+              <Pressable onPress={handleSkip}>
+                <Text className="dark:text-chalk font-quick font-semibold">
+                  Skip
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+
+          <Frames />
+          <View className="h-[calc(100vh-46vh)]">
+            <FlatList
+              horizontal
+              data={slides}
+              pagingEnabled
+              ref={slidesRef}
+              bounces={false}
+              renderItem={renderItem}
+              viewabilityConfig={viewConfig}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.id}
+              onScroll={onScroll}
+              onViewableItemsChanged={viewableItemsChanged}
+              initialScrollIndex={0}
+              getItemLayout={getItemLayout}
+              className="scroll-smooth dark:border-chalk h-full border-void will-change-scroll"
+            />
+          </View>
+          <View className="fixed bottom-0 h-[10vh] w-full flex px-8 items-center flex-row justify-center">
+            {currentIndex === slides.length - 1 && (
+              <Pressable
+                onPress={handleGetStarted}
+                className="rounded-3xl dark:border-chalk/80 dark:bg-transparent bg-dark-active px-12 py-4"
+              >
+                <Text className="text-xl font-semibold text-white font-quicksemi tracking-tight">
+                  Get Started
+                </Text>
+              </Pressable>
+            )}
+          </View>
+          <View className="h-[15vh] flex items-center justify-center w-full">
+            <Pressable
+              className="flex flex-row items-center justify-center"
+              onPress={handleNext}
+            >
+              <SwipeLeftIndicator
+                onComplete={completeOnboarding}
+                isLastScreen={currentIndex === slides.length - 1}
+                hasSwiped={currentIndex === 2}
+                dots={6}
+              />
             </Pressable>
           </View>
-        </View>
-
-        <Frames />
-        <View className="h-[calc(100vh-46vh)]">
-          <FlatList
-            horizontal
-            data={slides}
-            pagingEnabled
-            ref={slidesRef}
-            bounces={false}
-            renderItem={renderItem}
-            viewabilityConfig={viewConfig}
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            onScroll={onScroll}
-            onViewableItemsChanged={viewableItemsChanged}
-            initialScrollIndex={0}
-            getItemLayout={getItemLayout}
-            className="scroll-smooth dark:border-chalk h-full border-void will-change-scroll"
-          />
-        </View>
-        <View className="fixed bottom-0 h-[10vh] w-full flex px-8 items-center flex-row justify-center">
-          {currentIndex === slides.length - 1 && (
-            <Pressable
-              onPress={handleGetStarted}
-              className="rounded-3xl dark:border-chalk/80 dark:bg-transparent bg-dark-active px-12 py-4"
-            >
-              <Text className="text-xl font-semibold text-white font-quicksemi tracking-tight">
-                Get Started
-              </Text>
-            </Pressable>
-          )}
-        </View>
-        <View className="h-[15vh] flex items-center justify-center w-full">
           <Pressable
-            className="flex flex-row items-center justify-center"
-            onPress={handleNext}
+            onPress={toggleColorScheme}
+            className="absolute bottom-12 right-8 rounded-xl size-8 dark:border-chalk flex items-center dark:bg-blu/[8%] bg-void/[8%] justify-center"
           >
-            <SwipeLeftIndicator
-              onComplete={completeOnboarding}
-              isLastScreen={currentIndex === slides.length - 1}
-              hasSwiped={currentIndex === 2}
-              dots={6}
+            <Ionicons
+              size={16}
+              name={colorScheme === "dark" ? "sunny" : "moon"}
+              color={"#FFFFFF"}
             />
           </Pressable>
         </View>
-        <Pressable
-          onPress={toggleColorScheme}
-          className="absolute bottom-12 right-8 rounded-xl size-8 dark:border-chalk flex items-center dark:bg-blu/[8%] bg-void/[8%] justify-center"
-        >
-          <Ionicons
-            size={16}
-            name={colorScheme === "dark" ? "sunny" : "moon"}
-            color={"#FFFFFF"}
-          />
-        </Pressable>
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    )
   );
 };
 export default OnboardingScreen;

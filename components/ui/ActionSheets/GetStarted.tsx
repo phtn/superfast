@@ -55,7 +55,7 @@ const GetStartedSheet = ({ payload }: SheetProps<"get-started">) => {
       <View className="px-0">
         <FlexCol
           style={{ borderTopStartRadius: 24, borderTopEndRadius: 24 }}
-          className="justify-start relative bg-white dark:bg-cronus py-8"
+          className="justify-start relative bg-white dark:bg-hades py-8"
         >
           <GetStartedOptions isDark={payload.isDark} />
         </FlexCol>
@@ -108,13 +108,13 @@ const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
             })}
           >
             <DText
-              fontSize={10}
-              className="font-quicksemi dark:text-grei tracking-teen"
+              fontSize={13}
+              className="font-quickbold dark:text-grei tracking-teen"
             >
               {label}
             </DText>
             {subtext && (
-              <SText className="text-base dark:text-grei opacity-70">
+              <SText className="text-base font-tight font-normal dark:text-grei opacity-60">
                 {subtext}
               </SText>
             )}
@@ -137,7 +137,7 @@ const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
           containerStyle="h-[26rem]"
           keyId="id"
           delay={500}
-          data={carTypes}
+          data={carTypes ?? []}
           component={CarTypeItem}
         />
       </View>

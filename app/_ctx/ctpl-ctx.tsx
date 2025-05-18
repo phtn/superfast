@@ -7,6 +7,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type Dispatch,
@@ -16,7 +17,17 @@ import {
 import { type IconName } from "../_components/icons/types";
 import { useAuth } from "./auth";
 import { useConfigCtx } from "./config";
-
+interface CarTypeDB {
+  id: string;
+  label: string;
+  subtext?: string;
+  description: string;
+  keywords: string;
+  price: number;
+  icon: string;
+  icon_solid?: boolean;
+  image_filename: string;
+}
 export interface CarType {
   id: string;
   label: string;
@@ -42,7 +53,7 @@ interface VehicleDocs {
 
 export type DocType = "or" | "cr" | "id";
 interface CTPLCtxValues {
-  carTypes: CarType[];
+  carTypes: CarType[] | null;
   onSelect: (id: string) => void;
   carType: CarType | undefined;
   pickImage: (docType: DocType) => Promise<void>;
@@ -51,6 +62,10 @@ interface CTPLCtxValues {
   id_image: Doc | null;
   documents: VehicleDocs;
   setDocuments: Dispatch<SetStateAction<VehicleDocs>>;
+  sampleDocs: {
+    or: string;
+    cr: string;
+  };
   /**
    * Upload a document to Supabase Storage and return its public URL
    */
@@ -68,69 +83,41 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
   const [carType, setSelectedCarType] = useState<CarType>();
   const [documents, setDocuments] = useState<VehicleDocs>({});
   const [uploading, setUploading] = useState(false);
+  const [carTypes, setCarTypes] = useState<CarType[] | null>(null);
 
   const { getFileUri } = useConfigCtx();
   const { user } = useAuth();
   const { gsec } = useCodeConverter();
 
-  const carTypes = useMemo(
-    () =>
-      [
-        {
-          id: "private",
-          label: "Private Cars",
-          subtext: "Including jeepneys and utility vehicles",
-          description: "Private Cars",
-          icon: "taxi",
-          price: 600,
-          keywords: [
-            "private cars",
-            "suv",
-            "sedans",
-            "utility vans",
-            "jeepneys",
-            "family vans",
-          ],
-          imageUri: getFileUri("TESLA1.png"),
-        },
-        {
-          id: "lm_trucks",
-          label: "Light · Medium Trucks",
-          description: "Trucks",
-          subtext: "Not over 3,930 kilograms",
-          icon: "tow-truck",
-          price: 650,
-          keywords: ["light trucks", "medium trucks", "elf trucks"],
-          imageUri: getFileUri("LIGHT_TRUCK3.png"),
-        },
-        {
-          id: "hv_trucks",
-          label: "Heavy Trucks",
-          description: "Heavy Trucks",
-          subtext: "Not over 3,930 kilograms",
-          icon: "shipping-truck",
+  const getCarTypes = useCallback(async () => {
+    const { data, error, status } = await supabase
+      .from("car_types")
+      .select(
+        "id, label,subtext, description, icon, icon_solid, keywords, price, image_filename",
+      );
+    if (error) console.log(error, status);
+    if (data) {
+      const parsedCarTypes = data.map((t: CarTypeDB) => ({
+        ...t,
+        keywords: t.keywords.split(","),
+        imageUri: getFileUri(t.image_filename),
+        iconSolid: t.icon_solid,
+      })) as CarType[];
 
-          price: 1245,
-          keywords: ["heavy trucks", "private buses"],
-          imageUri: getFileUri("HEAVY_TRUCK.png"),
-        },
-        {
-          id: "motors",
-          label: "Motorcycles · Tricycles · Trailers",
-          description: "Motors",
-          icon: "bigbike",
-          iconSolid: true,
-          price: 600,
-          keywords: ["motorcycles", "tricycles", "trailers"],
-          imageUri: getFileUri("MOTORCYCLE.png"),
-        },
-      ] as CarType[],
-    [getFileUri],
-  );
+      setCarTypes(parsedCarTypes);
+
+      // console.log(JSON.stringify(data, null, 2));
+      // console.log(status);
+    }
+  }, [getFileUri]);
+
+  useEffect(() => {
+    getCarTypes().catch(console.log);
+  }, [getCarTypes]);
 
   const onSelect = useCallback(
     (id: string) => {
-      const carType = carTypes.find((t) => t.id === id);
+      const carType = carTypes?.find((t) => t.id === id);
       setSelectedCarType(carType);
     },
     [carTypes],
@@ -258,6 +245,14 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, cr_image, or_image, uploadDocument, gsec]);
 
+  const sampleDocs = useMemo(
+    () => ({
+      cr: getFileUri("CR.webp"),
+      or: getFileUri("OR.webp"),
+    }),
+    [getFileUri],
+  );
+
   const value = useMemo(
     () => ({
       carTypes,
@@ -272,6 +267,7 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
       uploadDocument,
       submitDocuments,
       uploading,
+      sampleDocs,
     }),
     [
       carTypes,
@@ -286,6 +282,7 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
       uploadDocument,
       submitDocuments,
       uploading,
+      sampleDocs,
     ],
   );
   return <CTPLCtx.Provider value={value}>{children}</CTPLCtx.Provider>;

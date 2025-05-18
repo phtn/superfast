@@ -17,6 +17,7 @@ import Animated, {
   useScrollViewOffset,
   useSharedValue,
 } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
 const FastScreen = () => {
   const { colorScheme } = useColorScheme();
@@ -61,23 +62,30 @@ const FastScreen = () => {
   );
 
   return (
-    <View
-      className={`flex-1 bg-grei dark:bg-void ${Platform.OS === "ios" ? "pt-14" : "pt-9"}`}
-    >
-      <StatusBar translucent backgroundColor="transparent" />
-      {/* Header - Fixed */}
-
-      <Header />
-      {/* Search Bar - Fixed */}
-
-      <ParallaxView
-        scrollRef={scrollRef}
-        height={120}
-        header={<UserCategories isDark={isDark} />}
+    <View className="flex-1">
+      <LinearGradient
+        className={`flex-1 bg-grei dark:bg-void ${Platform.OS === "ios" ? "pt-14" : "pt-9"}`}
+        colors={
+          isDark
+            ? ["#14141B", "#14141B", "#14141B", "#14141B"]
+            : ["#ECECEE", "#ECECEE", "#f2f2f2", "#ffffff"]
+        }
       >
-        {/* Main Scrollable Content */}
-        <UserProducts list={products} isDark={isDark} />
-      </ParallaxView>
+        <StatusBar translucent backgroundColor="transparent" />
+        {/* Header - Fixed */}
+
+        <Header />
+        {/* Search Bar - Fixed */}
+
+        <ParallaxView
+          scrollRef={scrollRef}
+          height={120}
+          header={<UserCategories isDark={isDark} />}
+        >
+          {/* Main Scrollable Content */}
+          <UserProducts list={products} isDark={isDark} />
+        </ParallaxView>
+      </LinearGradient>
     </View>
   );
 };

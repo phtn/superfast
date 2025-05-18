@@ -38,10 +38,11 @@ module.exports = {
         "dark-ga": "#5d5d63",
         "light-ga": "#c7c7cb",
         fade: "#f3f4f6",
-        hades: "#222229",
+        hades: "#2B2B31",
         cronus: "#1e2029",
         medusa: "#67696f",
         mortar: "#808186",
+        offwhite: "#ECECEE",
       },
 
       keyframes: {

@@ -110,13 +110,13 @@ export const BottomTab = (_: BottomTabBarProps) => {
             />
           </Animated.View>
           <Animated.View
-            entering={SlideInUp.delay(800)
-              .duration(1850)
+            entering={SlideInUp.delay(750)
+              .duration(1775)
               .damping(5)
               .mass(3)
               .withInitialValues({ originY: 128 })}
             className={clsx(
-              `absolute -top-32 w-1 h-36 rotate-[60deg] bg-royal dark:bg-white left-8 ${index !== active && " hidden"}`,
+              `absolute -top-32 w-4 h-36 rotate-[60deg] bg-royal/80 dark:bg-white left-8 ${index !== active && " hidden"}`,
             )}
           />
           <Icon

@@ -1,15 +1,16 @@
+import { DAnimatedText } from "@/components/FontScaling";
+import { LinearGradient } from "expo-linear-gradient";
+import { memo } from "react";
+import { View } from "react-native";
+import Animated, {
+  FadeInDown,
+  SlideInUp,
+  ZoomInEasyDown,
+} from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 import { FlexRow } from "../FlexRow";
-import { Dimensions, View } from "react-native";
-import { memo } from "react";
-import Animated, { SlideInUp, ZoomInEasyDown } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
-import { DAnimatedText } from "@/components/FontScaling";
 
 export const Handle = () => {
-  const width = Dimensions.get("screen").width;
-  const left = Math.round(width / 2 - 32);
-  console.log(left);
   return (
     <FlexRow
       className={`absolute -top-[1.5px] w-full`}
@@ -38,7 +39,7 @@ export const Handle = () => {
 
 export const SheetHeader = memo(({ title }: { title: string }) => (
   <Animated.View
-    entering={ZoomInEasyDown.delay(0).duration(500).damping(2).mass(2)}
+    entering={FadeInDown.delay(300).duration(500).damping(2).mass(2)}
     className="h-16 overflow-hidden bg-royal dark:bg-void relative flex flex-col rounded-3xl items-center justify-center mx-4"
   >
     <Animated.View
@@ -66,9 +67,8 @@ export const SheetHeader = memo(({ title }: { title: string }) => (
       className="absolute -top-48 bg-white -rotate-[30deg] h-2 w-[36rem] rounded-full"
     />
     <DAnimatedText
-      fontSize={20}
       entering={ZoomInEasyDown.delay(150).duration(500).damping(5)}
-      className="font-ultratight origin-center tracking-tight text-white"
+      className="font-ultratight origin-center tracking-snug text-white"
     >
       {title}
     </DAnimatedText>
