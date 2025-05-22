@@ -5,8 +5,9 @@ import { DAnimatedText, DText, SText } from "@/components/FontScaling";
 import ParallaxView from "@/components/ParallaxView";
 import { FlexRow } from "@/components/ui/FlexRow";
 import { GridBackground } from "@/components/ui/Grid";
+import StackedCards from "@/components/ui/StackedCards";
+import { TextTransition } from "@/components/ux/TextTransition";
 import { Colors } from "@/constants/Colors";
-import clsx from "clsx";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -15,7 +16,6 @@ import { memo, useCallback, useMemo } from "react";
 import {
   ActivityIndicator,
   Image,
-  Text,
   TouchableOpacity,
   TouchableOpacityProps,
   View,
@@ -59,6 +59,23 @@ export default function CTPLScreen() {
 
   const headerImageUri = useMemo(() => carType?.imageUri, [carType?.imageUri]);
 
+  const doc_types = [
+    {
+      id: 0,
+      label: "Original Receipt",
+      fn: selectUploadOption("or"),
+      uri: documents?.or?.uri ?? or_image?.uri ?? sampleDocs.or,
+      withDoc: !!or_image,
+    },
+    {
+      id: 1,
+      label: "Certificate of Registration",
+      fn: selectUploadOption("cr"),
+      uri: documents?.cr?.uri ?? cr_image?.uri ?? sampleDocs.cr,
+      withDoc: !!cr_image,
+    },
+  ] as IDocType[];
+
   return (
     <View className="size-full relative dark:bg-chalk/20 bg-slate-600/70">
       <StatusBar style="light" />
@@ -71,116 +88,29 @@ export default function CTPLScreen() {
           />
         }
       >
-        <Animated.View className="rounded-t-[2rem] h-screen dark:bg-void bg-chalk overflow-hidden">
+        <Animated.View className="rounded-t-[2rem] h-screen dark:bg-neutral-950 bg-chalk overflow-hidden">
           <View className="px-2">
             <MinimalistHeader
-              title={`for ${carType?.description}`}
+              title={`CTPL for ${carType?.description}`}
               description={carType?.subtext}
               onPress={() => console.log("")}
               value={carType?.price}
               isDark={isDark}
             >
-              <Text className="font-ultratight dark:text-royal px-2">
-                CTPL &nbsp;
-              </Text>
+              <TextTransition
+                textArray={carType?.keywords}
+                textStyle="tracking-snug dark:text-ultra-active"
+                containerStyle="h-10"
+                cycleTime={5000}
+              />
             </MinimalistHeader>
           </View>
 
-          <Animated.View
-            entering={FadeInUp.delay(700)
-              .duration(500)
-              .withInitialValues({ y: -32 })
-              .easing(Easing.out(Easing.quad))}
-            className="pt-6 pb-3 -mt-2 ps-3 mx-3 rounded-b-xl bg-hyper-active/5 border-b border-x border-ga dark:border-hyper-active dark:bg-hyper-active flex flex-row items-center gap-4"
-          >
-            <SText className="font-quicksemi text-base tracking-snug dark:text-royal">
-              When you&apos;re ready
-            </SText>
-            <SText className="font-tight leading-none aspect-square p-1.5 size-7 rounded-full text-center text-base bg-hyper-active dark:bg-white tracking-snug dark:text-royal/80 text-white">
-              &rarr;
-            </SText>
-            <SText className="text-base font-quicksemi text-hades dark:text-royal tracking-snug">
-              Upload Documents
-            </SText>
-          </Animated.View>
+          {/* <Note /> */}
 
-          <FlexRow className="px-2 h-80 pt-8 py-b pb-0 gap-7">
-            <TouchableOpacity
-              onPress={selectUploadOption("or")}
-              className="flex-1 h-44"
-              activeOpacity={0.6}
-            >
-              <FlexRow className="h-44 py-8  flex-col rounded-[2rem]">
-                <View className="size-full gap-4 flex items-center justify-center flex-col">
-                  <FlexRow
-                    className={clsx(
-                      "h-36",
-                      or_image &&
-                        " border border-ga rounded-xl bg-hyper-active",
-                    )}
-                  >
-                    <Image
-                      source={{
-                        uri:
-                          documents?.or?.uri ?? or_image?.uri ?? sampleDocs.or,
-                      }}
-                      resizeMode="contain"
-                      className="w-full aspect-auto h-full"
-                    />
-                  </FlexRow>
-                  <View className="h-12">
-                    <DText
-                      fontSize={10}
-                      className="font-quicksemi tracking-tight dark:text-ga"
-                    >
-                      Original Receipt
-                    </DText>
-                  </View>
-                </View>
-              </FlexRow>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={selectUploadOption("cr")}
-              className="flex-1 h-44"
-              activeOpacity={0.6}
-            >
-              <FlexRow className="h-44 py-8 w-full flex-col rounded-[2rem]">
-                <View className="size-full gap-4 p-1 flex items-center justify-center flex-col">
-                  <FlexRow
-                    className={clsx(
-                      "h-36",
-                      cr_image &&
-                        " border border-ga rounded-xl bg-hyper-active",
-                    )}
-                  >
-                    <Image
-                      source={{
-                        uri:
-                          documents?.cr?.uri ?? cr_image?.uri ?? sampleDocs.cr,
-                      }}
-                      resizeMode="contain"
-                      className="w-full aspect-auto h-full"
-                    />
-                  </FlexRow>
-                  <View className="flex flex-col justify-center h-12">
-                    <DText
-                      fontSize={10}
-                      className="font-quicksemi tracking-snug text-center dark:text-ga"
-                    >
-                      Certificate
-                    </DText>
-                    <DText
-                      fontSize={10}
-                      className="text-base font-quicksemi tracking-snug dark:text-ga"
-                    >
-                      of Registration
-                    </DText>
-                  </View>
-                </View>
-              </FlexRow>
-            </TouchableOpacity>
-          </FlexRow>
+          <View className="h-[110vw] w-screen overflow-scroll">
+            <StackedCards cards={doc_types} />
+          </View>
           {or_image || cr_image ? (
             <FlexRow className="mx-8 h-36">
               <UploadButton onPress={submitDocuments} loading={uploading} />
@@ -201,7 +131,40 @@ export default function CTPLScreen() {
     </View>
   );
 }
-
+interface IDocType {
+  id: number;
+  fn: VoidFunction;
+  label: string;
+  uri: string;
+  withDoc: boolean;
+}
+export const DocTypeItem = ({ fn, label, uri, withDoc }: IDocType) => (
+  <TouchableOpacity
+    onPress={fn}
+    className="size-64 border border-blue-400 p-2 flex flex-col rounded-[2rem]"
+    activeOpacity={0.6}
+  >
+    <View
+      className={`flex items-center bg-pink-200/20 justify-center flex-col ${withDoc && "border border-ga rounded-xl bg-hyper-active"}`}
+    >
+      <Image
+        source={{
+          uri,
+        }}
+        resizeMode="contain"
+        className="w-auto aspect-auto h-48"
+      />
+      <View className="h-12">
+        <DText
+          fontSize={10}
+          className="font-quicksemi tracking-tight dark:text-ga"
+        >
+          {label}
+        </DText>
+      </View>
+    </View>
+  </TouchableOpacity>
+);
 const Brand = ({ route }: HeaderProps) => {
   return (
     <FlexRow className="h-[4.5rem] px-3 justify-between">
@@ -355,3 +318,23 @@ const UploadButton = (props: UploadButtonProps) => {
     </TouchableOpacity>
   );
 };
+
+export const Note = () => (
+  <Animated.View
+    entering={FadeInUp.delay(700)
+      .duration(500)
+      .withInitialValues({ y: -32 })
+      .easing(Easing.out(Easing.quad))}
+    className="pt-6 pb-3 -mt-2 ps-3 mx-3 rounded-b-xl bg-hyper-active/5 border-b border-x border-ga dark:border-hyper-active dark:bg-hyper-active flex flex-row items-center gap-4"
+  >
+    <SText className="font-quicksemi text-base tracking-snug dark:text-royal">
+      When you&apos;re ready
+    </SText>
+    <SText className="font-tight leading-none aspect-square p-1.5 size-7 rounded-full text-center text-base bg-hyper-active dark:bg-white tracking-snug dark:text-royal/80 text-white">
+      &rarr;
+    </SText>
+    <SText className="text-base font-quicksemi text-hades dark:text-royal tracking-snug">
+      Upload Documents
+    </SText>
+  </Animated.View>
+);

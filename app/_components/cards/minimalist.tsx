@@ -93,23 +93,27 @@ export const MinimalistHeader = (props: CardProps) => {
       entering={FadeInDown.delay(400)
         .duration(700)
         .withInitialValues({ marginTop: 8 })}
-      className="flex-row justify-between items-start p-6"
+      className="flex-row justify-between items-start py-5 px-4"
     >
       <View>
-        <DText className="text-3xl font-bold">{props.title}</DText>
-        <View className="flex-row items-center mt-2">
-          <Icon name="abacus" size={16} color="#10b981" />
-          <SText className="ml-1 text-green-600 font-medium">Subtext</SText>
+        <DText
+          fontSize={12.5}
+          className="dark:text-white font-quicksemi tracking-snug"
+        >
+          {props.title}
+        </DText>
+        <View className="flex-row items-center gap-4">
+          <Icon
+            name="arrow-right-up-broken"
+            size={20}
+            color={props.isDark ? Colors.dark.hyper : Colors.dark.hyper}
+            container="bg-chalk/20 rotate-45 size-6 p-[3px] rounded-full"
+          />
+          {props.children}
         </View>
       </View>
 
-      <View className="items-end">
-        <View className="flex-row items-center">
-          <Icon name="taxi" size={18} color="#fbbf24" />
-          <SText className="ml-1 text-lg font-bold">Rating</SText>
-        </View>
-        <SText className="text-gray-500">0 reviews</SText>
-      </View>
+      <View className="items-end"></View>
     </Animated.View>
   );
 };

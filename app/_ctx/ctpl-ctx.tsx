@@ -247,8 +247,8 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
 
   const sampleDocs = useMemo(
     () => ({
-      cr: getFileUri("CR.webp"),
-      or: getFileUri("OR.webp"),
+      cr: getFileUri("CR.png"),
+      or: getFileUri("OR.png"),
     }),
     [getFileUri],
   );

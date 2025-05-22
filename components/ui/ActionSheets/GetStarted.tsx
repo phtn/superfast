@@ -36,6 +36,8 @@ const GetStartedSheet = ({ payload }: SheetProps<"get-started">) => {
         paddingHorizontal: 0,
         borderTopEndRadius: 36,
         borderTopStartRadius: 36,
+        borderBottomEndRadius: 36,
+        borderBottomStartRadius: 36,
         backgroundColor: "transparent",
         shadowOffset: { width: 0, height: 0 },
       } as ViewStyle,

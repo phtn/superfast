@@ -1,3 +1,4 @@
+import { ClassName } from "@/types";
 import React, {
   useEffect,
   useState,
@@ -5,14 +6,8 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
+import { View } from "react-native";
 import {
-  View,
-  StyleSheet,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-} from "react-native";
-import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -20,6 +15,7 @@ import Animated, {
   Easing,
   cancelAnimation,
 } from "react-native-reanimated";
+import { DAnimatedText } from "../FontScaling";
 
 interface AnimatedTextCyclerProps {
   /** Array of strings to cycle through */
@@ -27,9 +23,9 @@ interface AnimatedTextCyclerProps {
   /** Time in milliseconds between transitions */
   cycleTime?: number;
   /** Style for the text characters */
-  textStyle?: StyleProp<TextStyle>;
+  textStyle?: ClassName;
   /** Style for the container */
-  containerStyle?: StyleProp<ViewStyle>;
+  containerStyle?: ClassName;
   /** Additional time in milliseconds to hold text steady before transition */
   steadyDisplayTime?: number;
 }
@@ -46,7 +42,7 @@ interface AnimatedCharacterProps {
   /** Time in milliseconds between transitions */
   cycleTime: number;
   /** Style for the text character */
-  textStyle?: StyleProp<TextStyle>;
+  textStyle?: ClassName;
 }
 
 interface RandomValues {
@@ -61,17 +57,18 @@ interface RandomValues {
  */
 export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
   textArray = ["Futuristic", "Animated", "Text", "Component"],
-  cycleTime = 5000,
-  textStyle = {},
+  textStyle,
+  cycleTime = 6000,
   containerStyle = {},
   steadyDisplayTime = 3000,
 }) => {
   // Use refs to keep track of state without triggering re-renders
-  const currentIndexRef = useRef<number>(0);
+  // Use state for currentIndex to trigger re-renders
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const timerRef = useRef<number | null>(null);
 
   // State to force render updates at the right time
-  const [renderKey, setRenderKey] = useState<number>(0);
+  // const [renderKey, setRenderKey] = useState<number>(0);
 
   // Memoize the current and next text
   const { currentText, nextText } = useMemo(() => {
@@ -79,42 +76,17 @@ export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
       return { currentText: [], nextText: [] };
     }
 
-    const current = textArray[currentIndexRef.current] || "";
-    const next =
-      textArray[(currentIndexRef.current + 1) % textArray.length] || "";
+    const current = textArray[currentIndex] || "";
+    const next = textArray[(currentIndex + 1) % textArray.length] || "";
 
     return {
       currentText: current.split(""),
       nextText: next.split(""),
     };
-  }, [textArray]);
+  }, [textArray, currentIndex]);
 
   // Set up cycle timer
-  useEffect(() => {
-    if (!textArray || textArray.length <= 1) return;
-
-    // Clear any existing timer
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-
-    // Set up new timer
-    timerRef.current = setInterval(() => {
-      // Update the index
-      currentIndexRef.current =
-        (currentIndexRef.current + 1) % textArray.length;
-      // Force a re-render
-      setRenderKey((prev) => prev + 1);
-    }, cycleTime);
-
-    // Cleanup on unmount
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [textArray, cycleTime]);
+  // Removed redundant useEffect
 
   // Calculate the max length for the display
   const maxLength = Math.max(currentText.length, nextText.length);
@@ -134,24 +106,40 @@ export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
     // Set up new timer with steady display time
     timerRef.current = setInterval(() => {
       // Update the index
-      currentIndexRef.current =
-        (currentIndexRef.current + 1) % textArray.length;
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % textArray.length);
       // Force a re-render
-      setRenderKey((prev) => prev + 1);
-    }, cycleTime + steadyDisplayTime); // Add steady display time
+      // setRenderKey((prev) => prev + 1);
+    }, cycleTime + steadyDisplayTime);
 
-    // Rest of the effect remains the same...
+    // Cleanup on unmount
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [textArray, cycleTime, steadyDisplayTime]);
+  /*
+  container: {
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 0,
+    },
+    textContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      // justifyContent: "space-around",
+      alignItems: "center",
+      minWidth: "100%",
+    },
+  */
 
   return (
-    <View
-      style={[styles.container, containerStyle as any]}
-      className="h-20 px-2"
-    >
-      <View style={styles.textContainer} className="h-9 overflow-hidden">
+    <View className={`${containerStyle} py-1`}>
+      <View className="h-8 overflow-hidden flex w-[70vw] flex-row items-center ">
         {displayArray.map((_, index) => (
           <AnimatedCharacter
-            key={`${index}-${renderKey}`}
+            key={`${index}`}
             currentChar={index < currentText.length ? currentText[index] : ""}
             nextChar={index < nextText.length ? nextText[index] : ""}
             index={index}
@@ -174,7 +162,7 @@ const AnimatedCharacter: React.FC<AnimatedCharacterProps> = ({
   index,
   totalChars,
   cycleTime,
-  textStyle = {},
+  textStyle,
 }) => {
   // Animation values
   const scale = useSharedValue<number>(1);
@@ -221,7 +209,7 @@ const AnimatedCharacter: React.FC<AnimatedCharacterProps> = ({
     opacity.value = withDelay(
       delay,
       withTiming(0, {
-        duration: firstPhaseDuration,
+        duration: firstPhaseDuration / 2,
         easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       }),
     );
@@ -319,34 +307,16 @@ const AnimatedCharacter: React.FC<AnimatedCharacterProps> = ({
     };
   });
 
+  const baseTextStyle =
+    "uppercase dark:text-chalk font-hypertight leading-none tracking-snug";
+
   return (
-    <Animated.Text
+    <DAnimatedText
+      fontSize={12}
       style={[animatedStyle]}
-      className="uppercase text-4xl dark:text-chalk font-hypertight leading-none -tracking-widest"
+      className={`${baseTextStyle} ${textStyle} ${displayChar === "a" && "-ml-[2px] -mr-[1px]"}`}
     >
       {displayChar}
-    </Animated.Text>
+    </DAnimatedText>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-  },
-  textContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    // justifyContent: "space-around",
-    alignItems: "center",
-    minWidth: "100%",
-  },
-  character: {
-    fontWeight: "bold",
-    color: "#14141b",
-    height: 40,
-    textAlign: "center",
-  },
-});

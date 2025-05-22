@@ -1,22 +1,15 @@
+import { ClassName } from "@/types";
+import { type ContentStyle, FlashList } from "@shopify/flash-list";
+import { clsx } from "clsx";
 import React, { FC, memo, ReactNode, useCallback, useMemo } from "react";
 import { View } from "react-native";
 import Animated, {
-  FadeInUp,
-  FadeInDown,
-  FadeInRight,
-  FadeInLeft,
   BaseAnimationBuilder,
+  FadeInDown,
+  FadeInLeft,
+  FadeInRight,
+  FadeInUp,
 } from "react-native-reanimated";
-import { type ContentStyle, FlashList } from "@shopify/flash-list";
-import { ClassName } from "@/types";
-import { clsx } from "clsx";
-
-// Helper to combine styles (replacement for cn utility)
-const combineStyles = (...styles: any[]) => {
-  return Object.assign({}, ...styles.filter(Boolean));
-};
-
-type StyleProp = object | object[] | undefined;
 
 interface HyperListProps<T> {
   keyId?: keyof T;
@@ -24,7 +17,7 @@ interface HyperListProps<T> {
   data: T[] | undefined;
   containerStyle?: ClassName;
   contentContainerStyle?: ContentStyle;
-  itemStyle?: StyleProp;
+  itemStyle?: ClassName;
   reversed?: boolean;
   orderBy?: keyof T;
   max?: number;
@@ -32,6 +25,7 @@ interface HyperListProps<T> {
   direction?: "up" | "down" | "left" | "right";
   delay?: number;
   disableAnimation?: boolean;
+  horizontal?: boolean;
 }
 
 export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
@@ -48,14 +42,15 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
     orderBy = "updated_at",
     reversed = false,
     disableAnimation = false,
+    horizontal = false,
   } = props;
 
   const baseContainerStyle = useMemo(
-    () => clsx("h-80", containerStyle),
+    () => clsx(`h-80 ${containerStyle}`),
     [containerStyle],
   );
 
-  const baseItemStyle = useMemo(() => combineStyles(itemStyle), [itemStyle]);
+  const baseItemStyle = useMemo(() => `${itemStyle}`, [itemStyle]);
 
   const enterAnimation = useCallback(
     (index: number): BaseAnimationBuilder | undefined => {
@@ -98,7 +93,7 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
       return (
         <Animated.View
           key={key}
-          style={baseItemStyle}
+          className={baseItemStyle}
           entering={enterAnimation(index)}
         >
           <Item {...item} />
@@ -125,6 +120,7 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
         keyExtractor={keyExtractor}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={contentContainerStyle}
+        horizontal={horizontal}
       />
     </View>
   );

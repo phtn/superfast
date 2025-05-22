@@ -62,7 +62,7 @@ export const SText = ({ className, style, ...props }: STextProps) => (
 );
 interface DAnimatedTextProps extends AnimatedProps<TextProps> {
   className?: ClassName;
-  style?: StyleProp<TextProps>;
+  style?: TextStyle | TextStyle[];
   fontSize?: number;
   children?: ReactNode;
 }

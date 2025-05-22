@@ -67,7 +67,7 @@ const ShopScreen = () => {
       {/* <SearchBar /> */}
 
       <ParallaxView
-        height={100}
+        height={120}
         scrollRef={scrollRef}
         header={<Categories isDark={isDark} />}
       >
