@@ -1,6 +1,6 @@
 import { TextInput, TextInputProps, View } from "react-native";
-import { IconName } from "@/app/_components/icons/types";
-import { Icon } from "@/app/_components/icons";
+import { IconName } from "../../components/icons/types";
+import { Icon } from "@/components/icons";
 
 interface InputProps extends TextInputProps {
   icon?: IconName;

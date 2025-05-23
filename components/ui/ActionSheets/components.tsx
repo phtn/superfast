@@ -68,7 +68,7 @@ export const SheetHeader = memo(({ title }: { title: string }) => (
     />
     <DAnimatedText
       entering={ZoomInEasyDown.delay(150).duration(500).damping(5)}
-      className="font-ultratight origin-center tracking-snug text-white"
+      className="font-ultratight origin-center tracking-tighter text-white"
     >
       {title}
     </DAnimatedText>

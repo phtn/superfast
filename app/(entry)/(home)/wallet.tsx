@@ -16,7 +16,7 @@ import Animated, { FadeInUp } from "react-native-reanimated";
 import ActionButton from "@/components/ui/ActionButton";
 import TransactionItem from "@/components/ui/TransactionItem";
 import CardCarousel from "@/components/ui/CardCarousel";
-import { Header } from "@/app/_components/home/components";
+import { Header } from "@/components/home/components";
 import { FlexRow } from "@/components/ui/FlexRow";
 
 export default function WalletScreen() {

@@ -14,7 +14,7 @@ import {
   type ReactNode,
   type SetStateAction,
 } from "react";
-import { type IconName } from "../_components/icons/types";
+import { type IconName } from "../components/icons/types";
 import { useAuth } from "./auth";
 import { useConfigCtx } from "./config";
 interface CarTypeDB {

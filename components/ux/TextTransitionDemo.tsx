@@ -1,16 +1,11 @@
 import React from "react";
 import { View, StyleSheet, SafeAreaView, StatusBar } from "react-native";
-import { ElementTransition } from "./TextTransition";
 
 const TextTransitionDemo = () => {
-  const futuristicPhrases = ["MOTORCYCLES", "TRICYCLES", "TRAILERS"];
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" />
-      <View className="w-screen bg-hyper-active border h-36 flex flex-row items-center">
-        <ElementTransition cycleTime={6000} textArray={futuristicPhrases} />
-      </View>
+      <View className="w-screen bg-hyper-active border h-36 flex flex-row items-center"></View>
     </SafeAreaView>
   );
 };

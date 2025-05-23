@@ -46,7 +46,7 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
   } = props;
 
   const baseContainerStyle = useMemo(
-    () => clsx(`h-80 ${containerStyle}`),
+    () => clsx("h-80", ` ${containerStyle}`),
     [containerStyle],
   );
 

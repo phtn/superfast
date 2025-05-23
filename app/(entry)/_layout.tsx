@@ -1,4 +1,4 @@
-import { useAuth } from "@/app/_ctx/auth";
+import { useAuth } from "@/ctx/auth";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
@@ -27,30 +27,28 @@ export default function Layout() {
 
   return (
     <>
-      <Stack screenOptions={{ headerShown: false }}>
-        {!isFirstLaunch && session ? (
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="/(account)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="/camera"
-              options={{
-                headerShown: false,
-                presentation: "fullScreenModal",
-              }}
-            />
-            <Stack.Screen name="/(ctpl)" options={{ headerShown: false }} />
-            <Stack.Screen name="/(docs)" options={{ headerShown: false }} />
-          </Stack>
-        ) : (
-          <>
-            {isLoading || authLoading ? (
-              <Stack.Screen name="splash" options={{ headerShown: false }} />
-            ) : (
-              <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-            )}
-          </>
-        )}
-      </Stack>
+      {!isFirstLaunch && session ? (
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="/(account)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="/camera"
+            options={{
+              headerShown: false,
+              presentation: "fullScreenModal",
+            }}
+          />
+          <Stack.Screen name="/(ctpl)" options={{ headerShown: false }} />
+          <Stack.Screen name="/(docs)" options={{ headerShown: false }} />
+        </Stack>
+      ) : (
+        <Stack screenOptions={{ headerShown: false }}>
+          {isLoading || authLoading ? (
+            <Stack.Screen name="splash" options={{ headerShown: false }} />
+          ) : (
+            <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+          )}
+        </Stack>
+      )}
       <StatusBar style="auto" />
     </>
   );

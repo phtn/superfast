@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { useConfigCtx } from "../_ctx/config";
+import { useConfigCtx } from "@/ctx/config";
 import pkg from "../../package.json";
 
 const SignInScreen = () => {

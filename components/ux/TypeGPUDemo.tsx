@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Canvas, useDevice, useGPUContext } from "react-native-wgpu";
-import tgpu from "typegpu";
+import t from "typegpu";
 import * as d from "typegpu/data";
 
-const mainVertex = tgpu["~unstable"].vertexFn({
+const mainVertex = t["~unstable"].vertexFn({
   in: { vertexIndex: d.builtin.vertexIndex },
   out: { outPos: d.builtin.position, uv: d.vec2f },
 })/* wgsl */ `{
@@ -13,7 +13,7 @@ const mainVertex = tgpu["~unstable"].vertexFn({
 }`;
 
 const blue = d.vec4f(0.114, 0.447, 0.941, 1);
-const mainFragment = tgpu["~unstable"].fragmentFn({
+const mainFragment = t["~unstable"].fragmentFn({
   in: { uv: d.vec2f },
   out: d.vec4f,
 })`{ return blue; }`.$uses({ blue });
@@ -21,7 +21,7 @@ const mainFragment = tgpu["~unstable"].fragmentFn({
 export function Triangle() {
   const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
   const { device = null } = useDevice();
-  const root = device ? tgpu.initFromDevice({ device }) : null;
+  const root = device ? t.initFromDevice({ device }) : null;
   const { ref, context } = useGPUContext();
 
   useEffect(() => {

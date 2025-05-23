@@ -1,8 +1,8 @@
-import { useAuth } from "@/app/_ctx/auth";
+import { useAuth } from "@/ctx/auth";
 import { useColorScheme } from "nativewind";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
-import { Icon } from "../app/_components/icons";
+import { Icon } from "@/components/icons";
 import { Button } from "./StyledButton";
 import { HyperInput } from "./StyledComponents";
 import { FlexRow } from "./ui/FlexRow";

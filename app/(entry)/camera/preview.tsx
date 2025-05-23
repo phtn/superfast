@@ -1,5 +1,5 @@
 // app/camera/preview.js
-import { Icon } from "@/app/_components/icons";
+import { Icon } from "@/components/icons";
 import { FlexRow } from "@/components/ui/FlexRow";
 import { Colors } from "@/constants/Colors";
 import {

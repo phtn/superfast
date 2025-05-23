@@ -1,324 +1,278 @@
-import { Icon } from "@/app/_components/icons";
-import { Colors } from "@/constants/Colors";
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Dimensions,
-  Image,
-  PanResponder,
-  StyleProp,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
-import { DText, SText } from "../FontScaling";
+// import { Icon } from "@/app/_components/icons";
+// import { Colors } from "@/constants/Colors";
+// import { LinearGradient } from "expo-linear-gradient";
+// import React, { useCallback, useEffect, useRef, useState } from "react";
+// import {
+//   Dimensions,
+//   Image,
+//   StyleProp,
+//   TouchableOpacity,
+//   View,
+//   ViewStyle,
+// } from "react-native";
+// import { Gesture, GestureDetector } from "react-native-gesture-handler";
+// import Animated, {
+//   AnimatedStyle,
+//   SharedValue,
+//   interpolate,
+//   useSharedValue,
+//   withSpring,
+//   runOnJS,
+// } from "react-native-reanimated";
+// import { DText } from "../FontScaling";
 
-const { width } = Dimensions.get("window");
-const CARD_WIDTH = width * 0.85;
-const CARD_HEIGHT = CARD_WIDTH * 1.15;
-const VISIBLE_CARDS = 3;
-const ROTATION_ANGLE = 5;
-const SWIPE_THRESHOLD = 120;
+// const { width } = Dimensions.get("window");
+// const CARD_WIDTH = width * 0.85;
+// const CARD_HEIGHT = CARD_WIDTH * 1.05;
+// const VISIBLE_CARDS = 3;
+// const ROTATION_ANGLE = 5;
+// const SWIPE_THRESHOLD = 120;
 
-interface IStackedCard {
-  id: number;
-  label: string;
-  subtext?: string;
-  description?: string;
-  uri?: string;
-  fn: VoidFunction;
-  withDoc: boolean;
-}
-interface StackedCardsProps {
-  cards: IStackedCard[];
-}
-const StackedCards = ({ cards }: StackedCardsProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [cardsData, setCardsData] = useState(cards);
+// interface IStackedCard {
+//   id: number;
+//   label: string;
+//   subtext?: string;
+//   description?: string;
+//   uri?: string;
+//   fn: VoidFunction;
+//   withDoc: boolean;
+// }
+// interface StackedCardsProps {
+//   cards: IStackedCard[];
+// }
 
-  // Create animated values for each card
-  const cardPositions = useRef(
-    cards.map(() => ({
-      translateX: new Animated.Value(0),
-      translateY: new Animated.Value(0),
-      rotate: new Animated.Value(0),
-      scale: new Animated.Value(0.9),
-      opacity: new Animated.Value(0.8),
-    })),
-  ).current;
+// // Add this type definition at the top of the file
+// type CardPosition = {
+//   translateX: SharedValue<number>;
+//   translateY: SharedValue<number>;
+//   rotate: SharedValue<number>;
+//   scale: SharedValue<number>;
+//   opacity: SharedValue<number>;
+// };
 
-  // Reset animation values when cards data changes
-  useEffect(() => {
-    setCardsData(cards);
-    cardPositions.forEach((card, index) => {
-      card.translateX.setValue(0);
-      card.translateY.setValue(0);
-      card.rotate.setValue(0);
+// const StackedCards = ({ cards }: StackedCardsProps) => {
+//   const [currentIndex, setCurrentIndex] = useState(0);
+//   const [cardsData, setCardsData] = useState(cards);
+//   const currentIndexRef = useRef(currentIndex);
 
-      // Set initial scale and opacity based on position in stack
-      const position = index - currentIndex;
+//   // Create individual shared values for each card
+//   const translateX = useSharedValue(0);
+//   const translateY = useSharedValue(0);
+//   const rotate = useSharedValue(0);
+//   const scale = useSharedValue(0.9);
+//   const opacity = useSharedValue(0.8);
 
-      if (position >= 0 && position < VISIBLE_CARDS) {
-        const scale = 1 - position * 0.05;
-        const opacity = 1 - position * 0.15;
+//   // Combine the values into cardPositions array
+//   const cardPositions = useRef(
+//     cards.map((_) => ({
+//       translateX,
+//       translateY,
+//       rotate,
+//       scale,
+//       opacity,
+//     })),
+//   ).current;
 
-        card.scale.setValue(scale);
-        card.opacity.setValue(opacity);
-      } else {
-        card.scale.setValue(0.8);
-        card.opacity.setValue(0);
-      }
-    });
-  }, [cards, currentIndex, cardPositions]);
+//   // Store the positions in a ref to maintain reference stability
+//   const cardPositionsRef = useRef<CardPosition[]>(cardPositions);
 
-  // Create pan responder for the top card
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: (_, { dx, dy }) => {
-        if (currentIndex < cardsData.length) {
-          cardPositions[currentIndex].translateX.setValue(dx);
-          cardPositions[currentIndex].translateY.setValue(dy);
+//   // Reset animation values when cards data changes
+//   useEffect(() => {
+//     setCardsData(cards);
+//     cardPositions.forEach((card, index) => {
+//       card.translateX.value = 0;
+//       card.translateY.value = 0;
+//       card.rotate.value = 0;
 
-          // Calculate rotation based on horizontal movement
-          const rotation = dx / 20; // Adjust divisor to control rotation sensitivity
-          cardPositions[currentIndex].rotate.setValue(rotation);
+//       // Set initial scale and opacity based on position in stack
+//       const position = index - currentIndex;
 
-          // Adjust scale and opacity of cards below
-          for (let i = 1; i < VISIBLE_CARDS; i++) {
-            const nextIndex = currentIndex + i;
-            if (nextIndex < cardsData.length) {
-              const progress = Math.min(Math.abs(dx) / SWIPE_THRESHOLD, 1);
-              const nextScale = 0.9 + i * 0.05 * progress;
-              const nextOpacity = 0.8 + i * 0.15 * progress;
+//       if (position >= 0 && position < VISIBLE_CARDS) {
+//         const scale = 1 - position * 0.05;
+//         const opacity = 1 - position * 0.15;
+//         const translateY = position * 15; // Calculate initial translateY
 
-              cardPositions[nextIndex].scale.setValue(nextScale);
-              cardPositions[nextIndex].opacity.setValue(nextOpacity);
-            }
-          }
-        }
-      },
-      onPanResponderRelease: (_, { dx, dy }) => {
-        if (Math.abs(dx) > SWIPE_THRESHOLD) {
-          // Swipe completed - animate card off screen
-          const direction = dx > 0 ? 1 : -1;
-          Animated.parallel([
-            Animated.timing(cardPositions[currentIndex].translateX, {
-              toValue: direction * width * 1.5,
-              duration: 300,
-              useNativeDriver: true,
-            }),
-            Animated.timing(cardPositions[currentIndex].translateY, {
-              toValue: dy,
-              duration: 300,
-              useNativeDriver: true,
-            }),
-            Animated.timing(cardPositions[currentIndex].rotate, {
-              toValue: direction * ROTATION_ANGLE,
-              duration: 300,
-              useNativeDriver: true,
-            }),
-          ]).start(() => {
-            // Move to next card or cycle back to first card
-            const newIndex = (currentIndex + 1) % cardsData.length;
-            setCurrentIndex(newIndex);
+//         card.scale.value = scale;
+//         card.opacity.value = opacity;
+//         card.translateY.value = translateY; // Set initial translateY
+//       } else {
+//         card.scale.value = 0.8;
+//         card.opacity.value = 0;
+//         card.translateY.value = 0; // Reset translateY for non-visible cards
+//       }
+//     });
 
-            // Reset the swiped card for reuse when cycling
-            cardPositions[currentIndex].translateX.setValue(0);
-            cardPositions[currentIndex].translateY.setValue(0);
-            cardPositions[currentIndex].rotate.setValue(0);
-          });
-        } else {
-          // Swipe not completed - return card to original position
-          Animated.parallel([
-            Animated.spring(cardPositions[currentIndex].translateX, {
-              toValue: 0,
-              friction: 5,
-              useNativeDriver: true,
-            }),
-            Animated.spring(cardPositions[currentIndex].translateY, {
-              toValue: 0,
-              friction: 5,
-              useNativeDriver: true,
-            }),
-            Animated.spring(cardPositions[currentIndex].rotate, {
-              toValue: 0,
-              friction: 5,
-              useNativeDriver: true,
-            }),
-          ]).start();
+//     // Explicitly reset animation values for the card that will become the next top card after cycling
+//     const nextTopCardIndex = (currentIndex + VISIBLE_CARDS) % cardsData.length;
+//     if (cardPositions[nextTopCardIndex]) {
+//       cardPositions[nextTopCardIndex].translateX.value = 0;
+//       cardPositions[nextTopCardIndex].translateY.value = 0;
+//       cardPositions[nextTopCardIndex].rotate.value = 0;
+//     }
 
-          // Reset scale and opacity of cards below
-          for (let i = 1; i < VISIBLE_CARDS; i++) {
-            const nextIndex = currentIndex + i;
-            if (nextIndex < cardsData.length) {
-              const scale = 1 - i * 0.05;
-              const opacity = 1 - i * 0.15;
+//     // Update ref whenever currentIndex changes
+//     currentIndexRef.current = currentIndex;
+//   }, [cards, currentIndex, cardsData, cardPositions]);
 
-              Animated.parallel([
-                Animated.spring(cardPositions[nextIndex].scale, {
-                  toValue: scale,
-                  friction: 5,
-                  useNativeDriver: true,
-                }),
-                Animated.spring(cardPositions[nextIndex].opacity, {
-                  toValue: opacity,
-                  friction: 5,
-                  useNativeDriver: true,
-                }),
-              ]).start();
-            }
-          }
-        }
-      },
-    }),
-  ).current;
+//   // Update the gesture definition
+//   const gesture = Gesture.Pan()
+//     .onBegin(() => {
+//       'worklet';
+//     })
+//     .onUpdate((event) => {
+//       'worklet';
+//       const index = currentIndexRef.current;
+//       cardPositions[index].translateX.value = event.translationX;
+//       cardPositions[index].translateY.value = event.translationY;
+//       cardPositions[index].rotate.value = interpolate(
+//         event.translationX,
+//         [-width, 0, width],
+//         [-ROTATION_ANGLE, 0, ROTATION_ANGLE],
+//         'clamp'
+//       );
+//     })
+//     .onFinalize((event) => {
+//       'worklet';
+//       const index = currentIndexRef.current;
 
-  // Function to navigate to previous card
-  const goToPrevious = () => {
-    if (cardsData.length > 0) {
-      const newIndex = (currentIndex - 1 + cardsData.length) % cardsData.length;
-      setCurrentIndex(newIndex);
-    }
-  };
+//       if (Math.abs(event.translationX) > SWIPE_THRESHOLD) {
+//         const direction = event.translationX > 0 ? 1 : -1;
+//         cardPositions[index].translateX.value = withSpring(direction * width * 1.5);
+//         cardPositions[index].translateY.value = withSpring(0);
+//         runOnJS(setCurrentIndex)((currentIndex + 1) % cardsData.length);
+//       } else {
+//         cardPositions[index].translateX.value = withSpring(0);
+//         cardPositions[index].translateY.value = withSpring(0);
+//         cardPositions[index].rotate.value = withSpring(0);
+//       }
+//     });
 
-  // Function to navigate to next card
-  const goToNext = () => {
-    if (cardsData.length > 0) {
-      const newIndex = (currentIndex + 1) % cardsData.length;
-      setCurrentIndex(newIndex);
-    }
-  };
+//   // Helper function to create animated style
+//   const getAnimatedCardStyle = useCallback(
+//     (index: number) => {
+//       const position = index - currentIndex;
+//       const zIndex = cardsData.length - position;
 
-  // Render each card
-  const renderCards = () => {
-    return cardsData.map((card, index) => {
-      // Only render visible cards for performance
-      if (index < currentIndex || index >= currentIndex + VISIBLE_CARDS) {
-        return null;
-      }
+//       return {
+//         position: "absolute",
+//         zIndex,
+//         transform: [
+//           { translateX: cardPositions[index].translateX.value },
+//           { translateY: cardPositions[index].translateY.value },
+//           {
+//             rotate: `${interpolate(
+//               cardPositions[index].rotate.value,
+//               [-width, 0, width],
+//               [-ROTATION_ANGLE, 0, ROTATION_ANGLE],
+//               "clamp",
+//             )}deg`,
+//           },
+//           { scale: cardPositions[index].scale.value },
+//         ],
+//         opacity: cardPositions[index].opacity.value,
+//         width: CARD_WIDTH,
+//         height: CARD_HEIGHT,
+//       } as StyleProp<AnimatedStyle<ViewStyle>>;
+//     },
+//     [cardPositions, cardsData.length, currentIndex],
+//   );
 
-      // Calculate position in stack (0 is top card)
-      const position = index - currentIndex;
+//   // Function to navigate to previous card
+//   const goToPrevious = () => {
+//     if (cardsData.length > 0) {
+//       const newIndex = (currentIndex - 1 + cardsData.length) % cardsData.length;
+//       setCurrentIndex(newIndex);
+//     }
+//   };
 
-      // Apply transforms based on position
-      const translateY = position * 15; // Vertical offset for stacking effect
-      const zIndex = cardsData.length - position; // Higher z-index for top cards
+//   // Function to navigate to next card
+//   const goToNext = () => {
+//     if (cardsData.length > 0) {
+//       const newIndex = (currentIndex + 1) % cardsData.length;
+//       setCurrentIndex(newIndex);
+//     }
+//   };
 
-      // Create animated styles
-      const cardStyle: StyleProp<ViewStyle> = {
-        zIndex,
-        position: "absolute",
-        transform: [
-          { translateX: cardPositions[index].translateX },
-          {
-            translateY:
-              position === 0
-                ? cardPositions[index].translateY
-                : new Animated.Value(translateY),
-          },
-          {
-            rotate: cardPositions[index].rotate.interpolate({
-              inputRange: [-width, 0, width],
-              outputRange: [
-                `-${ROTATION_ANGLE}deg`,
-                "0deg",
-                `${ROTATION_ANGLE}deg`,
-              ],
-              extrapolate: "clamp",
-            }),
-          },
-          { scale: cardPositions[index].scale },
-        ],
-        opacity: cardPositions[index].opacity,
-        width: CARD_WIDTH,
-        height: CARD_HEIGHT,
-      };
+//   const renderCards = () => {
+//     return cardsData
+//       .map((card, index) => {
+//         if (index < currentIndex || index >= currentIndex + VISIBLE_CARDS) {
+//           return null;
+//         }
 
-      // Apply pan responder only to the top card
-      const panHandlers = position === 0 ? panResponder.panHandlers : {};
+//         const animatedStyles = getAnimatedCardStyle(index);
+//         const isTopCard = index === currentIndex;
+//         const cardElement = (
+//           <Animated.View
+//             key={card.id}
+//             style={animatedStyles}
+//             className="rounded-[2rem] shadow-lg overflow-hidden absolute"
+//           >
+//             <LinearGradient
+//               colors={["#14b8a6", "#2dd4bf", "#5eead4", "#a5f3fc", "#cffafe"]}
+//               className="w-full h-full p-4"
+//             >
+//               <View className="w-full h-[75%] p-14 border">
+//                 {card.uri && (
+//                   <Image
+//                     source={{ uri: card.uri }}
+//                     className="w-full h-full"
+//                     resizeMode="contain"
+//                   />
+//                 )}
+//               </View>
+//               <View className="h-[5%]" />
+//               <View className="h-[20%] justify-center">
+//                 <TouchableOpacity
+//                   activeOpacity={0.7}
+//                   className="flex-row h-[4.5rem] gap-4 px-4 items-center justify-between bg-black/60 rounded-full"
+//                   onPress={card.fn}
+//                 >
+//                   <DText className="text-white">{card.label}</DText>
+//                 </TouchableOpacity>
+//               </View>
+//             </LinearGradient>
+//           </Animated.View>
+//         );
 
-      return (
-        <Animated.View
-          key={card.id}
-          style={cardStyle}
-          className={`rounded-[2rem] shadow-lg overflow-hidden `}
-          {...panHandlers}
-        >
-          <LinearGradient
-            colors={["#14b8a6", "#2dd4bf", "#5eead4", "#a5f3fc", "#cffafe"]}
-            className="p-4"
-          >
-            <View className="w-full h-[80%] p-10">
-              <Image
-                source={{ uri: card.uri }}
-                className="p-4 w-auto h-full aspect-auto"
-                resizeMode="contain"
-              />
-            </View>
-            <View className="absolute top-[15px] rounded-full overflow-hidden right-[15px] w-[40px] h-[40px] justify-center items-center">
-              <View className="flex flex-row items-center justify-center size-full bg-void/40">
-                <Ionicons name="heart-outline" size={24} color="white" />
-              </View>
-            </View>
-            <View className="h-[20%] justify-center">
-              <TouchableOpacity
-                activeOpacity={0.7}
-                className="flex-row flex h-16 gap-4 px-2 items-center justify-between bg-void/60 rounded-full"
-              >
-                <View className="rounded-full overflow-hidden bg-void/30 size-12 flex items-center justify-center">
-                  <SText className="text-xl font-hypertight tracking-snug text-white">
-                    OR
-                  </SText>
-                </View>
-                <DText
-                  fontSize={12}
-                  className="font-quicksemi tracking-snug dark:text-white"
-                >
-                  {card.label}
-                </DText>
-                <Icon
-                  name="upload"
-                  color="white"
-                  size={16}
-                  container="h-10 w-10 flex-row p-2 items-center justify-center"
-                />
-              </TouchableOpacity>
-            </View>
-          </LinearGradient>
-        </Animated.View>
-      );
-    });
-  };
+//         if (isTopCard) {
+//           return (
+//             <GestureDetector gesture={gesture} key={`handler-${card.id}`}>
+//               {cardElement}
+//             </GestureDetector>
+//           );
+//         }
+//         return cardElement;
+//       })
+//       .filter(Boolean);
+//   };
 
-  return (
-    <View className="flex-1 justify-start items-center">
-      <View className="w-full h-[calc(115vw-15vw)] items-center justify-center">
-        {renderCards()}
-      </View>
-      <View className="flex-row h-12 gap-8 items-center">
-        <TouchableOpacity
-          className="size-8 rounded-full bg-white justify-center items-center mx-[10px]"
-          onPress={goToPrevious}
-        >
-          <Icon
-            size={20}
-            name="chev-right-linear"
-            color={Colors.dark.active}
-            container="rotate-180"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="size-8 rounded-full bg-gray-100 justify-center items-center mx-[10px]"
-          onPress={goToNext}
-        >
-          <Icon size={20} name="chev-right-linear" color={Colors.dark.active} />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
+//   return (
+//     <View className="flex-1 justify-start items-center">
+//       <View className="w-full h-[calc(115vw-15vw)] items-center justify-center">
+//         {renderCards()}
+//       </View>
+//       <View className="flex-row h-12 gap-8 items-center">
+//         <TouchableOpacity
+//           className="size-8 rounded-full bg-white justify-center items-center mx-[10px]"
+//           onPress={goToPrevious}
+//         >
+//           <Icon
+//             size={20}
+//             name="chev-right-linear"
+//             color={Colors.dark.active}
+//             container="rotate-180"
+//           />
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           className="size-8 rounded-full bg-gray-100 justify-center items-center mx-[10px]"
+//           onPress={goToNext}
+//         >
+//           <Icon size={20} name="chev-right-linear" color={Colors.dark.active} />
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+// };
 
-export default StackedCards;
+// export default StackedCards;

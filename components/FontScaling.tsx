@@ -1,4 +1,4 @@
-import { IconName } from "@/app/_components/icons/types";
+import { IconName } from "../components/icons/types";
 import { ClassName } from "@/types";
 import { ReactNode, useEffect, useState } from "react";
 import {
@@ -14,7 +14,7 @@ import Animated, { AnimatedProps } from "react-native-reanimated";
 
 const BASE_WIDTH = 375;
 const MAX_SIZE = 0.95;
-const MIN_SIZE = 1.075;
+const MIN_SIZE = 1.15;
 const FONT_SIZE = 15;
 
 interface DTextProps extends TextProps {

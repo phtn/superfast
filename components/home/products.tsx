@@ -15,10 +15,11 @@ import Animated, {
   ZoomInEasyDown,
   ZoomInEasyUp,
 } from "react-native-reanimated";
-import { PremiumCard } from "../cards/premium";
+import { PremiumCard } from "../cards/premium-card";
 import { Icon } from "../icons";
 import { useRouter } from "expo-router";
 import { ClassName } from "@/types";
+import { POST } from "@/finance/ubp/get-access-token";
 
 export interface IProductItem {
   id: number;
@@ -102,6 +103,10 @@ export const UserProducts = ({ isDark, list }: Props) => {
     [isDark],
   );
 
+  const handleRequest = useCallback(async () => {
+    await POST({ request: "ACCESS_TOKEN" });
+  }, []);
+
   return (
     <Animated.ScrollView
       onScroll={scrollHandler}
@@ -128,7 +133,7 @@ export const UserProducts = ({ isDark, list }: Props) => {
         </TouchableOpacity>
       </FlexRow>
       {/* Featured Product */}
-      <PremiumCard title="to PRO" onPress={() => console.log("premium")} />
+      <PremiumCard title="to PRO" onPress={handleRequest} />
       <FlashList
         data={list}
         estimatedItemSize={10}
@@ -188,11 +193,11 @@ const ProductItem = ({
       key={id}
       entering={FadeInDown.delay(400 + 100 * id).duration(500)}
       className={clsx(
-        `overflow-hidden rounded-[36px] p-1.5 bg-grei dark:bg-ga ${itemStyle}`,
+        `overflow-hidden rounded-[36px] p-0.5 bg-grei dark:bg-ga ${itemStyle}`,
         itemStyle,
       )}
     >
-      <View className="relative rounded-b-3xl rounded-t-[32px] overflow-hidden h-72">
+      <View className="relative rounded-b-[21.5px] bg-void/30 rounded-t-[34px]  overflow-hidden h-72">
         <FlexRow className="absolute z-10 top-4 left-0 w-full px-6 justify-between">
           <View className="w-4/5 -space-y-1">
             <DText
@@ -227,7 +232,7 @@ const ProductItem = ({
                 uri: image,
               }}
               resizeMode="cover"
-              className="w-full aspect-auto h-full"
+              className="w-full aspect-auto h-full rounded-b-[20px]"
             />
           </View>
         </LinearGradient>

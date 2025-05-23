@@ -59,7 +59,7 @@ export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
   textArray = ["Futuristic", "Animated", "Text", "Component"],
   textStyle,
   cycleTime = 6000,
-  containerStyle = {},
+  containerStyle,
   steadyDisplayTime = 3000,
 }) => {
   // Use refs to keep track of state without triggering re-renders
@@ -135,7 +135,7 @@ export const TextTransition: React.FC<AnimatedTextCyclerProps> = ({
   */
 
   return (
-    <View className={`${containerStyle} py-1`}>
+    <View className={`${containerStyle} pb-1`}>
       <View className="h-8 overflow-hidden flex w-[70vw] flex-row items-center ">
         {displayArray.map((_, index) => (
           <AnimatedCharacter
@@ -308,13 +308,13 @@ const AnimatedCharacter: React.FC<AnimatedCharacterProps> = ({
   });
 
   const baseTextStyle =
-    "uppercase dark:text-chalk font-hypertight leading-none tracking-snug";
+    "uppercase dark:text-chalk font-ultratight leading-none tracking-teen";
 
   return (
     <DAnimatedText
-      fontSize={12}
+      fontSize={14}
       style={[animatedStyle]}
-      className={`${baseTextStyle} ${textStyle} ${displayChar === "a" && "-ml-[2px] -mr-[1px]"}`}
+      className={`${baseTextStyle} ${textStyle} ${displayChar === "a" && "-mx-[1px]"}`}
     >
       {displayChar}
     </DAnimatedText>

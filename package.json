@@ -10,12 +10,13 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "lint:fix": "expo lint --fix"
+    "lint:fix": "bun run lint.mjs --fix"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo-google-fonts/geist": "^0.3.1",
     "@expo/vector-icons": "^14.1.0",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-firebase/app": "^21.14.0",
@@ -29,6 +30,7 @@
     "@shopify/flash-list": "1.7.6",
     "@supabase/supabase-js": "2.49.5-next.1",
     "@testing-library/react-native": "^13.2.0",
+    "chalk": "^5.4.1",
     "clsx": "^2.1.1",
     "expo": "^53.0.9",
     "expo-blur": "~14.1.4",
@@ -52,6 +54,7 @@
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.1.6",
     "nativewind": "^4.1.23",
+    "ora": "^8.2.0",
     "qr-code-styling": "^1.9.2",
     "react": "19.0.0",
     "react-dom": "19.0.0",

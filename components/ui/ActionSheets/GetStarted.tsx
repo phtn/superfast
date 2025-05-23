@@ -1,5 +1,5 @@
-import { Icon } from "@/app/_components/icons";
-import { CarType, useCTPLCtx } from "@/app/_ctx/ctpl-ctx";
+import { Icon } from "@/components/icons";
+import { CarType, useCTPLCtx } from "@/ctx/ctpl-ctx";
 import { HyperList } from "@/components/HyperList";
 import { Colors } from "@/constants/Colors";
 import clsx from "clsx";
@@ -13,7 +13,7 @@ import ActionSheet, {
 import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import { FlexCol } from "../FlexCol";
 import { SheetHeader } from "./components";
-import { DText, SText } from "@/components/FontScaling";
+import { DText } from "@/components/FontScaling";
 
 const GetStartedSheet = ({ payload }: SheetProps<"get-started">) => {
   // Memoize the styles to prevent recreation on each render
@@ -110,15 +110,18 @@ const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
             })}
           >
             <DText
-              fontSize={13}
+              fontSize={14}
               className="font-quickbold dark:text-grei tracking-teen"
             >
               {label}
             </DText>
             {subtext && (
-              <SText className="text-base font-tight font-normal dark:text-grei opacity-60">
+              <DText
+                fontSize={11}
+                className="text-base font-tight font-normal dark:text-grei opacity-60"
+              >
                 {subtext}
-              </SText>
+              </DText>
             )}
           </View>
         </View>

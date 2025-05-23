@@ -1,10 +1,10 @@
 "use client";
 
 import { Platform, View } from "react-native";
-import { Categories } from "@/app/_components/home/categories";
-import { Header } from "@/app/_components/home/components";
-import { IProductItem, Products } from "@/app/_components/home/products";
-import { useConfigCtx } from "@/app/_ctx/config";
+import { Categories } from "@/components/home/categories";
+import { Header } from "@/components/home/components";
+import { IProductItem, Products } from "@/components/home/products";
+import { useConfigCtx } from "@/ctx/config";
 import ParallaxView from "@/components/ParallaxView";
 import "@/components/ui/ActionSheets/sheets";
 import { StatusBar } from "expo-status-bar";

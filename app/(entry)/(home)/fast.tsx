@@ -2,12 +2,9 @@
 
 import { Platform, View } from "react-native";
 
-import { UserCategories } from "@/app/_components/home/categories";
-import { Header } from "@/app/_components/home/components";
-import {
-  type IProductItem,
-  UserProducts,
-} from "@/app/_components/home/products";
+import { UserCategories } from "@/components/home/categories";
+import { Header } from "@/components/home/components";
+import { type IProductItem, UserProducts } from "@/components/home/products";
 import ParallaxView from "@/components/ParallaxView";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";

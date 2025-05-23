@@ -93,27 +93,43 @@ export const MinimalistHeader = (props: CardProps) => {
       entering={FadeInDown.delay(400)
         .duration(700)
         .withInitialValues({ marginTop: 8 })}
-      className="flex-row justify-between items-start py-5 px-4"
+      className="flex-row flex h-[4.5rem] justify-between rounded-3xl w-auto items-start px-4"
     >
       <View>
-        <DText
-          fontSize={12.5}
-          className="dark:text-white font-quicksemi tracking-snug"
-        >
-          {props.title}
-        </DText>
-        <View className="flex-row items-center gap-4">
+        <View className="flex items-center gap-2 flex-row">
+          <DText
+            fontSize={12.5}
+            className="dark:text-ga text-xl font-quickbold text-neutral-600"
+          >
+            CTPL
+          </DText>
           <Icon
-            name="arrow-right-up-broken"
-            size={20}
-            color={props.isDark ? Colors.dark.hyper : Colors.dark.hyper}
-            container="bg-chalk/20 rotate-45 size-6 p-[3px] rounded-full"
+            name="arrow-right-up"
+            size={16}
+            color={"#FFF"}
+            container="rotate-45 rounded-full bg-hyper-active p-[1px] size-3.5"
           />
+          <DText
+            fontSize={12.5}
+            className="dark:text-ga text-xl font-space text-neutral-700 tracking-tight"
+          >
+            {props.title}
+          </DText>
+        </View>
+        <View className="flex-row w-[80%] items-center gap-4">
           {props.children}
         </View>
       </View>
-
-      <View className="items-end"></View>
+      <View className="pr-3 flex flex-row">
+        <FlexRow className="px-4 py-2 rounded-3xl bg-hyper-active">
+          <SText className="font-quick text-royal dark:text-offwhite mr-0.5 mb-0.5 text-xl">
+            ₱
+          </SText>
+          <SText className="font-geist text-white dark:text-white text-xl tracking-snug">
+            {props.value}
+          </SText>
+        </FlexRow>
+      </View>
     </Animated.View>
   );
 };

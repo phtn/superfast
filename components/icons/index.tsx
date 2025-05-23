@@ -1,6 +1,6 @@
 import { memo } from "react";
 import Svg, { G, Path } from "react-native-svg";
-import { FlexRow } from "../../../components/ui/FlexRow";
+import { FlexRow } from "@/components/ui/FlexRow";
 import { toRN } from "./extractor";
 import { icons } from "./icons";
 import { IconData, IconProps } from "./types";

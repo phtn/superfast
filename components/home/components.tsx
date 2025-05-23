@@ -1,4 +1,4 @@
-import { useAuth } from "@/app/_ctx/auth";
+import { useAuth } from "@/ctx/auth";
 import { SText } from "@/components/FontScaling";
 import { FlexCol } from "@/components/ui/FlexCol";
 import { FlexRow } from "@/components/ui/FlexRow";

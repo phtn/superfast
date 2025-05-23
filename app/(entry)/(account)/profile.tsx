@@ -1,5 +1,5 @@
-import { Icon } from "@/app/_components/icons";
-import { useAuth } from "@/app/_ctx/auth";
+import { Icon } from "@/components/icons";
+import { useAuth } from "@/ctx/auth";
 import { DText } from "@/components/FontScaling";
 import { Button } from "@/components/StyledButton";
 import { HyperInput } from "@/components/StyledComponents";

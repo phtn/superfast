@@ -1,4 +1,4 @@
-import { useConfigCtx } from "@/app/_ctx/config";
+import { useConfigCtx } from "@/ctx/config";
 import { useMemo } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { FlexRow } from "./FlexRow";

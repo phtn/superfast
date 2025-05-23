@@ -1,5 +1,5 @@
-import { Icon } from "@/app/_components/icons";
-import { IconName } from "@/app/_components/icons/types";
+import { Icon } from "@/components/icons";
+import { IconName } from "../../components/icons/types";
 import { FlexRow } from "@/components/ui/FlexRow";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { clsx } from "clsx";

@@ -18,6 +18,7 @@ module.exports = {
         hypertight: ["TightBold"],
         eaves: ["Eaves"],
         garamond: ["Garamond"],
+        geist: ["Geist"],
       },
       colors: {
         active: "#007AFE",

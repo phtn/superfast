@@ -23,7 +23,7 @@ import {
   ViewToken,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../_ctx/auth";
+import { useAuth } from "@/ctx/auth";
 
 export interface OnboardingData {
   id: string;

@@ -1,6 +1,5 @@
-import { Icon } from "@/app/_components/icons";
-import { IconName } from "@/app/_components/icons/types";
-import { DocType, useCTPLCtx } from "@/app/_ctx/ctpl-ctx";
+import { Icon } from "@/components/icons";
+import { DocType, useCTPLCtx } from "@/ctx/ctpl-ctx";
 import { DText, SText } from "@/components/FontScaling";
 import { HyperList } from "@/components/HyperList";
 import { Colors } from "@/constants/Colors";
@@ -14,6 +13,7 @@ import ActionSheet, {
 } from "react-native-actions-sheet";
 import { FlexCol } from "../FlexCol";
 import { SheetHeader } from "./components";
+import { IconName } from "../../icons/types";
 
 function UploadOptionSheet({ payload }: SheetProps<"upload-options">) {
   return (
@@ -36,6 +36,8 @@ function UploadOptionSheet({ payload }: SheetProps<"upload-options">) {
         elevation: 0,
         borderTopStartRadius: 36,
         borderTopEndRadius: 36,
+        borderBottomStartRadius: 36,
+        borderBottomEndRadius: 36,
         backgroundColor: "transparent",
       }}
       elevation={0}
@@ -45,7 +47,7 @@ function UploadOptionSheet({ payload }: SheetProps<"upload-options">) {
       <View className="px-0">
         <FlexCol
           style={{ borderTopStartRadius: 24, borderTopEndRadius: 24 }}
-          className="justify-start relative bg-white dark:bg-cronus py-8"
+          className="justify-start relative bg-white dark:bg-hades py-8"
         >
           <UploadOptions isDark={payload.isDark} docType={payload.docType} />
         </FlexCol>
@@ -114,7 +116,7 @@ const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
             <Icon
               size={24}
               name={icon}
-              color={isDark ? Colors.dark.text : Colors.light.text}
+              color={isDark ? Colors.dark.hyper : Colors.light.text}
             />
           </View>
           <View
@@ -123,13 +125,13 @@ const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
             })}
           >
             <DText
-              fontSize={10}
-              className="font-quicksemi text-lg dark:text-grei tracking-teen"
+              fontSize={12}
+              className="font-quicksemi text-lg dark:text-grei tracking-snug"
             >
               {label}
             </DText>
             {subtext && (
-              <SText className="text-base dark:text-grei opacity-80">
+              <SText className="text-sm font-tight dark:text-grei opacity-80">
                 {subtext}
               </SText>
             )}
@@ -137,7 +139,7 @@ const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
         </View>
         <Icon
           name="chev-right-linear"
-          color={isDark ? Colors.dark.text : Colors.light.text}
+          color={isDark ? Colors.dark.hyper : Colors.light.text}
         />
       </TouchableOpacity>
     ),
@@ -145,14 +147,14 @@ const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
   );
 
   return (
-    <View className="py-4 px-2">
+    <View className="py-4 px-1.5">
       <SheetHeader title="Upload Options" />
       <View className="rounded-3xl py-6">
         <HyperList
           keyId="id"
           delay={500}
           data={upload_options}
-          containerStyle={"h-56"}
+          containerStyle={"h-[15rem]"}
           component={OptionItem}
         />
       </View>

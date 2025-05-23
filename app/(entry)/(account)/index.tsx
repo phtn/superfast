@@ -1,8 +1,8 @@
 "use client";
 
-import { PremiumCard } from "@/app/_components/cards/premium";
-import { Icon } from "@/app/_components/icons";
-import { useAuth } from "@/app/_ctx/auth";
+import { Icon } from "@/components/icons";
+import { PremiumCard } from "@/components/cards/premium-card";
+import { useAuth } from "@/ctx/auth";
 import { DText, SText } from "@/components/FontScaling";
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";

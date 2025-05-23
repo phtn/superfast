@@ -5,16 +5,17 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+import { Geist_500Medium } from "@expo-google-fonts/geist";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { AuthProvider } from "@/app/_ctx/auth";
+import { AuthProvider } from "@/ctx/auth";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { ConfigCtxProvider } from "./_ctx/config";
-import { CTPLCtxProvider } from "./_ctx/ctpl-ctx";
+import { ConfigCtxProvider } from "@/ctx/config";
+import { CTPLCtxProvider } from "@/ctx/ctpl-ctx";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,6 +35,7 @@ export default function RootLayout() {
     TightSemi: require("../assets/fonts/InterTight-SemiBold.ttf"),
     TightBold: require("../assets/fonts/InterTight-Bold.ttf"),
     Eaves: require("../assets/fonts/Mrs-Eaves-XLSerif-OT.otf"),
+    Geist: Geist_500Medium,
   });
 
   useEffect(() => {

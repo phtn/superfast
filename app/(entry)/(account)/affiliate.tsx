@@ -1,17 +1,17 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { View, Alert, Text, Image, TouchableOpacity } from "react-native";
-import { useAuth } from "@/app/_ctx/auth";
+import { useAuth } from "@/ctx/auth";
 import { FlexRow } from "@/components/ui/FlexRow";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { Icon } from "@/app/_components/icons";
+import { Icon } from "@/components/icons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "nativewind";
 import { router } from "expo-router";
 import { useCodeConverter } from "@/hooks/useCodeConverter";
-import { StatCard } from "@/app/_components/cards/stats-card";
-import { StatCardTwo } from "@/app/_components/cards/stats-card-2";
-import { useConfigCtx } from "@/app/_ctx/config";
+import { StatCard } from "@/components/cards/stats-card";
+import { StatCardTwo } from "@/components/cards/stats-card-2";
+import { useConfigCtx } from "@/ctx/config";
 
 export default function Affiliate() {
   const [loading, setLoading] = useState(true);
