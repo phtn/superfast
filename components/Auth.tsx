@@ -1,8 +1,10 @@
+import { Icon } from "@/components/icons";
+import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/ctx/auth";
 import { useColorScheme } from "nativewind";
-import React, { useState } from "react";
-import { Text, View } from "react-native";
-import { Icon } from "@/components/icons";
+import React, { useMemo, useState } from "react";
+import { View } from "react-native";
+import { DText } from "./FontScaling";
 import { Button } from "./StyledButton";
 import { HyperInput } from "./StyledComponents";
 import { FlexRow } from "./ui/FlexRow";
@@ -20,6 +22,7 @@ export function SBAuth() {
     useAuth();
 
   const { colorScheme } = useColorScheme();
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
 
   return (
     <View className="px-4">
@@ -40,17 +43,27 @@ export function SBAuth() {
           onPress={signInWithEmail(email, password)}
         ></Button>
         <FlexRow className="h-20">
-          <Text className="text-center text-dark-ga font-quick">
+          <DText
+            fontSize={10}
+            className="text-center text-dark-ga dark:text-grei/60 font-quick"
+          >
             or you can
-          </Text>
+          </DText>
         </FlexRow>
         <Button
           title="Continue with Google"
           disabled={googleLoading}
           loading={googleLoading}
           onPress={signInWithGoogle}
-          variant={colorScheme === "dark" ? "gray" : "primary"}
-          endContent={<Icon name="google" color="#fff" size={24} solid />}
+          variant={isDark ? "light" : "primary"}
+          endContent={
+            <Icon
+              name="google"
+              color={isDark ? Colors.dark.royal : Colors.dark.text}
+              size={24}
+              solid
+            />
+          }
         />
       </View>
     </View>

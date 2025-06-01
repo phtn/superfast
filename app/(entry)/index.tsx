@@ -1,5 +1,10 @@
+"use client";
+
+import { DAnimatedText, DText } from "@/components/FontScaling";
 import { Paginator } from "@/components/ux/Paginator";
 import { SwipeLeftIndicator } from "@/components/ux/SwipeIndicator";
+import { useAuth } from "@/ctx/auth";
+import { useConfigCtx } from "@/ctx/config";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, RelativePathString, useRouter } from "expo-router";
@@ -16,14 +21,19 @@ import {
   Animated,
   Dimensions,
   FlatList,
+  Image,
   Pressable,
   StatusBar,
   Text,
   View,
   ViewToken,
 } from "react-native";
+import A, {
+  FadeInLeft,
+  FadeInRight,
+  SlideInLeft,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "@/ctx/auth";
 
 export interface OnboardingData {
   id: string;
@@ -59,7 +69,6 @@ const { width } = Dimensions.get("window");
 const OnboardingScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { toggleColorScheme, colorScheme } = useColorScheme();
-  const router = useRouter();
   const isDark = colorScheme === "dark";
   const gradients: readonly [string, string, ...string[]] = useMemo(
     () =>
@@ -69,7 +78,10 @@ const OnboardingScreen = () => {
     [colorScheme],
   );
 
+  const router = useRouter();
   const { session } = useAuth();
+  const { getFileUri } = useConfigCtx();
+  const glass = useMemo(() => getFileUri("GLASS_BLUE5.webp"), [getFileUri]);
 
   useEffect(() => {
     if (session?.access_token) {
@@ -83,7 +95,7 @@ const OnboardingScreen = () => {
 
   const viewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      if (!!viewableItems[0]?.index) {
+      if (viewableItems[0]?.index) {
         setCurrentIndex(viewableItems[0].index);
       }
     },
@@ -133,25 +145,34 @@ const OnboardingScreen = () => {
     router.push("/(entry)/sign-in");
   };
 
-  const renderItem = ({
-    item,
-    index,
-  }: {
-    item: OnboardingData;
-    index: number;
-  }) => {
+  useEffect(() => {
+    // SecureStore.getItemAsync("hasSeenOnboarding")
+    //   .then(console.log)
+    //   .catch(console.log);
+    console.log(currentIndex);
+  }, [currentIndex]);
+
+  const renderItem = ({ item }: { item: OnboardingData; index: number }) => {
     return (
       <View className=" flex items-center w-screen flex-1">
-        <View className="w-full border-void dark:border-white px-8 pt-10">
-          <Text className="text-[4rem] px-2 font-semi dark:text-chalk border-orange-300 -tracking-[0.12em] text-dark-active capitalize font-space">
+        <View className="w-full border-void dark:border-white px-6 pt-10">
+          <DAnimatedText
+            fontSize={48}
+            entering={FadeInLeft.duration(500)}
+            className="px-2 font-semi dark:text-chalk border-orange-300 tracking-teen text-dark-active capitalize font-space"
+          >
             {item.title}
-          </Text>
+          </DAnimatedText>
         </View>
-        <View className="w-full border-void dark:border-white px-8">
+        <View className="w-full border-void dark:border-white ps-16">
           <View>
-            <Text className="text-[2.5rem] px-2 dark:text-orange-200 -tracking-[0.04em] text-void font-eaves">
+            <DAnimatedText
+              entering={FadeInRight.duration(600)}
+              fontSize={28}
+              className="text-[2.5rem] px-2 dark:text-orange-200 tracking-teen text-void/80 font-garamond"
+            >
               {item.subtext}
-            </Text>
+            </DAnimatedText>
           </View>
         </View>
         <View className="h-1/3 bg-orange-100/5"></View>
@@ -171,54 +192,6 @@ const OnboardingScreen = () => {
     }),
     [],
   );
-
-  const Frames = useCallback(() => {
-    return (
-      <View className="h-24 flex relative items-center w-full justify-between flex-row px-8">
-        <View className="h-3/4 w-auto aspect-square border dark:bg-blu/30 bg-blu/40 border-void relative z-50 dark:border-orange-100 rounded-2xl"></View>
-        <Animated.View
-          className="h-2/4 flex-row rounded-2xl bg-active/15 items-center justify-center w-auto absolute aspect-square border dark:border-2 border-active top-6 left-20 dark:border-dark-active"
-          style={{
-            transform: [
-              {
-                translateX: scrollX.interpolate({
-                  inputRange: [
-                    (currentIndex - 1) * width,
-                    currentIndex * width,
-                    (currentIndex + 1) * width,
-                  ],
-                  outputRange: [150, 0, 0],
-                  extrapolate: "clamp",
-                }),
-              },
-              {
-                translateY: scrollX.interpolate({
-                  inputRange: [
-                    (currentIndex - 1) * width,
-                    currentIndex * width,
-                    (currentIndex + 1) * width,
-                  ],
-                  outputRange: [-200, 0, 0],
-                  extrapolate: "clamp",
-                }),
-              },
-            ],
-            opacity: scrollX.interpolate({
-              inputRange: [
-                (currentIndex - 1) * width,
-                currentIndex * width,
-                (currentIndex * 2 + 1) * width,
-              ],
-              outputRange: [0, 1, 1],
-              extrapolate: "clamp",
-            }),
-            borderCurve: "continuous",
-          }}
-        ></Animated.View>
-        <View className="h-3/4 w-auto aspect-square border-0 dark:border-chalk rounded-2xl"></View>
-      </View>
-    );
-  }, [currentIndex, scrollX]);
 
   const [staging, setStaging] = useState(true);
 
@@ -241,22 +214,24 @@ const OnboardingScreen = () => {
 
           <View className="flex h-20 px-8 flex-row w-full items-center justify-between">
             <Paginator
-              scrollX={scrollX}
-              slides={slides}
               width={width}
+              slides={slides}
               isDark={isDark}
+              scrollX={scrollX}
             />
             <View>
               <Pressable onPress={handleSkip}>
-                <Text className="dark:text-chalk font-quick font-semibold">
+                <DText
+                  fontSize={12}
+                  className="dark:text-chalk font-quick font-semibold"
+                >
                   Skip
-                </Text>
+                </DText>
               </Pressable>
             </View>
           </View>
 
-          <Frames />
-          <View className="h-[calc(100vh-46vh)]">
+          <View className="h-[calc(100vh-40vh)] relative z-10">
             <FlatList
               horizontal
               data={slides}
@@ -273,7 +248,22 @@ const OnboardingScreen = () => {
               getItemLayout={getItemLayout}
               className="scroll-smooth dark:border-chalk h-full border-void will-change-scroll"
             />
+            <View className="h-[24vh] w-screen absolute bottom-10 z-0 pointer-events-none overflow-hidden">
+              <A.View
+                entering={SlideInLeft.duration(60000).withInitialValues({
+                  x: 45,
+                  originX: -145,
+                })}
+              >
+                <Image
+                  source={{ uri: glass }}
+                  className="h-20 w-full scale-[3] mt-4 -rotate-6 ml-0"
+                  resizeMode="contain"
+                />
+              </A.View>
+            </View>
           </View>
+
           <View className="fixed bottom-0 h-[10vh] w-full flex px-8 items-center flex-row justify-center">
             {currentIndex === slides.length - 1 && (
               <Pressable

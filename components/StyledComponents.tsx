@@ -40,7 +40,7 @@ export const HyperInput = ({
       {label && (
         <DText
           fontSize={9}
-          className={`text-gray-500 mt-0.5 tracking-teen font-quick text-xs ${labelClassName}`}
+          className={`text-gray-500 pt-1.5 tracking-teen font-quick text-xs ${labelClassName}`}
         >
           {label}
         </DText>
@@ -48,7 +48,7 @@ export const HyperInput = ({
       <View className="flex flex-row items-center justify-start">
         {icon && <Icon name={icon} solid={solidIcon} size={24} color="gray" />}
         <DTextInput
-          fontSize={10}
+          fontSize={12}
           className={`px-4 h-16 py-2 font-quick placeholder:text-dark-ga ${error ? "border-red-500" : ""} ${className}`}
           value={value}
           onChangeText={onChangeText}

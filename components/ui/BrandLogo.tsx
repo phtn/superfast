@@ -4,7 +4,7 @@ import { FlexRow } from "./FlexRow";
 export const BrandLogo = () => {
   return (
     <FlexRow>
-      <Text className="font-courg -tracking-[0.25rem] h-fit text-dark-active text-4xl -mr-0.5">
+      <Text className="font-courg -tracking-[0.25rem] h-fit text-hyper-active text-4xl -mr-0.5">
         My
       </Text>
 

@@ -1,4 +1,5 @@
 import { View, Text } from "react-native";
+import { DText } from "../FontScaling";
 // import { LineChart } from 'react-native-chart-kit';
 
 type StatCardProps = {
@@ -16,29 +17,33 @@ export const StatCard = ({
 }: StatCardProps) => {
   return (
     <View className="bg-white dark:bg-hades rounded-2xl p-5 mb-4 shadow-sm">
-      <Text className="text-base font-tight mb-4 dark:text-chalk">
+      <DText
+        fontSize={10}
+        className="text-base font-tight mb-4 dark:text-chalk"
+      >
         Engagements
-      </Text>
+      </DText>
 
       <View className="flex-row justify-between items-start">
         <View>
-          <Text className="text-3xl font-spacebold mb-2 dark:text-chalk">
-            {hours}
-          </Text>
+          <DText className="font-geist mb-2 dark:text-chalk">{hours}</DText>
           <View className="flex-row items-center">
             <View className="mr-1">
-              <Text className="text-green-500 text-lg">▲</Text>
+              <DText fontSize={10} className="text-green-500 text-lg">
+                ▲
+              </DText>
             </View>
-            <Text className="text-lg font-quicksemi text-green-500">
+            <DText
+              fontSize={10}
+              className="text-lg font-quicksemi text-green-500"
+            >
               +{percentChange}% last week
-            </Text>
+            </DText>
           </View>
         </View>
 
         <View className="items-end">
-          <Text className="text-xs text-gray-500 absolute top-0 right-8 z-10">
-            {peakPercentage}%
-          </Text>
+          <Text className="text-xs text-gray-500 absolute top-0 right-8 z-10"></Text>
           {/* <LineChart
             data={{
               labels: [],

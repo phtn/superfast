@@ -69,17 +69,14 @@ const FastScreen = () => {
         }
       >
         <StatusBar translucent backgroundColor="transparent" />
-        {/* Header - Fixed */}
 
         <Header />
-        {/* Search Bar - Fixed */}
 
         <ParallaxView
-          scrollRef={scrollRef}
           height={120}
+          scrollRef={scrollRef}
           header={<UserCategories isDark={isDark} />}
         >
-          {/* Main Scrollable Content */}
           <UserProducts list={products} isDark={isDark} />
         </ParallaxView>
       </LinearGradient>

@@ -26,6 +26,7 @@ export interface IProductItem {
   name: string;
   price?: number;
   image?: string;
+  badge?: string;
   description: string;
   rating?: number;
   subtext?: string;
@@ -70,7 +71,7 @@ export const Products = ({ isDark, list }: Props) => {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
     >
-      <PremiumCard title="Upgrade to PRO" onPress={routeToDocs} />
+      <PremiumCard title="PRO Membership" onPress={routeToDocs} />
       <FlashList
         data={list}
         estimatedItemSize={10}
@@ -114,7 +115,8 @@ export const UserProducts = ({ isDark, list }: Props) => {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 16, gap: 48 }}
     >
-      <FlexRow className="justify-between h-14 -mb-12 px-3">
+      <PremiumCard title="to PRO" onPress={handleRequest} />
+      <FlexRow className="justify-between h-10 -mb-10 px-4">
         <View className="flex flex-row items-center">
           <Text className="font-courg text-2xl text-dark-active -tracking-[0.16rem] dark:text-hyper-active">
             My
@@ -128,12 +130,11 @@ export const UserProducts = ({ isDark, list }: Props) => {
             size={20}
             name="add"
             className="stroke-2"
-            color={isDark ? Colors.dark.royal : Colors.dark.text}
+            color={isDark ? Colors.dark.text : Colors.dark.text}
           />
         </TouchableOpacity>
       </FlexRow>
-      {/* Featured Product */}
-      <PremiumCard title="to PRO" onPress={handleRequest} />
+
       <FlashList
         data={list}
         estimatedItemSize={10}
@@ -201,7 +202,6 @@ const ProductItem = ({
         <FlexRow className="absolute z-10 top-4 left-0 w-full px-6 justify-between">
           <View className="w-4/5 -space-y-1">
             <DText
-              fontSize={13}
               className={clsx(
                 "font-hypertight dark:text-white -tracking-wider",
                 textStyles ? textStyles : "text-chalk",
@@ -211,7 +211,7 @@ const ProductItem = ({
             </DText>
             <SText
               className={clsx(
-                "font-ultratight text-lg -mt-1.5 tracking-snug dark:text-white dark:opacity-95 opacity-70",
+                "font-ultratight text-base -mt-1.5 tracking-snug dark:text-white dark:opacity-95 opacity-70",
                 textStyles ? textStyles : "text-chalk",
               )}
             >
@@ -239,7 +239,7 @@ const ProductItem = ({
       </View>
       <FlexRow className="justify-between pt-1.5 px-3 h-[5.25rem]">
         <View className="flex-col items-start ps-2">
-          <SText className="font-tight tracking-snug text-lg">{name}</SText>
+          <SText className="font-tight tracking-snug text-sm">{name}</SText>
           <FlexRow className="w-fit">
             <Text className="font-quick hidden w-fit border border-grei dark:border-ga capitalize tracking-tighter text-void">
               {tag}
@@ -254,7 +254,7 @@ const ProductItem = ({
         >
           <SText
             className={clsx(
-              "font-quickbold tracking-tighter mb-0.5 text-lg",
+              "font-quickbold tracking-tighter mb-0.5 text-base",
               isDark ? "text-white" : "text-white",
             )}
           >
@@ -262,8 +262,8 @@ const ProductItem = ({
           </SText>
           <FlexRow className="rounded-full size-6">
             <Icon
+              size={20}
               name="arrow-right-up"
-              size={24}
               color={isDark ? "#53A9FF" : "#53A9FF"}
               className={clsx("", isDark ? " drop-shadow-xs" : "")}
             />

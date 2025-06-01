@@ -43,7 +43,7 @@ export const Header = () => {
               <ActivityIndicator color={Colors.dark.hyper} />
             ) : (
               <View className=" flex flex-row px-2 justify-start whitespace-nowrap overflow-hidden">
-                <SText className="max-w-[80%] text-lg dark:text-chalk font-quicksemi whitespace-nowrap">
+                <SText className="max-w-[80%] text-base dark:text-chalk font-quicksemi whitespace-nowrap">
                   {displayName}
                 </SText>
                 <View className="size-6 pt-0.5">

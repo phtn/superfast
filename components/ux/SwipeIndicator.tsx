@@ -1,6 +1,8 @@
+import { Colors } from "@/constants/Colors";
+import { ClassName } from "@/types";
 import { useColorScheme } from "nativewind";
-import React, { useEffect, useMemo } from "react";
-import { Text, ViewStyle } from "react-native";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { Dimensions } from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
@@ -11,7 +13,8 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import Svg, { Path } from "react-native-svg";
+import { DText } from "../FontScaling";
+import { Icon } from "../icons";
 import { FlexRow } from "../ui/FlexRow";
 
 interface SwipeLeftIndicatorProps {
@@ -20,16 +23,25 @@ interface SwipeLeftIndicatorProps {
   hasSwiped?: boolean;
   dots?: number;
 }
-const CONTAINER_WIDTH = 256;
+const CONTAINER_WIDTH = Dimensions.get("screen").width / 1.33;
+
+export const simIdx = (fn: (i: number) => number) => {
+  console.log(
+    "SIMIDX",
+    fn(0).toFixed(2),
+    fn(1).toFixed(2),
+    fn(2).toFixed(2),
+    fn(3).toFixed(2),
+  );
+};
 
 export const SwipeLeftIndicator = ({
-  onComplete,
   hasSwiped,
   isLastScreen = false,
-  dots = 7,
 }: SwipeLeftIndicatorProps) => {
   const progress = useSharedValue(0);
   const { colorScheme } = useColorScheme();
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
 
   // Only run the animation if it's not the last screen
   useEffect(() => {
@@ -38,7 +50,7 @@ export const SwipeLeftIndicator = ({
         withDelay(
           1000,
           withTiming(1, {
-            duration: 3000,
+            duration: 3600,
             easing: Easing.bezier(0.25, 0.15, 0.3, 1),
           }),
         ),
@@ -57,76 +69,19 @@ export const SwipeLeftIndicator = ({
     }
   }, [hasSwiped, progress]);
 
-  const dotsAnima = useMemo(() => {
-    const spacing = (0.75 * CONTAINER_WIDTH) / (dots - 1);
-    const arrowX = interpolate(
-      progress.value,
-      [0, 1],
-      [CONTAINER_WIDTH, CONTAINER_WIDTH * 1.5],
-    );
-    return {
-      dotY: (i: number) =>
-        interpolate(progress.value, [0, 0.7, 1], [15 - i * 2, 0, 5 + i * 2]),
-      dotX: (i: number) => arrowX - i * spacing * 1.15,
-      fade: (i: number) => 1 - i / (dots - 1),
-    };
-  }, [dots, progress]);
-
-  const Dot = ({ style, i }: { style: ViewStyle; i: number }) => {
-    return (
-      <Animated.View
-        key={i}
-        style={[
-          !hasSwiped && {
-            width: 6,
-            height: 6,
-            borderRadius: 3,
-          },
-          style,
-          {
-            backgroundColor: colorScheme === "dark" ? "#ffedd5" : "#14141b",
-            position: "absolute",
-            top: 0,
-          },
-        ]}
-      />
-    );
-  };
-
-  // Dots expand to cover the full container width, synchronized with the arrow
-  const Dots = () => {
-    return Array(dots)
-      .fill(0)
-      .map((_, i) => (
-        <Dot
-          key={i}
-          style={{
-            opacity: interpolate(dotsAnima.fade(i), [0, 1], [0.8, 0]),
-            transform: [
-              { translateX: dotsAnima.dotX(i) },
-              { translateY: dotsAnima.dotY(i) },
-              { scale: interpolate(dotsAnima.fade(i), [0, 1], [1, 0.1]) },
-            ],
-          }}
-          i={i}
-        />
-      ));
-  };
-
   // Arrow animation styles (sync with rightmost dot)
   const arrowAnimatedStyle = useAnimatedStyle(() => {
-    const containerWidth = 256;
     return {
       transform: [
         {
           translateX: interpolate(
             progress.value,
             [0, 1],
-            [containerWidth, -containerWidth],
+            [CONTAINER_WIDTH, -CONTAINER_WIDTH],
           ),
         },
         {
-          translateY: interpolate(progress.value, [0, 0.6, 1], [15, -5, 5]),
+          translateY: interpolate(progress.value, [0, 0.6, 1], [15, -5, 4]),
         },
         {
           rotate: `${interpolate(progress.value, [0, 0.6, 1], [6, 0, -6])}deg`,
@@ -136,36 +91,38 @@ export const SwipeLeftIndicator = ({
     };
   });
 
+  const Chev = useCallback(
+    ({ cn }: { cn?: ClassName }) => (
+      <Icon
+        size={24}
+        container={`rotate-180 ${cn}`}
+        name="chev-right-linear"
+        color={isDark ? Colors.dark.hyper : Colors.dark.active}
+      />
+    ),
+    [isDark],
+  );
+
   return (
     <FlexRow className="w-64 h-36 relative overflow-hidden px-5">
       <Animated.View
         style={[arrowAnimatedStyle]}
         className="py-4 pe-6 mr-2 top-4 flex flex-row items-center absolute"
       >
-        <Svg
-          width={24}
-          height={24}
-          strokeWidth={0}
-          viewBox="0 0 24 24"
-          fill="none"
-        >
-          <Path
-            d="M4 12h16M9 17s-5-3.682-5-5s5-5 5-5"
-            stroke={colorScheme === "dark" ? "#fafafa" : "#14141b"}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </Svg>
-
-        <FlexRow className="relative w-12 -mt-4">
-          <Dots />
-        </FlexRow>
+        <Chev />
+        <Chev cn="opacity-90 ml-1" />
+        <Chev cn="opacity-80 ml-2 -mt-[0.5px]" />
+        <Chev cn="scale-90 opacity-70 -mt-[1px] ml-3.5" />
+        <Chev cn="scale-75 opacity-60 mt-[0.5px] ml-5" />
+        <FlexRow className="relative w-12 -mt-4">{/* <Dots /> */}</FlexRow>
       </Animated.View>
       <FlexRow className="mt-10 w-full">
-        <Text className="opacity-60 font-quicksemi text-sm dark:text-chalk">
+        <DText
+          fontSize={11}
+          className="opacity-60 font-quicksemi dark:text-chalk"
+        >
           {isLastScreen ? "Are you ready?" : "Swipe left to continue"}
-        </Text>
+        </DText>
       </FlexRow>
     </FlexRow>
   );

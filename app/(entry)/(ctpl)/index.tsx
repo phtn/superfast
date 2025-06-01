@@ -1,13 +1,14 @@
 import { MinimalistHeader } from "@/components/cards/minimalist";
-import { Icon } from "@/components/icons";
-import { DocType, useCTPLCtx } from "@/ctx/ctpl-ctx";
 import { DAnimatedText, DText, SText } from "@/components/FontScaling";
+import { Icon } from "@/components/icons";
 import ParallaxView from "@/components/ParallaxView";
 import { CarouselStack } from "@/components/ui/CarouselStack";
 import { FlexRow } from "@/components/ui/FlexRow";
 import { GridBackground } from "@/components/ui/Grid";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextTransition } from "@/components/ux/TextTransition";
 import { Colors } from "@/constants/Colors";
+import { DocType, useCTPLCtx } from "@/ctx/ctpl-ctx";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -24,7 +25,7 @@ import { SheetManager } from "react-native-actions-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   Easing,
-  FadeInDown,
+  FadeInLeft,
   FadeInRight,
   FadeInUp,
   SlideInUp,
@@ -42,6 +43,7 @@ export default function CTPLScreen() {
     documents,
     or_image,
     cr_image,
+    id_image,
     submitDocuments,
     uploading,
     sampleDocs,
@@ -64,11 +66,11 @@ export default function CTPLScreen() {
   const doc_types = [
     {
       id: "or",
-      label: "Original Receipt",
+      label: "Vehicle Registration Original Receipt",
       fn: selectUploadOption("or"),
       uri: documents?.or?.uri ?? or_image?.uri ?? sampleDocs.or,
       withDoc: !!or_image,
-      description: "bg-teal-600",
+      description: "bg-sky-600",
     },
     {
       id: "cr",
@@ -80,17 +82,17 @@ export default function CTPLScreen() {
     },
     {
       id: "id",
-      label: "Government ID",
-      fn: selectUploadOption("or"),
-      uri: documents?.or?.uri ?? or_image?.uri ?? sampleDocs.or,
+      label: "Government Issued Identification",
+      fn: selectUploadOption("id"),
+      uri: documents?.id?.uri ?? id_image?.uri ?? sampleDocs.id,
       withDoc: !!or_image,
-      description: "bg-sky-600",
+      description: "bg-teal-500",
     },
   ] as IDocType[];
 
   return (
     <View className="size-full relative dark:bg-chalk/20 bg-slate-600/70">
-      <StatusBar style="light" />
+      <StatusBar style="auto" />
       <ParallaxView
         height={300}
         header={
@@ -102,10 +104,10 @@ export default function CTPLScreen() {
         }
       >
         <Animated.View
-          entering={FadeInDown.duration(500).easing(Easing.out(Easing.quad))}
-          className="rounded-t-[2rem] h-screen dark:bg-neutral-950 bg-offwhite overflow-hidden"
+          // entering={FadeInDown.duration(500).easing(Easing.out(Easing.quad))}
+          className="rounded-t-[2rem] h-full dark:bg-neutral-950 bg-offwhite overflow-hidden"
         >
-          <View className="px-2 py-4">
+          <View className="px-2 py-6">
             <MinimalistHeader
               title={`${carType?.description}`}
               description={carType?.subtext}
@@ -120,16 +122,18 @@ export default function CTPLScreen() {
                 cycleTime={5000}
               />
             </MinimalistHeader>
-            <Note />
+            <View className="p-4">
+              <Note />
+            </View>
           </View>
 
-          <View className="h-[110vw] w-screen overflow-scroll">
+          <View className="h-[105vw] w-screen overflow-scroll">
             <GestureHandlerRootView>
               <CarouselStack cards={doc_types} />
             </GestureHandlerRootView>
           </View>
           {or_image || cr_image ? (
-            <FlexRow className="mx-8 h-36">
+            <FlexRow className="mx-8 h-20">
               <UploadButton onPress={submitDocuments} loading={uploading} />
             </FlexRow>
           ) : null}
@@ -183,63 +187,45 @@ export const DocTypeItem = ({ fn, label, uri, withDoc }: IDocType) => (
     </View>
   </TouchableOpacity>
 );
-const Brand = ({ route }: HeaderProps) => {
+const Brand = () => {
   return (
-    <FlexRow className="h-14 px-3 justify-between">
-      <Animated.View
-        entering={FadeInRight.delay(2000)
-          .duration(500)
-          .easing(Easing.out(Easing.quad))}
-        className="px-3 w-16 h-10"
+    <FlexRow>
+      <DAnimatedText
+        fontSize={24}
+        entering={FadeInRight.delay(1200)
+          .duration(720)
+          .easing(Easing.elastic(1.5))}
+        className="font-courg font-semibold align-middle tracking-tighter -mr-0.5 h-12 text-white"
       >
-        <TouchableOpacity onPress={route} className="size-6">
-          <Icon
-            size={32}
-            name="arrow-to-left"
-            container="-rotate-90"
-            color={Colors.dark.text}
-          />
-        </TouchableOpacity>
+        M
+      </DAnimatedText>
+      <DAnimatedText
+        fontSize={28}
+        entering={FadeInRight.delay(1300)
+          .duration(720)
+          .easing(Easing.out(Easing.cubic))}
+        className="font-courg font-semibold align-middle tracking-tighter h-12 text-white"
+      >
+        y
+      </DAnimatedText>
+      <Animated.View
+        entering={ZoomInEasyUp.delay(500)
+          .duration(300)
+          .damping(1)
+          .mass(1.5)
+          .easing(Easing.out(Easing.cubic))}
+        className="flex flex-row items-center justify-center px-1 h-8 rounded-[10px] bg-hyper-active"
+      >
+        <DAnimatedText
+          fontSize={20}
+          entering={ZoomInEasyDown.delay(600)
+            .duration(400)
+            .easing(Easing.out(Easing.quad))}
+          className="font-hypertight leading-none tracking-snug text-white"
+        >
+          CTPL
+        </DAnimatedText>
       </Animated.View>
-      <FlexRow className="ps-4">
-        <DAnimatedText
-          fontSize={28}
-          entering={FadeInRight.delay(1200)
-            .duration(720)
-            .easing(Easing.elastic(1.5))}
-          className="font-courg font-semibold tracking-tighter -mr-0.5 h-12 text-white"
-        >
-          M
-        </DAnimatedText>
-        <DAnimatedText
-          fontSize={28}
-          entering={FadeInRight.delay(1300)
-            .duration(720)
-            .easing(Easing.out(Easing.cubic))}
-          className="font-courg font-semibold tracking-tighter h-12 text-white"
-        >
-          y
-        </DAnimatedText>
-        <Animated.View
-          entering={ZoomInEasyUp.delay(500)
-            .duration(300)
-            .damping(1)
-            .mass(1.5)
-            .easing(Easing.out(Easing.cubic))}
-          className="flex flex-row items-center justify-center px-1.5 mr-6 rounded-xl bg-hyper-active"
-        >
-          <DAnimatedText
-            fontSize={24}
-            entering={ZoomInEasyDown.delay(600)
-              .duration(400)
-              .easing(Easing.out(Easing.quad))}
-            className="font-hypertight tracking-snug text-white"
-          >
-            CTPL
-          </DAnimatedText>
-        </Animated.View>
-      </FlexRow>
-      <View className="w-16" />
     </FlexRow>
   );
 };
@@ -253,16 +239,17 @@ const ParallaxHeader = memo(
   ({ isDark, route, imageUri }: ParallaxHeaderProps) => {
     return (
       <View className="h-[26rem] overflow-hidden relative w-screen">
-        <View className="h-[3.5rem]"></View>
-
-        <Brand route={route} isDark={isDark} />
+        <ScreenHeader back={route} isDark={isDark} safeTop>
+          <Brand />
+          <View className="w-12" />
+        </ScreenHeader>
         <View>
           <Image
             source={{
               uri: imageUri,
             }}
             resizeMode="contain"
-            className="w-auto aspect-auto h-[18rem]"
+            className="w-auto aspect-auto h-[20rem]"
           />
         </View>
       </View>
@@ -270,11 +257,6 @@ const ParallaxHeader = memo(
   },
 );
 ParallaxHeader.displayName = "ParallaxHeader";
-
-interface HeaderProps {
-  route: VoidFunction;
-  isDark: boolean;
-}
 
 interface UploadButtonProps extends TouchableOpacityProps {
   loading: boolean;
@@ -289,7 +271,7 @@ const UploadButton = (props: UploadButtonProps) => {
     >
       <Animated.View
         entering={ZoomInEasyDown.delay(0).duration(500).damping(2).mass(2)}
-        className="h-16 overflow-hidden flex flex-row items-center gap-x-8 px-12 bg-royal dark:bg-white relative rounded-3xl justify-center mx-6"
+        className="h-14 overflow-hidden flex flex-row items-center gap-x-8 px-16 bg-royal dark:bg-white relative rounded-3xl justify-center mx-6"
       >
         <Animated.View
           entering={SlideInUp.delay(600)
@@ -316,9 +298,9 @@ const UploadButton = (props: UploadButtonProps) => {
           className="absolute -top-48 bg-royal -rotate-[30deg] h-2 w-[36rem] rounded-full"
         />
         <DAnimatedText
-          fontSize={16}
+          fontSize={14}
           entering={ZoomInEasyDown.delay(150).duration(500).damping(5)}
-          className="font-ultratight origin-center tracking-tight dark:text-royal"
+          className="font-tight origin-center tracking-tight text-offwhite dark:text-royal"
         >
           Upload Documents
         </DAnimatedText>
@@ -329,7 +311,7 @@ const UploadButton = (props: UploadButtonProps) => {
           {props.loading ? (
             <ActivityIndicator color={Colors.dark.active} size={24} />
           ) : (
-            <Icon name="upload" size={24} color={Colors.dark.active} />
+            <Icon name="upload" size={24} color={Colors.dark.hyper} />
           )}
         </Animated.View>
       </Animated.View>
@@ -343,7 +325,7 @@ export const Note = () => (
       .duration(500)
       .withInitialValues({ y: -32 })
       .easing(Easing.out(Easing.quad))}
-    className="h-16 rounded-2xl bg-ga/20 dark:bg-chalk/30 flex flex-row items-center justify-evenly"
+    className="h-16 rounded-2xl bg-ga/20 dark:bg-offwhite/20 flex flex-row items-center justify-center gap-3"
   >
     <SText className="font-quicksemi text-base tracking-snug dark:text-offwhite">
       When you&apos;re ready
@@ -351,7 +333,9 @@ export const Note = () => (
     {/* <SText className="font-tight leading-none aspect-square p-1.5 size-7 rounded-full text-center text-base bg-hyper-active dark:bg-white tracking-snug dark:text-royal/80 text-white">
       &rarr;
     </SText> */}
-    <Icon name="double-arrow" solid size={24} color={Colors.dark.ultra} />
+    <Animated.View entering={FadeInLeft.delay(500).duration(600)}>
+      <Icon name="double-arrow" solid size={24} color={Colors.dark.ultra} />
+    </Animated.View>
     <SText className="text-base font-quicksemi text-hades dark:text-offwhite tracking-snug">
       Upload Documents
     </SText>

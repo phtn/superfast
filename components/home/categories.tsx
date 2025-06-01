@@ -91,7 +91,7 @@ export const Categories = ({ isDark }: CategoryProps) => {
               </FlexRow>
               <SText
                 className={clsx(
-                  `tracking-tighter text-base text-dark-active font-quicksemi ${activeCategory === category.id ? "text-dark-active dark:text-hyper-active" : "text-void/70 dark:text-chalk/80"}`,
+                  `tracking-tighter text-base text-dark-active font-quicksemi ${activeCategory === category.id ? "text-dark-active dark:text-hyper-active" : "text-void/80 dark:text-chalk/80"}`,
                 )}
               >
                 {category.name}
@@ -179,7 +179,7 @@ export const UserCategories = ({ isDark }: UserCategoryProps) => {
                 </FlexRow>
                 <SText
                   className={clsx(
-                    `tracking-tighter text-base dark:chalk text-active font-quicksemi ${activeCategory === category.id ? "text-royal dark:text-white" : "text-void/60 dark:text-chalk/80"}`,
+                    `tracking-tighter text-base dark:chalk text-active font-quicksemi ${activeCategory === category.id ? "text-royal dark:text-white" : "text-void/80 dark:text-chalk/80"}`,
                   )}
                 >
                   {category.name}

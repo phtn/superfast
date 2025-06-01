@@ -105,13 +105,13 @@ export const MinimalistHeader = (props: CardProps) => {
           </DText>
           <Icon
             name="arrow-right-up"
-            size={16}
+            size={12}
             color={"#FFF"}
-            container="rotate-45 rounded-full bg-hyper-active p-[1px] size-3.5"
+            container="rotate-45 rounded-full bg-hyper-active p-[1.5px] size-3.5"
           />
           <DText
-            fontSize={12.5}
-            className="dark:text-ga text-xl font-space text-neutral-700 tracking-tight"
+            fontSize={11}
+            className="dark:text-ga font-space text-neutral-700 tracking-tight"
           >
             {props.title}
           </DText>
@@ -121,11 +121,11 @@ export const MinimalistHeader = (props: CardProps) => {
         </View>
       </View>
       <View className="pr-3 flex flex-row">
-        <FlexRow className="px-4 py-2 rounded-3xl bg-hyper-active">
-          <SText className="font-quick text-royal dark:text-offwhite mr-0.5 mb-0.5 text-xl">
+        <FlexRow className="px-4 py-2 rounded-3xl bg-hyper-active dark:bg-off-active/10">
+          <SText className="font-quick text-white dark:text-ga mr-0.5 mb-0.5 text-xl">
             ₱
           </SText>
-          <SText className="font-geist text-white dark:text-white text-xl tracking-snug">
+          <SText className="font-geist text-white dark:text-hyper-active text-xl tracking-snug">
             {props.value}
           </SText>
         </FlexRow>

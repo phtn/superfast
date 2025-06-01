@@ -1,19 +1,16 @@
-import { Icon } from "@/components/icons";
-import { DocType, useCTPLCtx } from "@/ctx/ctpl-ctx";
-import { DText, SText } from "@/components/FontScaling";
 import { HyperList } from "@/components/HyperList";
 import { Colors } from "@/constants/Colors";
-import clsx from "clsx";
+import { DocType, useCTPLCtx } from "@/ctx/ctpl-ctx";
 import { RelativePathString, useRouter } from "expo-router";
 import { useCallback, useMemo } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import ActionSheet, {
   SheetManager,
   SheetProps,
 } from "react-native-actions-sheet";
-import { FlexCol } from "../FlexCol";
-import { SheetHeader } from "./components";
 import { IconName } from "../../icons/types";
+import { FlexCol } from "../FlexCol";
+import { ListItem, SheetHeader } from "./components";
 
 function UploadOptionSheet({ payload }: SheetProps<"upload-options">) {
   return (
@@ -84,16 +81,16 @@ const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
     () =>
       [
         {
-          id: 0,
-          label: "Use camera",
+          id: "0",
+          label: "Use Camera",
           subtext: "Take a photo of your document to upload.",
           icon: "camera-outline",
           onSelect: onCameraSelect,
         },
         {
-          id: 1,
-          label: "Browse files",
-          subtext: "Browse device files to select the document to upload.",
+          id: "1",
+          label: "Browse Files",
+          subtext: "Select a file from this device to upload.",
           icon: "folder",
           onSelect: onPickerSelect,
         },
@@ -101,47 +98,9 @@ const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
     [onCameraSelect, onPickerSelect],
   );
 
-  const OptionItem = useCallback(
-    ({ id, label, subtext, icon, onSelect }: IOption) => (
-      <TouchableOpacity
-        activeOpacity={0.6}
-        onPress={onSelect}
-        className={clsx(
-          "flex flex-row items-center justify-between py-5 border-b border-grei dark:border-dark-ga/60",
-          { "border-b-0": id === 1 },
-        )}
-      >
-        <View className="flex flex-row items-center gap-x-4">
-          <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-            <Icon
-              size={24}
-              name={icon}
-              color={isDark ? Colors.dark.hyper : Colors.light.text}
-            />
-          </View>
-          <View
-            className={clsx("gap-y-0.5", {
-              "flex flex-row items-center": !subtext,
-            })}
-          >
-            <DText
-              fontSize={12}
-              className="font-quicksemi text-lg dark:text-grei tracking-snug"
-            >
-              {label}
-            </DText>
-            {subtext && (
-              <SText className="text-sm font-tight dark:text-grei opacity-80">
-                {subtext}
-              </SText>
-            )}
-          </View>
-        </View>
-        <Icon
-          name="chev-right-linear"
-          color={isDark ? Colors.dark.hyper : Colors.light.text}
-        />
-      </TouchableOpacity>
+  const OptItem = useCallback(
+    (props: IOption) => (
+      <ListItem {...props} fn={props.onSelect} isDark={isDark} />
     ),
     [isDark],
   );
@@ -155,7 +114,7 @@ const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
           delay={500}
           data={upload_options}
           containerStyle={"h-[15rem]"}
-          component={OptionItem}
+          component={OptItem}
         />
       </View>
     </View>
@@ -163,7 +122,7 @@ const UploadOptions = ({ isDark, docType }: UploadOptionsProps) => {
 };
 
 interface IOption {
-  id: number;
+  id: string;
   icon: IconName;
   label: string;
   subtext: string;

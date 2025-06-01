@@ -41,19 +41,19 @@ export default function Profile() {
   return (
     <View className="pt-16 pb-6 h-full bg-gray-200 dark:bg-transparent relative">
       <TouchableOpacity
-        className="absolute top-16 z-10 left-6 size-10 rounded-full dark:bg-gray-300/5 flex flex-row items-center justify-center"
         onPress={goBack}
+        className="absolute top-16 z-10 left-6 size-10 rounded-full dark:bg-gray-300/5 flex flex-row items-center justify-center"
       >
         <Icon
-          name="arrow-to-left"
           size={28}
-          color={isDark ? Colors.dark.text : Colors.dark.royal}
+          name="arrow-to-left"
           container="-rotate-90"
+          color={isDark ? Colors.dark.text : Colors.dark.royal}
         />
       </TouchableOpacity>
       <Animated.View
-        entering={FadeInDown.delay(100).duration(300)}
         className="pt-12 px-6"
+        entering={FadeInDown.delay(100).duration(300)}
       >
         <FlexRow className="justify-between">
           <View>
@@ -64,27 +64,27 @@ export default function Profile() {
               Account
             </DText>
             <DText
-              fontSize={8}
+              fontSize={10}
               className="text-sm font-quick dark:text-hyper-active"
             >
               {session?.user?.email}
             </DText>
           </View>
           <Image
-            source={{ uri: session?.user.user_metadata.avatar_url }}
             className="size-16 rounded-full"
+            source={{ uri: session?.user.user_metadata.avatar_url }}
           />
         </FlexRow>
       </Animated.View>
 
       <Animated.ScrollView
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 30 }}
-        scrollEventThrottle={16}
       >
         <Animated.View
+          className="py-4 px-6"
           entering={FadeInDown.delay(100).duration(300)}
-          className="py-12 px-6"
         >
           <DText
             fontSize={12}
@@ -96,20 +96,20 @@ export default function Profile() {
           <View className="gap-y-4">
             <HyperInput
               fontSize={10}
+              placeholder="name"
+              label="Display name"
               icon={"user-settings"}
               autoCapitalize={"none"}
-              label="Display name"
               defaultValue={displayName}
-              placeholder="name"
               onChangeText={displayNameChange}
             />
             <HyperInput
               fontSize={10}
-              icon={"camera-outline"}
-              label="Phone number"
-              autoCapitalize={"none"}
-              defaultValue={phone}
               placeholder="63"
+              label="Phone number"
+              defaultValue={phone}
+              icon={"camera-outline"}
+              autoCapitalize={"none"}
               onChangeText={phoneChange}
             />
             {/* <TextInput
@@ -123,10 +123,10 @@ export default function Profile() {
             /> */}
             <View style={styles.verticallySpaced}>
               <Button
-                variant="secondary"
-                title={loading ? "Loading ..." : "Update"}
-                onPress={handleUpdate}
                 disabled={loading}
+                variant="secondary"
+                onPress={handleUpdate}
+                title={loading ? "Loading ..." : "Update"}
               />
             </View>
           </View>

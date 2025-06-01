@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
   Image,
@@ -24,6 +24,7 @@ import Reanimated, {
 import { DText } from "../FontScaling";
 import { Icon } from "../icons";
 import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "nativewind";
 
 interface IStackedCard {
   id: string;
@@ -288,13 +289,19 @@ export const CarouselStack = ({ cards }: StackedCardsProps) => {
             ]}
             className={`rounded-[20px] shadow-lg overflow-hidden ${card.description}`}
           >
-            <View className="h-[75%] p-14">
+            <View
+              className={`${card.withDoc ? "px-8 pb-6 pt-14" : "p-14"} h-[75%]`}
+            >
               {card.uri && (
-                <Image
-                  source={{ uri: card.uri }}
-                  className="w-full h-full"
-                  resizeMode="contain"
-                />
+                <View
+                  className={`${card.withDoc && "border bg-offwhite/60"} overflow-hidden rounded-xl border-void/40 size-full`}
+                >
+                  <Image
+                    resizeMode="contain"
+                    source={{ uri: card.uri }}
+                    className="w-auto h-full aspect-auto"
+                  />
+                </View>
               )}
             </View>
             <View className="absolute top-4 right-2 size-fit rounded-full items-center justify-center">
@@ -302,31 +309,34 @@ export const CarouselStack = ({ cards }: StackedCardsProps) => {
                 solid
                 size={40}
                 color={Colors.dark.text}
-                name="check-circle-dashed"
-                container="opacity-40 rounded-full flex flex-row justify-center items-center"
+                name={card.withDoc ? "check-circle" : "check-circle-dashed"}
+                container={`${card.withDoc ? "opacity-100" : "opacity-40"} rounded-full flex flex-row justify-center items-center`}
               />
             </View>
-            <View className="h-[20%] justify-center px-4">
+            <View className="h-[24%] justify-center px-3">
               <TouchableOpacity
-                activeOpacity={0.7}
-                className="flex-row h-[4.5rem] gap-4 px-4 items-center justify-between bg-black/60 rounded-[2rem]"
                 onPress={card.fn}
+                activeOpacity={0.7}
+                className="flex-row h-16 gap-4 px-2 items-center justify-between bg-black/60 rounded-[2rem]"
               >
                 <DText
-                  fontSize={16}
-                  className="text-offwhite font-hypertight size-12 rounded-[1.25rem] bg-void/60 text-center align-middle"
+                  fontSize={15}
+                  className="text-offwhite uppercase font-spacebold size-12 rounded-[1.5rem] bg-void/60 text-center align-middle"
                 >
-                  CR
+                  {card.id}
                 </DText>
 
-                <DText fontSize={14} className="text-offwhite font-quicksemi">
+                <DText
+                  fontSize={11}
+                  className="text-offwhite w-[56%] font-quicksemi tracking-snug"
+                >
                   {card.label}
                 </DText>
                 <Icon
-                  name="plus"
-                  size={24}
+                  size={16}
+                  name="chev-right-linear"
                   color={Colors.dark.text}
-                  container="size-12"
+                  container="size-12 aspect-square mr-2"
                 />
               </TouchableOpacity>
             </View>
@@ -336,29 +346,37 @@ export const CarouselStack = ({ cards }: StackedCardsProps) => {
     });
   };
 
+  const { colorScheme } = useColorScheme();
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
+
   return (
     <GestureHandlerRootView className="flex-1">
       <View className="flex-1 justify-center items-center">
         <View className="w-full h-[80%] items-center justify-center">
           {renderCards()}
         </View>
-        <View className="flex-row h-28 justify-end px-10 border border-ga w-full">
+        <View className="flex-row h-16 justify-end gap-4 pe-16 items-center w-full">
           <TouchableOpacity
-            className="size-8 rounded-full bg-gray-100 justify-center items-center mx-[10px]"
+            className="size-8 rounded-full dark:bg-offwhite bg-hades justify-center items-center mx-[10px]"
             onPress={goToPrevious}
           >
             <Icon
-              name="arrow-right-up"
               size={16}
-              color="black"
-              container="-rotate-[120deg]"
+              name="arrow-right-up"
+              container="-rotate-[135deg]"
+              color={isDark ? Colors.dark.royal : Colors.dark.text}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            className="size-8 rounded-full bg-gray-100 justify-center items-center mx-[10px]"
+            className="size-8 rounded-full dark:bg-offwhite bg-hades justify-center items-center mx-[10px]"
             onPress={goToNext}
           >
-            <Icon name="arrow-right-up" size={16} color="black" />
+            <Icon
+              size={16}
+              name="arrow-right-up"
+              container="rotate-45"
+              color={isDark ? Colors.dark.royal : Colors.dark.text}
+            />
           </TouchableOpacity>
         </View>
       </View>

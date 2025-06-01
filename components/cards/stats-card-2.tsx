@@ -1,10 +1,11 @@
 import { View, Text, Image } from "react-native";
+import { DText } from "../FontScaling";
 // import { CircularProgress } from 'react-native-circular-progress';
 
 type RevenueCardProps = {
   companyName: string;
   category: string;
-  revenue: string;
+  revenue: number;
   percentChange: number;
   engagement: number;
   logoUri: string;
@@ -25,28 +26,39 @@ export const StatCardTwo = ({
           <Image source={{ uri: logoUri }} className="w-6 h-6 tint-white" />
         </View>
         <View className="flex-col">
-          <Text className="text-base font-tight dark:text-chalk mb-0.5">
+          <DText
+            fontSize={10}
+            className="text-base font-tight dark:text-chalk mb-0.5"
+          >
             {companyName}
-          </Text>
-          <Text className="text-sm font-quick text-ga">{category}</Text>
+          </DText>
+          <DText fontSize={10} className="text-sm font-quick text-ga">
+            {category}
+          </DText>
         </View>
       </View>
 
       <View className="flex-row justify-between items-end">
         <View>
           <View className="flex flex-row gap-3">
-            <Text className="text-2xl dark:text-chalk font-space mb-1">
-              {revenue}
-            </Text>
+            <DText className="text-2xl dark:text-chalk font-geist mb-1">
+              ₱ {revenue.toFixed(2)}
+            </DText>
             <View className="flex-row items-center mb-1">
-              <Text className="text-xl font-quicksemi font-medium text-green-500">
+              <DText
+                fontSize={10}
+                className="text-xl font-quicksemi font-medium text-green-500"
+              >
                 ▲ {percentChange}%
-              </Text>
+              </DText>
             </View>
           </View>
-          <Text className="text-base font-quicksemi text-gray-500 dark:text-chalk/60">
+          <DText
+            fontSize={9}
+            className="text-base font-quicksemi text-gray-500 dark:text-chalk/60"
+          >
             Earnings this month
-          </Text>
+          </DText>
         </View>
 
         <View className="items-center">

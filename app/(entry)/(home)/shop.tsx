@@ -22,13 +22,17 @@ const ShopScreen = () => {
   const { getFileUri } = useConfigCtx();
 
   const ctplImageUri = useMemo(
-    () =>
-      isDark ? getFileUri("CTPL_DARK5.webp") : getFileUri("CTPL_LIGHT4.png"),
+    () => ({
+      bg: getFileUri(isDark ? "CTPL_DARK.webp" : "CTPL_LIGHT4.png"),
+      badge: getFileUri(isDark ? "CTPL_D.webp" : "CTPL_L.png"),
+    }),
     [isDark, getFileUri],
   );
   const fullImageUri = useMemo(
-    () =>
-      isDark ? getFileUri("FULL_DARK5.png") : getFileUri("FULL_LIGHT5.png"),
+    () => ({
+      bg: getFileUri(isDark ? "FULL_DARK5.png" : "FULL_LIGHT5.png"),
+      badge: getFileUri(isDark ? "FULL_S.webp" : "FULL_S.webp"),
+    }),
     [isDark, getFileUri],
   );
 
@@ -39,7 +43,8 @@ const ShopScreen = () => {
           id: 0,
           name: "CTPL",
           subtext: "Compulsory Third Party Liability",
-          image: ctplImageUri,
+          image: ctplImageUri.bg,
+          badge: ctplImageUri.badge,
           description: "Compulsory Third Party Liability",
           textStyles: "text-hades",
           tag: "car insurance",
@@ -48,7 +53,8 @@ const ShopScreen = () => {
           id: 1,
           name: "Full Coverage",
           subtext: "Comprehensive Insurance Coverage",
-          image: fullImageUri,
+          image: fullImageUri.bg,
+          badge: fullImageUri.badge,
           description: "Comprehensive Insurance Coverage",
           textStyles: "text-hades",
           tag: "car insurance",

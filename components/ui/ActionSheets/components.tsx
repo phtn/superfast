@@ -1,7 +1,7 @@
-import { DAnimatedText } from "@/components/FontScaling";
+import { DAnimatedText, DText } from "@/components/FontScaling";
 import { LinearGradient } from "expo-linear-gradient";
 import { memo } from "react";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Animated, {
   FadeInDown,
   SlideInUp,
@@ -9,6 +9,10 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 import { FlexRow } from "../FlexRow";
+import { IconName } from "@/components/icons/types";
+import clsx from "clsx";
+import { Icon } from "@/components/icons";
+import { Colors } from "@/constants/Colors";
 
 export const Handle = () => {
   return (
@@ -75,3 +79,69 @@ export const SheetHeader = memo(({ title }: { title: string }) => (
   </Animated.View>
 ));
 SheetHeader.displayName = "SheetHeader";
+
+interface ListItemProps {
+  id: string;
+  label: string;
+  subtext?: string;
+  description?: string;
+  keywords?: string[];
+  price?: number;
+  icon: IconName;
+  iconSolid?: boolean;
+  imageUri?: string;
+  onSelect?: VoidFunction;
+}
+export const ListItem = ({
+  id,
+  label,
+  subtext,
+  icon,
+  iconSolid,
+  isDark,
+  fn,
+}: ListItemProps & { isDark: boolean; fn: VoidFunction }) => (
+  <TouchableOpacity
+    activeOpacity={0.6}
+    onPress={fn}
+    className={clsx(
+      "flex flex-row items-center justify-between py-5 border-b border-grei dark:border-dark-ga/60",
+      { "border-b-0": id === "motors" },
+    )}
+  >
+    <View className="flex flex-row items-center gap-x-4">
+      <View className="size-10 rounded-xl flex flex-row items-center justify-center">
+        <Icon
+          size={28}
+          name={icon}
+          color={isDark ? Colors.dark.hyper : Colors.light.active}
+          solid={iconSolid}
+        />
+      </View>
+      <View
+        className={clsx("gap-y-0.5", {
+          "flex flex-row items-center": !subtext,
+        })}
+      >
+        <DText
+          fontSize={15}
+          className="font-quickbold dark:text-grei text-void tracking-teen"
+        >
+          {label}
+        </DText>
+        {subtext && (
+          <DText
+            fontSize={11}
+            className="text-base font-tight font-normal dark:text-grei opacity-60"
+          >
+            {subtext}
+          </DText>
+        )}
+      </View>
+    </View>
+    <Icon
+      name="chev-right-linear"
+      color={isDark ? Colors.dark.text : Colors.light.text}
+    />
+  </TouchableOpacity>
+);

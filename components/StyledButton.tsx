@@ -95,7 +95,7 @@ export const Button = ({
       {...props}
     >
       <DText
-        fontSize={10}
+        fontSize={12}
         className={`font-quickbold tracking-teen px-6
                   ${textSizeStyles[size]}
                   ${textStyles[variant]}

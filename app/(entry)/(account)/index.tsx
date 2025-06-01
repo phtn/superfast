@@ -27,7 +27,7 @@ interface UserInfo {
   avatar: string | undefined;
 }
 
-const ProfileScreen = ({ navigation }: any) => {
+const ProfileScreen = () => {
   // const [darkMode, setDarkMode] = useState(false);
   // const [notifications, setNotifications] = useState(true);
   // const [faceID, setFaceID] = useState(true);
@@ -136,7 +136,7 @@ const ProfileScreen = ({ navigation }: any) => {
         style={[{ height: HEADER_HEIGHT }, headerAnimatedStyle]}
       >
         <LinearGradient
-          colors={isDarkMode ? ["#14141B", "#14141B"] : ["#fafafa", "#fafafa"]}
+          colors={isDarkMode ? ["#14141B", "#14141B"] : ["#fff", "#fff"]}
           className="flex-1 items-center pt-12"
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -159,8 +159,8 @@ const ProfileScreen = ({ navigation }: any) => {
             containerStyle={avatarAnimatedStyle}
           />
           <Animated.View
-            className="flex flex-row items-center mt-6 max-w-[80%]"
             style={[nameAnimatedStyle]}
+            className="flex flex-row items-center mt-6 max-w-[80%]"
           >
             <DText
               fontSize={10}
@@ -174,26 +174,22 @@ const ProfileScreen = ({ navigation }: any) => {
       </Animated.View>
 
       <Animated.ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 30 }}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 30 }}
       >
         <View style={{ height: HEADER_HEIGHT }} />
 
-        {/* Account Settings */}
         <Animated.View
           entering={FadeInDown.delay(100).duration(300)}
           className="py-12 px-2"
         >
-          <DText
-            fontSize={12}
-            className="h-14 font-ultratight px-6 tracking-tighter dark:text-chalk text-2xl"
-          >
+          <DText className="h-14 font-ultratight px-6 tracking-tight dark:text-chalk text-2xl">
             Settings
           </DText>
 
-          <View className="bg-neutral-50 dark:bg-hades py-1 rounded-3xl">
+          <View className="bg-neutral-100/80 dark:bg-hades py-1 rounded-3xl">
             <TouchableOpacity
               activeOpacity={0.6}
               onPress={route("profile" as RelativePathString)}
@@ -216,13 +212,17 @@ const ProfileScreen = ({ navigation }: any) => {
             </TouchableOpacity>
 
             <TouchableOpacity
+              activeOpacity={0.7}
               onPress={route("affiliate" as RelativePathString)}
-              activeOpacity={0.6}
               className="flex h-[4.5rem] flex-row items-center justify-between px-4 py-4 border-y-[0.33px] border-neutral-300 dark:border-medusa"
             >
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
-                  <Icon name="affiliate" size={24} color={Colors.dark.text} />
+                  <Icon
+                    size={24}
+                    name="affiliate"
+                    color={isDarkMode ? Colors.dark.text : Colors.light.text}
+                  />
                 </View>
                 <Title
                   label="Affiliate Account"
@@ -235,7 +235,7 @@ const ProfileScreen = ({ navigation }: any) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              activeOpacity={0.6}
+              activeOpacity={0.7}
               className="flex flex-row items-center justify-between px-4 py-4"
             >
               <View className="flex flex-row items-center gap-x-4">
@@ -257,14 +257,11 @@ const ProfileScreen = ({ navigation }: any) => {
           entering={FadeInDown.delay(200).duration(300)}
           className="pt-6 pb-12 px-2"
         >
-          <DText
-            fontSize={12}
-            className=" font-ultratight h-14 px-8 tracking-tighter dark:text-chalk text-2xl"
-          >
+          <DText className=" font-ultratight h-14 px-8 tracking-tight dark:text-chalk text-2xl">
             Preferences
           </DText>
 
-          <View className="bg-neutral-50 rounded-3xl dark:bg-hades py-1">
+          <View className="bg-neutral-100/80 rounded-3xl dark:bg-hades py-1">
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={toggleColorScheme}
@@ -273,8 +270,8 @@ const ProfileScreen = ({ navigation }: any) => {
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
                   <Icon
-                    name="paint-brush"
                     size={24}
+                    name="paint-brush"
                     color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
@@ -285,10 +282,10 @@ const ProfileScreen = ({ navigation }: any) => {
                 <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
               <Icon
-                name={isDarkMode ? "fat-toggle-off" : "fat-toggle-on"}
-                size={40}
                 solid
+                size={40}
                 fill={Colors.dark.fade}
+                name={isDarkMode ? "fat-toggle-off" : "fat-toggle-on"}
                 color={isDarkMode ? Colors.dark.fade : Colors.dark.active}
               />
             </TouchableOpacity>
@@ -308,21 +305,27 @@ const ProfileScreen = ({ navigation }: any) => {
                 />
                 <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
-              <Icon name="chev-right-linear" color={Colors.light.text} />
+              <Icon
+                name="chev-right-linear"
+                color={isDarkMode ? Colors.dark.text : Colors.light.text}
+              />
             </TouchableOpacity>
 
             <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga">
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
                   <Icon
-                    name="fingerprint"
                     size={24}
+                    name="fingerprint"
                     color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
                 <Title label="Passkeys" subtext="Create a new passkey" />
               </View>
-              <Icon name="chev-right-linear" color={Colors.light.text} />
+              <Icon
+                name="chev-right-linear"
+                color={isDarkMode ? Colors.dark.text : Colors.light.text}
+              />
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -335,43 +338,44 @@ const ProfileScreen = ({ navigation }: any) => {
           entering={FadeInDown.delay(300).duration(300)}
           className="py-12 px-2"
         >
-          <DText
-            fontSize={12}
-            className=" font-ultratight h-14 px-8 tracking-tighter dark:text-chalk text-2xl"
-          >
+          <DText className=" font-ultratight h-14 px-8 tracking-tight dark:text-chalk text-2xl">
             Preferences
           </DText>
 
-          <View className="bg-neutral-50 rounded-3xl dark:bg-hades py-1">
-            <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga">
+          <View className="bg-neutral-100/80 rounded-3xl dark:bg-hades py-1">
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga"
+            >
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
                   <Icon
-                    name="document-linear"
                     size={24}
+                    name="document-linear"
                     color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
                 <Title
-                  label="HelpCenter"
+                  label="Help Center"
                   subtext="Enabled &middot; Do not disturb is off"
                 />
                 <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
               <Icon
                 name="chev-right-linear"
-                strokeWidth={1.5}
-                size={24}
-                color="#14141b"
+                color={isDarkMode ? Colors.dark.text : Colors.light.text}
               />
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex h-[4.5rem] flex-row items-center justify-between px-4 py-4 border-y-[0.33px] border-neutral-300 dark:border-neutral-400/80">
+            <TouchableOpacity
+              activeOpacity={0.8}
+              className="flex h-[4.5rem] flex-row items-center justify-between px-4 py-4 border-y-[0.33px] border-neutral-300 dark:border-neutral-400/80"
+            >
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
                   <Icon
-                    name="chats"
                     size={24}
+                    name="chats"
                     color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
@@ -381,15 +385,21 @@ const ProfileScreen = ({ navigation }: any) => {
                 />
                 <Text className="font-quicksemi text-lg dark:text-black tracking-tight"></Text>
               </View>
-              <Icon name="chev-right-linear" color={Colors.light.text} />
+              <Icon
+                name="chev-right-linear"
+                color={isDarkMode ? Colors.dark.text : Colors.light.text}
+              />
             </TouchableOpacity>
 
-            <TouchableOpacity className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga">
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="flex flex-row items-center justify-between px-4 py-4 border-b-[0.0px] border-ga"
+            >
               <View className="flex flex-row items-center gap-x-4">
                 <View className="size-10 rounded-xl flex flex-row items-center justify-center">
                   <Icon
-                    name="wallet"
                     size={24}
+                    name="wallet"
                     color={isDarkMode ? Colors.dark.text : Colors.light.text}
                   />
                 </View>
@@ -447,10 +457,7 @@ interface TitleProps {
 const Title = ({ label, subtext }: TitleProps) => {
   return (
     <View>
-      <DText
-        fontSize={12}
-        className="font-quickbold text-lg tracking-tight dark:text-chalk"
-      >
+      <DText fontSize={14} className="font-quicksemi text-lg dark:text-chalk">
         {label}
       </DText>
       <SText className="text-sm font-quick tracking-tighter opacity-70 dark:text-chalk">

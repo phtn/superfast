@@ -1,18 +1,14 @@
-import { HyperList } from "@/components/HyperList";
 import { Colors } from "@/constants/Colors";
-import { CarType, useCTPLCtx } from "@/ctx/ctpl-ctx";
-import { RelativePathString, useRouter } from "expo-router";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { View } from "react-native";
-import ActionSheet, {
-  SheetManager,
-  SheetProps,
-} from "react-native-actions-sheet";
+import ActionSheet, { SheetProps } from "react-native-actions-sheet";
 import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import { FlexCol } from "../FlexCol";
-import { ListItem, SheetHeader } from "./components";
+import { FlexRow } from "../FlexRow";
+import { StyledQr } from "../QRStyling";
+import { SheetHeader } from "./components";
 
-const GetStartedSheet = ({ payload }: SheetProps<"get-started">) => {
+const QRViewerSheet = ({ payload }: SheetProps<"qr-viewer">) => {
   // Memoize the styles to prevent recreation on each render
   const sheetStyles = useMemo(
     () => ({
@@ -56,54 +52,27 @@ const GetStartedSheet = ({ payload }: SheetProps<"get-started">) => {
           style={{ borderTopStartRadius: 24, borderTopEndRadius: 24 }}
           className="justify-start relative bg-white dark:bg-hades py-8"
         >
-          <GetStartedOptions isDark={payload.isDark} />
+          <QRViewer {...payload} />
         </FlexCol>
       </View>
     </ActionSheet>
   );
 };
 
-interface GetStartedOptionsProps {
+interface QRViewerProps {
+  affiliateCode: string;
   isDark: boolean;
 }
-const GetStartedOptions = memo(({ isDark }: GetStartedOptionsProps) => {
-  const router = useRouter();
-  const route = useCallback(() => {
-    router.navigate("/(entry)/(ctpl)" as RelativePathString);
-  }, [router]);
-
-  const { carTypes, onSelect } = useCTPLCtx();
-
-  const handleSelect = useCallback(
-    (id: string) => () => {
-      SheetManager.hide("get-started").then(route);
-      onSelect(id);
-    },
-    [route, onSelect],
-  );
-
-  const CarItem = useCallback(
-    (props: CarType) => (
-      <ListItem {...props} fn={handleSelect(props.id)} isDark={isDark} />
-    ),
-    [isDark, handleSelect],
-  );
-
+const QRViewer = memo(({ affiliateCode }: QRViewerProps) => {
   return (
     <View className="py-4 px-2">
-      <SheetHeader title="Select Vehicle Type" />
-      <View className="rounded-3xl py-6">
-        <HyperList
-          keyId="id"
-          delay={500}
-          component={CarItem}
-          data={carTypes ?? []}
-          containerStyle="h-[26rem]"
-        />
-      </View>
+      <SheetHeader title="Affiliate QR Code" />
+      <FlexRow className="rounded-3xl py-6">
+        <StyledQr value={`https://${affiliateCode}`} size={300} />
+      </FlexRow>
     </View>
   );
 });
-GetStartedOptions.displayName = "GetStartedOptions";
+QRViewer.displayName = "QRViewer";
 
-export default GetStartedSheet;
+export default QRViewerSheet;

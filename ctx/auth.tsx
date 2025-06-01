@@ -41,6 +41,7 @@ interface AuthContextType {
   updateProfile: (payload: Omit<UserProfile, "id" | "uid">) => Promise<void>;
   getProfile: (id: string) => Promise<UserProfile | null>;
   displayName: string | undefined;
+  avatar: string | undefined;
   phone: string | undefined;
 }
 
@@ -71,7 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [displayName, setDisplayName] = useState<string | undefined>(
-    session?.user?.user_metadata.name as string,
+    user?.user_metadata.name as string,
+  );
+
+  const [avatar, setAvatar] = useState<string | undefined>(
+    user?.user_metadata.avatar_url as string,
   );
   const [phone, setPhone] = useState<string | undefined>(user?.phone);
   const router = useRouter();
@@ -174,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setDisplayName(session?.user?.user_metadata.name);
+      setAvatar(session?.user?.user_metadata.avatar_url);
       setLoading(false);
     });
 
@@ -271,7 +277,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) console.log(error);
+      router.replace("/sign-in");
     } catch (error) {
       if (error instanceof Error) {
         console.log("Error", error.message);
@@ -279,7 +286,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   const signInWithGoogle = useCallback(async () => {
     console.log("triggered google signin");
@@ -345,6 +352,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       updateProfile,
       displayName,
       phone,
+      avatar,
     }),
     [
       user,
@@ -359,6 +367,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       updateProfile,
       displayName,
       phone,
+      avatar,
     ],
   );
 

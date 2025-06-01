@@ -17,7 +17,7 @@ export const PremiumCard = (props: PremiumCardProps) => {
   return (
     <Animated.View
       entering={FadeInDown.delay(500).duration(700)}
-      className="px-3 py-6"
+      className="px-3 py-4"
     >
       <LinearGradient
         colors={
@@ -33,21 +33,18 @@ export const PremiumCard = (props: PremiumCardProps) => {
         <View className="relative p-3 flex flex-row items-center justify-between">
           <View className="gap-y-3 ">
             <View className="flex flex-row items-center">
-              <DText
-                fontSize={10}
-                className="font-hypertight text-chalk tracking-snug"
-              >
+              <DText fontSize={14} className="font-hypertight text-chalk">
                 {props.title}
               </DText>
             </View>
-            <SText className="text-white/90 dark:text-neutral-200 font-quick max-w-[85%] tracking-teen text-lg">
+            <SText className="text-white/90 dark:text-neutral-200 font-quick max-w-[85%] tracking-teen text-sm">
               {props.description ??
                 "Get exclusive 10% discount to all insurance policies."}
             </SText>
           </View>
 
           <TouchableOpacity
-            activeOpacity={0.65}
+            activeOpacity={0.75}
             onPress={props.onPress}
             className={clsx(
               "absolute shadow-gray-500 top-1.5 right-2 pt-1.5",
@@ -57,7 +54,7 @@ export const PremiumCard = (props: PremiumCardProps) => {
               " dark:right-1 dark:px-0",
             )}
           >
-            <SText className="font-garamond text-royal/80 drop-shadow-md shadow-hyper-active dark:text-white dark:h-[2.3rem] h-[2.22rem] text-[1.5rem] tracking-teen px-1.5 leading-none">
+            <SText className="font-garamond text-royal/80 drop-shadow-md shadow-hyper-active dark:text-white h-[1.75rem] text-[1.25rem] tracking-teen px-1.5 leading-none">
               {props.actionLabel ?? "upgrade"}
             </SText>
           </TouchableOpacity>

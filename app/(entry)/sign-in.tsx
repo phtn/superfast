@@ -3,18 +3,11 @@ import { FlexRow } from "@/components/ui/FlexRow";
 import { supabase } from "@/lib/supabase";
 import { Session, SupabaseClient } from "@supabase/supabase-js";
 import { RelativePathString, useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { useConfigCtx } from "@/ctx/config";
-import pkg from "../../package.json";
+import { EnvFlag } from "@/components/ui/EnvFlag";
 
 const SignInScreen = () => {
   const router = useRouter();
@@ -23,15 +16,6 @@ const SignInScreen = () => {
   // const [isLoading, setIsLoading] = useState(false);
   // const [error, setError] = useState("");
   const [session] = useState<Session | null>(null);
-  const { getFileUri } = useConfigCtx();
-  const re_up_logo = useMemo(
-    () => getFileUri("RE_UP_LOGO_DARK_MONO.png"),
-    [getFileUri],
-  );
-  const fast_logo = useMemo(
-    () => getFileUri("FAST_LOGO_DARK_MONO.png"),
-    [getFileUri],
-  );
 
   useEffect(() => {
     if (supabase instanceof SupabaseClient) {
@@ -57,33 +41,7 @@ const SignInScreen = () => {
         <View className="px-4 flex">
           <SBAuth />
         </View>
-        <FlexRow className="absolute dark:bg-indigo-300/80 px-8 w-full justify-between bottom-0 h-12 bg-grei">
-          <FlexRow className="gap-4 w-24">
-            <View className="opacity-30 dark:opacity-100">
-              <Image
-                source={{ uri: re_up_logo }}
-                className="size-4"
-                resizeMode="contain"
-              />
-            </View>
-            <View className="opacity-30 dark:opacity-100">
-              <Image
-                source={{ uri: fast_logo }}
-                className="size-14"
-                resizeMode="contain"
-              />
-            </View>
-          </FlexRow>
-          <Text className="opacity-40 dark:opacity-100 text-sm font-quick">
-            TEST&middot;&middot;BUILD
-          </Text>
-          <FlexRow className="w-24">
-            <View className="flex-1" />
-            <Text className="opacity-40 dark:opacity-100 text-sm text-end font-quick">
-              v{pkg.version}
-            </Text>
-          </FlexRow>
-        </FlexRow>
+        <EnvFlag />
       </KeyboardAvoidingView>
     </View>
   );

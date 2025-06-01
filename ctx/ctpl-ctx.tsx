@@ -34,7 +34,7 @@ export interface CarType {
   subtext?: string;
   description: string;
   keywords: string[];
-  price: number;
+  price?: number;
   icon: IconName;
   iconSolid?: boolean;
   imageUri: string;
@@ -65,6 +65,7 @@ interface CTPLCtxValues {
   sampleDocs: {
     or: string;
     cr: string;
+    id: string;
   };
   /**
    * Upload a document to Supabase Storage and return its public URL
@@ -249,6 +250,7 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       cr: getFileUri("CR.png"),
       or: getFileUri("OR.png"),
+      id: getFileUri("ID3.webp"),
     }),
     [getFileUri],
   );
