@@ -34,9 +34,10 @@ export const ScreenHeader = ({
       )}
       <FlexRow className="h-16 px-3 justify-between">
         <Animated.View
-          entering={FadeInRight.delay(1600)
+          entering={FadeInRight.delay(800)
             .duration(500)
-            .easing(Easing.out(Easing.quad))}
+            .easing(Easing.out(Easing.quad))
+            .withInitialValues({ x: 8 })}
           className="w-12 flex flex-row items-center justify-center h-8"
         >
           <TouchableOpacity onPress={back} hitSlop={5}>
@@ -52,7 +53,7 @@ export const ScreenHeader = ({
           children
         ) : (
           <Animated.View
-            entering={FlipInEasyX.delay(1800).duration(300)}
+            entering={FlipInEasyX.delay(75).duration(300)}
             className="flex flex-row items-center gap-1 h-10"
           >
             {title && (

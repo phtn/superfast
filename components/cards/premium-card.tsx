@@ -2,17 +2,20 @@ import { DText, SText } from "@/components/FontScaling";
 import { clsx } from "clsx";
 import { LinearGradient } from "expo-linear-gradient";
 import { useColorScheme } from "nativewind";
+import { useMemo, type ReactNode } from "react";
 import { TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 interface PremiumCardProps {
   onPress: VoidFunction;
-  title: string;
+  title?: string;
   description?: string;
   actionLabel?: string;
+  children?: ReactNode;
 }
 export const PremiumCard = (props: PremiumCardProps) => {
   const { colorScheme } = useColorScheme();
+  const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
 
   return (
     <Animated.View
@@ -21,7 +24,7 @@ export const PremiumCard = (props: PremiumCardProps) => {
     >
       <LinearGradient
         colors={
-          colorScheme === "dark"
+          isDark
             ? ["#007AFE", "#030303", "#040404"]
             : // : ["#53A9FF", "#53A9FF", "#53A9FF", "#53A9FF", "#aad3fc", "#172554"]
               ["#0A84FF", "#0A84FF", "#0A84FF", "#0A84FF", "#aad3fc", "#172554"]
@@ -31,15 +34,21 @@ export const PremiumCard = (props: PremiumCardProps) => {
         className="rounded-3xl p-2 overflow-hidden border-[1.5px] border-s-[0.10] border-b-[0.0px] border-t-[0.75px] dark:border-hyper-active border-ultra-active/60"
       >
         <View className="relative p-3 flex flex-row items-center justify-between">
-          <View className="gap-y-3 ">
-            <View className="flex flex-row items-center">
-              <DText fontSize={14} className="font-hypertight text-chalk">
-                {props.title}
-              </DText>
+          <View className="gap-y-4">
+            <View className="flex flex-row items-center gap-x-2">
+              {props.title && (
+                <DText
+                  fontSize={12}
+                  className="font-ultratight tracking-snug text-chalk"
+                >
+                  {props.title}
+                </DText>
+              )}
+              {props.children}
             </View>
             <SText className="text-white/90 dark:text-neutral-200 font-quick max-w-[85%] tracking-teen text-sm">
               {props.description ??
-                "Get exclusive 10% discount to all insurance policies."}
+                "Get exclusive 10% discount in all our insurance coverage products."}
             </SText>
           </View>
 

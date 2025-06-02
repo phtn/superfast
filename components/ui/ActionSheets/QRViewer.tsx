@@ -2,6 +2,7 @@ import { Colors } from "@/constants/Colors";
 import { memo, useMemo } from "react";
 import { View } from "react-native";
 import ActionSheet, { SheetProps } from "react-native-actions-sheet";
+import Animated, { ZoomIn } from "react-native-reanimated";
 import { ViewStyle } from "react-native/Libraries/StyleSheet/StyleSheetTypes";
 import { FlexCol } from "../FlexCol";
 import { FlexRow } from "../FlexRow";
@@ -65,11 +66,19 @@ interface QRViewerProps {
 }
 const QRViewer = memo(({ affiliateCode }: QRViewerProps) => {
   return (
-    <View className="py-4 px-2">
+    <View className="py-4 px-2 origin-center">
       <SheetHeader title="Affiliate QR Code" />
-      <FlexRow className="rounded-3xl py-6">
-        <StyledQr value={`https://${affiliateCode}`} size={300} />
-      </FlexRow>
+      <Animated.View
+        entering={ZoomIn.delay(300)
+          .duration(500)
+          .withInitialValues({
+            transform: [{ scale: 0.9 }],
+          })}
+      >
+        <FlexRow className="rounded-3xl py-6">
+          <StyledQr value={`https://${affiliateCode}`} size={300} />
+        </FlexRow>
+      </Animated.View>
     </View>
   );
 });

@@ -339,7 +339,7 @@ const ProfileScreen = () => {
           className="py-12 px-2"
         >
           <DText className=" font-ultratight h-14 px-8 tracking-tight dark:text-chalk text-2xl">
-            Preferences
+            Support
           </DText>
 
           <View className="bg-neutral-100/80 rounded-3xl dark:bg-hades py-1">
@@ -457,7 +457,7 @@ interface TitleProps {
 const Title = ({ label, subtext }: TitleProps) => {
   return (
     <View>
-      <DText fontSize={14} className="font-quicksemi text-lg dark:text-chalk">
+      <DText fontSize={12} className="font-quicksemi text-lg dark:text-chalk">
         {label}
       </DText>
       <SText className="text-sm font-quick tracking-tighter opacity-70 dark:text-chalk">
@@ -468,82 +468,3 @@ const Title = ({ label, subtext }: TitleProps) => {
 };
 
 export default ProfileScreen;
-
-{
-  /* Account Stats
-
-          statsContainer: {
-              marginHorizontal: 20,
-              marginTop: 80,
-              borderRadius: 16,
-              borderWidth: 1,
-              overflow: "hidden",
-            },
-          */
-}
-{
-  /* <Animated.View
-          entering={FadeInDown.duration(300)}
-          style={styles.statsContainer}
-          className="hidden "
-        > */
-}
-{
-  /*
-            statsContainer: {
-               marginHorizontal: 20,
-               marginTop: 80,
-               borderRadius: 16,
-               borderWidth: 1,
-               overflow: "hidden",
-             },
-             statsBlur: {
-               flexDirection: "row",
-               justifyContent: "space-between",
-               padding: 20,
-               backgroundColor: "rgba(255, 255, 255, 0.8)",
-             },
-             statItem: {
-               flex: 1,
-               alignItems: "center",
-             },
-             statValue: {
-               fontSize: 18,
-               fontWeight: "700",
-               color: "#0F172A",
-               marginBottom: 4,
-             },
-             statLabel: {
-               fontSize: 12,
-               color: "#64748B",
-             },
-             statDivider: {
-               width: 1,
-               height: "100%",
-               backgroundColor: "#E2E8F0",
-             },
-            */
-}
-{
-  /* <BlurView
-            intensity={Platform.OS === "ios" ? 60 : 100}
-            tint="light"
-            style={styles.statsBlur}
-          >
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>€12,450</Text>
-              <Text style={styles.statLabel}>Total Balance</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>24</Text>
-              <Text style={styles.statLabel}>Transactions</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>3</Text>
-              <Text style={styles.statLabel}>Active Cards</Text>
-            </View>
-          </BlurView>
-        </Animated.View> */
-}

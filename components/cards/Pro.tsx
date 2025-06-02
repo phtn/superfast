@@ -1,26 +1,25 @@
-import Animated from "react-native-reanimated";
-import { DText } from "../FontScaling";
 import clsx from "clsx";
 import { memo } from "react";
+import Animated from "react-native-reanimated";
+import { SText } from "../FontScaling";
 
 interface IPro {
   dark?: boolean;
 }
 export const Pro = memo(({ dark }: IPro) => {
-  const viewStyle = dark ? `bg-void` : `bg-active`;
-  const textStyle = dark ? "text-hyper-active" : "text-white";
+  const viewStyle = dark ? `bg-void` : `bg-amber-100`;
+  const textStyle = dark ? "text-hyper-active" : "text-royal";
   return (
     <Animated.View
       className={clsx(
-        `${viewStyle} rounded-ss-sm rounded-r-[5.5px] flex flex-row items-center justify-center overflow-hidden h-[11px] px-[1.5px] pe-[1px]`,
+        `${viewStyle} rounded-ss-[3px] rounded-r-[8px] flex flex-row items-center justify-center overflow-hidden h-[1rem] px-[1px] pe-[1.5px]`,
       )}
     >
-      <DText
-        fontSize={14}
-        className={`${textStyle} font-quicksemi leading-none tracking-tight -mt-[2.45px]`}
+      <SText
+        className={`${textStyle} font-quickbold leading-none tracking-tight text-xl p-0 -mt-[4.5px]`}
       >
         pro
-      </DText>
+      </SText>
     </Animated.View>
   );
 });

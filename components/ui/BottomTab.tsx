@@ -89,7 +89,7 @@ export const BottomTab = (_: BottomTabBarProps) => {
       >
         <FlexRow
           className={clsx(
-            `relative rounded-2xl overflow-hidden size-12`,
+            `relative rounded-xl overflow-hidden size-10`,
             getTabColor(index),
           )}
         >
@@ -139,10 +139,10 @@ export const BottomTab = (_: BottomTabBarProps) => {
   }, [active, handleTabRoute, tabs, getTabColor, isDark]);
 
   return (
-    <FlexRow className="w-full px-16">
+    <FlexRow className="w-full px-24">
       <FlexRow
         className={clsx(
-          "overflow-hidden px-4 h-20 absolute shadow-lg bottom-0 rounded-[1.8rem] w-full mb-6 justify-between",
+          "overflow-hidden px-3 h-[4rem] absolute shadow-lg bottom-0 rounded-[1.25rem] w-full mb-8 justify-between",
           colorScheme === "dark" ? "bg-white" : "bg-void",
         )}
       >

@@ -1,22 +1,19 @@
-import { Icon } from "@/components/icons";
-import { useAuth } from "@/ctx/auth";
 import { DText } from "@/components/FontScaling";
 import { Button } from "@/components/StyledButton";
 import { HyperInput } from "@/components/StyledComponents";
-import { FlexRow } from "@/components/ui/FlexRow";
-import { Colors } from "@/constants/Colors";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { useAuth } from "@/ctx/auth";
 import { router } from "expo-router";
 import { useColorScheme } from "nativewind";
 import { useCallback, useMemo, useState } from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 export default function Profile() {
   const [newDisplayName, setNewDisplayName] = useState<string | undefined>();
   const [newPhone, setNewPhone] = useState<string | undefined>();
 
-  const { session, signOut, phone, displayName, updateProfile, loading } =
-    useAuth();
+  const { signOut, phone, displayName, updateProfile, loading } = useAuth();
 
   const { colorScheme } = useColorScheme();
   const isDark = useMemo(() => colorScheme === "dark", [colorScheme]);
@@ -39,43 +36,8 @@ export default function Profile() {
   }, [newDisplayName, newPhone, displayName, phone, updateProfile]);
 
   return (
-    <View className="pt-16 pb-6 h-full bg-gray-200 dark:bg-transparent relative">
-      <TouchableOpacity
-        onPress={goBack}
-        className="absolute top-16 z-10 left-6 size-10 rounded-full dark:bg-gray-300/5 flex flex-row items-center justify-center"
-      >
-        <Icon
-          size={28}
-          name="arrow-to-left"
-          container="-rotate-90"
-          color={isDark ? Colors.dark.text : Colors.dark.royal}
-        />
-      </TouchableOpacity>
-      <Animated.View
-        className="pt-12 px-6"
-        entering={FadeInDown.delay(100).duration(300)}
-      >
-        <FlexRow className="justify-between">
-          <View>
-            <DText
-              fontSize={12}
-              className="h-8 font-ultratight tracking-tighter dark:text-chalk text-2xl"
-            >
-              Account
-            </DText>
-            <DText
-              fontSize={10}
-              className="text-sm font-quick dark:text-hyper-active"
-            >
-              {session?.user?.email}
-            </DText>
-          </View>
-          <Image
-            className="size-16 rounded-full"
-            source={{ uri: session?.user.user_metadata.avatar_url }}
-          />
-        </FlexRow>
-      </Animated.View>
+    <View className="pb-6 h-full bg-gray-200 dark:bg-transparent relative">
+      <ScreenHeader back={goBack} label="Account" isDark={isDark} safeTop />
 
       <Animated.ScrollView
         scrollEventThrottle={16}

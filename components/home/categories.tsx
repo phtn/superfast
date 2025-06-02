@@ -3,7 +3,13 @@ import { FlexCol } from "@/components/ui/FlexCol";
 import { FlexRow } from "@/components/ui/FlexRow";
 import { Colors } from "@/constants/Colors";
 import { clsx } from "clsx";
-import { useCallback, useMemo, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import Animated, { ZoomInEasyDown } from "react-native-reanimated";
 import { Icon } from "../icons";
@@ -20,10 +26,14 @@ interface ICategory {
 }
 interface CategoryProps {
   isDark: boolean;
+  activeCategory: number;
+  setActiveCategory: Dispatch<SetStateAction<number>>;
 }
-export const Categories = ({ isDark }: CategoryProps) => {
-  const [activeCategory, setActiveCategory] = useState(1);
-
+export const Categories = ({
+  isDark,
+  activeCategory,
+  setActiveCategory,
+}: CategoryProps) => {
   const categories = useMemo(
     () =>
       [
@@ -49,7 +59,7 @@ export const Categories = ({ isDark }: CategoryProps) => {
     (id: number) => () => {
       setActiveCategory(id);
     },
-    [],
+    [setActiveCategory],
   );
 
   return (

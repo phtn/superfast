@@ -23,42 +23,70 @@ interface CardProps {
   actionLabel?: string;
   children?: ReactNode;
   isDark?: boolean;
+  paddingVertical?: number;
+  delay?: number;
 }
 export const MinimalistCard = (props: CardProps) => {
   return (
     <Animated.View
-      entering={FadeInUp.delay(300)
+      entering={FadeInDown.delay(props.delay ?? 200)
         .duration(500)
-        .easing(Easing.out(Easing.quad))}
+        .easing(Easing.out(Easing.quad))
+        .withInitialValues({
+          transform: [
+            {
+              translateY: 6,
+            },
+          ],
+        })}
+      style={{ paddingVertical: props.paddingVertical }}
       className="w-full z-50 relative"
     >
-      <View className="absolute dark:bg-void/15 bg-void/25 -bottom-2 left-0 rounded-lg scale-[0.97] px-2 w-full h-24 z-10" />
+      <Animated.View
+        entering={FadeInUp.delay(300)
+          .duration(600)
+          .withInitialValues({ opacity: 0, transform: [{ translateY: -4 }] })}
+        className="absolute dark:bg-ga/20 bg-void/25 bottom-1.5 left-0 rounded-b-2xl scale-[0.986] overflow-hidden w-full h-4 z-10"
+      >
+        <LinearGradient
+          colors={
+            props.isDark
+              ? ["#FFFBEB", "#FFF", Colors.dark.off]
+              : ["#222222", "#333333", "#555555"]
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className="size-full opacity-40"
+        />
+      </Animated.View>
       <LinearGradient
         colors={
-          props.isDark ? ["#020202", "#030303", "#040404"] : ["#FFF", "#FFF"]
+          props.isDark
+            ? ["#FFFBEB", "#FFF", Colors.dark.off]
+            : ["#020202", "#030303", "#040404"]
         }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         className="px-1.5 h-[5.5rem] z-50 relative overflow-hidden flex flex-row items-center rounded-xl"
       >
-        <FlexRow className="h-20 w-12">
+        <FlexRow className="h-20 w-12 pb-5">
           <Icon
-            name={props.icon ?? "shield-bold-duotone"}
             solid
             size={32}
-            color={props.isDark ? Colors.dark.hyper : Colors.light.active}
+            name={props.icon ?? "shield-bold-duotone"}
+            color={props.isDark ? Colors.light.active : Colors.dark.hyper}
           />
         </FlexRow>
         <View className="px-1 flex flex-row items-center w-full justify-between">
           <View className="gap-y-1">
             <DText
               fontSize={11}
-              className="font-tight text-chalk/90 dark:text-void text-lg leading-none"
+              className="font-quickbold text-chalk/90 dark:text-void tracking-snug leading-4"
             >
               {props.children}
               {props.title ?? "Upgrade to PRO!"}
             </DText>
-            <SText className="dark:text-dark-ga text-ga text-base font-quick max-w-full">
+            <SText className="dark:text-hades text-ga text-base font-quick tracking-tight max-w-full">
               {props.description ?? "Get coverage in minutes."}
             </SText>
           </View>
@@ -67,19 +95,24 @@ export const MinimalistCard = (props: CardProps) => {
           activeOpacity={0.65}
           onPress={props.onPress}
           className={clsx(
-            "absolute w-[6.5rem] h-10 right-0",
+            "absolute w-[8rem] h-10 right-0",
             "flex flex-row items-center justify-between",
           )}
         >
-          <View className="h-full w-[2px] rounded-full dark:bg-royal/10 bg-chalk/15"></View>
-          <FlexRow>
-            <SText className="font-quick text-white dark:text-royal mr-0.5 mb-0.5 text-2xl">
-              ₱
+          <View className="h-full w-[0px] rounded-full dark:bg-royal/10 bg-chalk/15"></View>
+          <View className="whitespace-nowrap justify-start">
+            <FlexRow>
+              <SText className="font-quick text-white dark:text-royal mr-[3px] mb-1 text-xl">
+                ₱
+              </SText>
+              <SText className="font-geist text-white dark:text-royal text-2xl tracking-teen">
+                {props.value?.toLocaleString() ?? "420"}
+              </SText>
+            </FlexRow>
+            <SText className="text-xs text-center dark:text-hades text-ga  font-quick tracking-tight">
+              Total Coverage
             </SText>
-            <SText className="font-space text-white dark:text-royal text-3xl tracking-tighter">
-              {props.value ?? "420"}
-            </SText>
-          </FlexRow>
+          </View>
           <View className="h-full w-[3px] rounded-full bg-grei/0"></View>
         </TouchableOpacity>
       </LinearGradient>

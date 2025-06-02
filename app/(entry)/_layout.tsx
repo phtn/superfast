@@ -38,6 +38,7 @@ export default function Layout() {
             }}
           />
           <Stack.Screen name="/(ctpl)" options={{ headerShown: false }} />
+          <Stack.Screen name="/(pa)" options={{ headerShown: false }} />
           <Stack.Screen name="/(docs)" options={{ headerShown: false }} />
         </Stack>
       ) : (

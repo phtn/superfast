@@ -101,11 +101,8 @@ export default function Affiliate() {
           showQrCode={showQrCode}
         />
 
-        <Animated.View
-          entering={FadeInDown.delay(100).duration(300)}
-          className="py-12 gap-6 px-6"
-        >
-          <View>
+        <View className="py-12 gap-6 px-6">
+          <Animated.View entering={FadeInDown.delay(200).duration(300)}>
             <View className="gap-3 h-12 flex flex-row items-center justify-start">
               <DText
                 fontSize={12}
@@ -128,8 +125,9 @@ export default function Affiliate() {
                 chartData={[0, 0]}
               />
             </View>
-          </View>
-          <View>
+          </Animated.View>
+
+          <Animated.View entering={FadeInDown.delay(300).duration(300)}>
             <FlexRow className="justify-between">
               <View className="gap-2 h-12 flex flex-row items-center justify-start">
                 <DText
@@ -160,8 +158,8 @@ export default function Affiliate() {
                 logoUri={re_up}
               />
             </View>
-          </View>
-        </Animated.View>
+          </Animated.View>
+        </View>
       </Animated.ScrollView>
       <View className="flex-1 flex"></View>
     </View>
@@ -183,7 +181,7 @@ const AffiliateCard = ({
 }: AffiliateCardProps) => (
   <View className="px-4">
     <Animated.View
-      entering={FadeInDown.delay(100).duration(300)}
+      entering={FadeInDown.delay(125).duration(300)}
       className="p-6 bg-slate-800 h-64 rounded-2xl"
     >
       <FlexRow className="justify-between items-start h-1/4">

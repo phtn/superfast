@@ -55,7 +55,8 @@ interface VehicleDocs {
 }
 
 export type DocType = "or" | "cr" | "id";
-interface CTPLCtxValues {
+
+interface PACtxValues {
   carTypes: CarType[] | null;
   onSelect: (id: string) => void;
   carType: CarType | undefined;
@@ -79,12 +80,12 @@ interface CTPLCtxValues {
    */
   submitDocuments: () => Promise<void>;
   uploading: boolean;
-  carInsuranceProducts: IProductItem[];
+  products: IProductItem[];
 }
-export const CTPLCtx = createContext<CTPLCtxValues | undefined>(undefined);
+const PACtx = createContext<PACtxValues | undefined>(undefined);
 
 const BUCKET_NAME = "cars";
-export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
+export const PACtxProvider = ({ children }: { children: ReactNode }) => {
   const [carType, setSelectedCarType] = useState<CarType>();
   const [documents, setDocuments] = useState<VehicleDocs>({});
   const [uploading, setUploading] = useState(false);
@@ -96,46 +97,29 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const { gsec } = useCodeConverter();
 
-  const ctplImageUri = useMemo(
+  const paImageUri = useMemo(
     () => ({
       bg: getFileUri(isDark ? "CTPL_DARK.webp" : "CTPL_LIGHT4.png"),
       badge: getFileUri(isDark ? "CTPL_D.webp" : "CTPL_L.png"),
     }),
     [isDark, getFileUri],
   );
-  const fullImageUri = useMemo(
-    () => ({
-      bg: getFileUri(isDark ? "FULL_DARK5.png" : "FULL_LIGHT5.png"),
-      badge: getFileUri(isDark ? "FULL_S.webp" : "FULL_S.webp"),
-    }),
-    [isDark, getFileUri],
-  );
 
-  const carInsuranceProducts = useMemo(
+  const products = useMemo(
     () =>
       [
         {
           id: 0,
-          name: "CTPL",
-          subtext: "Compulsory Third Party Liability",
-          image: ctplImageUri.bg,
-          badge: ctplImageUri.badge,
-          description: "Compulsory Third Party Liability",
+          name: "code: PA",
+          subtext: "Personal Accident Insurance Coverage",
+          image: paImageUri.bg,
+          badge: paImageUri.badge,
+          description: "",
           textStyles: "text-hades",
-          tag: "car insurance",
-        },
-        {
-          id: 1,
-          name: "Full Coverage",
-          subtext: "Comprehensive Insurance Coverage",
-          image: fullImageUri.bg,
-          badge: fullImageUri.badge,
-          description: "Comprehensive Insurance Coverage",
-          textStyles: "text-hades",
-          tag: "car insurance",
+          tag: "personal accidents",
         },
       ] as IProductItem[],
-    [ctplImageUri, fullImageUri],
+    [paImageUri],
   );
 
   const getCarTypes = useCallback(async () => {
@@ -318,7 +302,7 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
       submitDocuments,
       uploading,
       sampleDocs,
-      carInsuranceProducts,
+      products,
     }),
     [
       carTypes,
@@ -334,17 +318,17 @@ export const CTPLCtxProvider = ({ children }: { children: ReactNode }) => {
       submitDocuments,
       uploading,
       sampleDocs,
-      carInsuranceProducts,
+      products,
     ],
   );
-  return <CTPLCtx.Provider value={value}>{children}</CTPLCtx.Provider>;
+  return <PACtx.Provider value={value}>{children}</PACtx.Provider>;
 };
 
 // Custom hook to use auth context
-export function useCTPLCtx() {
-  const context = useContext(CTPLCtx);
+export function usePACtx() {
+  const context = useContext(PACtx);
   if (context === undefined) {
-    throw new Error("useCTPLCtx must be used within an CTPLCtx.Provider");
+    throw new Error("usePACtx must be used within an PACtx.Provider");
   }
   return context;
 }

@@ -16,6 +16,7 @@ import { AuthProvider } from "@/ctx/auth";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ConfigCtxProvider } from "@/ctx/config";
 import { CTPLCtxProvider } from "@/ctx/ctpl-ctx";
+import { PACtxProvider } from "@/ctx/pa-ctx";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -53,11 +54,13 @@ export default function RootLayout() {
       <ConfigCtxProvider>
         <AuthProvider>
           <CTPLCtxProvider>
-            <Stack>
-              <Stack.Screen name="(entry)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
-            <StatusBar style="auto" />
+            <PACtxProvider>
+              <Stack>
+                <Stack.Screen name="(entry)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <StatusBar style="auto" />
+            </PACtxProvider>
           </CTPLCtxProvider>
         </AuthProvider>
       </ConfigCtxProvider>

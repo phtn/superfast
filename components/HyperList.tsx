@@ -18,6 +18,7 @@ interface HyperListProps<T> {
   containerStyle?: ClassName;
   contentContainerStyle?: ContentStyle;
   itemStyle?: ClassName;
+  listSize?: number;
   reversed?: boolean;
   orderBy?: keyof T;
   max?: number;
@@ -39,6 +40,7 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
     itemStyle,
     keyId,
     max = 15,
+    listSize = 10,
     orderBy = "updated_at",
     reversed = false,
     disableAnimation = false,
@@ -115,12 +117,12 @@ export const ListComponent = <T extends object>(props: HyperListProps<T>) => {
       <FlashList
         data={sortedData}
         scrollEnabled={false}
-        estimatedItemSize={12}
         renderItem={renderItem}
+        horizontal={horizontal}
         keyExtractor={keyExtractor}
+        estimatedItemSize={listSize}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={contentContainerStyle}
-        horizontal={horizontal}
       />
     </View>
   );
